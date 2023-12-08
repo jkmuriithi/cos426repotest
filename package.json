@@ -1,20 +1,16 @@
 {
     "$schema": "https://json.schemastore.org/package.json",
-    "repository": "cos426finalproject-vite",
-    "name": "lower-case-dashed-name-of-project",
+    "repository": "roguelife426",
+    "name": "roguelife",
     "type": "module",
     "version": "0.1.0",
-    "title": "PROJECT TITLE HERE",
-    "description": "SHORT DESCRIPTION OF PROJECT HERE. ONE TO TWO SENTENCES MAX",
+    "title": "roguelife",
+    "description": "A 2.5D beat-em-up based on the hardest situations in life. Created as a final project for COS426.",
     "keywords": [
         "Princeton",
         "graphics",
         "three.js",
-        "COS 426",
-        "keywor0d",
-        "keyword1",
-        "keyword2-etc",
-        "but this last entry CANNOT have a comma after it ->"
+        "COS 426"
     ],
     "scripts": {
         "start": "vite",
@@ -23,11 +19,13 @@
         "format": "prettier --write ."
     },
     "dependencies": {
-        "dat.gui": "^0.7.9",
+        "cannon-es": "^0.20.0",
+        "stats.js": "^0.17.0",
         "three": "^0.158.0"
     },
     "devDependencies": {
-        "@types/dat.gui": "^0.7.12",
+        "@types/node": "^20.10.4",
+        "@types/stats.js": "^0.17.3",
         "@types/three": "^0.158.3",
         "prettier": "^3.1.0",
         "typescript": "^5.2.2",

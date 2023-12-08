@@ -14,6 +14,8 @@ class BasicLights extends Group {
 
         this.add(ambi, hemi, dir);
     }
+
+    update() {}
 }
 
 export default BasicLights;

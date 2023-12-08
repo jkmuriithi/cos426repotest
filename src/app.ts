@@ -6,6 +6,8 @@
  * handles window resizes.
  *
  */
+import { World, Vec3 } from 'cannon-es';
+import Stats from 'stats.js';
 import { WebGLRenderer, PerspectiveCamera, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
@@ -28,7 +30,16 @@ document.body.style.margin = '0'; // Removes margin around page
 document.body.style.overflow = 'hidden'; // Fix scrolling
 document.body.appendChild(canvas);
 
-// Set up controls
+// Set up FPS meter
+const stats = new Stats();
+stats.showPanel(0);
+stats.dom.style.top = '';
+stats.dom.style.left = '';
+stats.dom.style.bottom = '0px';
+stats.dom.style.right = '0px';
+document.body.appendChild(stats.dom);
+
+// Set up manual controls
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 controls.enablePan = false;
@@ -36,11 +47,21 @@ controls.minDistance = 4;
 controls.maxDistance = 16;
 controls.update();
 
+// Set up physics sim
+const world = new World({
+    gravity: new Vec3(0, -9.82, 0),
+});
+
 // Render loop
-const onAnimationFrameHandler = (timeStamp: number) => {
+const onAnimationFrameHandler = () => {
+    stats.begin();
+
     controls.update();
     renderer.render(scene, camera);
-    scene.update && scene.update(timeStamp);
+    world.fixedStep();
+    scene.update && scene.update();
+
+    stats.end();
     window.requestAnimationFrame(onAnimationFrameHandler);
 };
 window.requestAnimationFrame(onAnimationFrameHandler);
