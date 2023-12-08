@@ -29,8 +29,6 @@ class Room extends Group {
             position: new Vec3(...position),
             shape: new CannonBox(new Vec3(...size.map((n) => n / 2))),
         });
-        console.log(this.position);
-        console.log(this.body.position);
     }
 
     update(): void {

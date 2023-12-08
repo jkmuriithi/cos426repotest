@@ -10,17 +10,17 @@ import {
 
 class Character extends Group {
     body: Body;
+    size: [number, number, number] = [1, 3, 1];
 
     constructor() {
         // Call parent Group() constructor
         super();
 
         this.name = 'character';
-        const size = [1, 3, 1];
         const position = [0, 3, 0] as const;
 
         // Create object
-        const geometry = new BoxGeometry(...size);
+        const geometry = new BoxGeometry(...this.size);
         const material = new MeshToonMaterial({ color: 0xe8beac });
         this.add(new Mesh(geometry, material));
         this.translateOnAxis(new Vector3(...position), 1);
@@ -29,13 +29,7 @@ class Character extends Group {
         this.body = new Body({
             mass: 10,
             position: new Vec3(...position),
-            shape: new CannonBox(new Vec3(...size.map((n) => n / 2))),
-        });
-
-        window.addEventListener('keydown', (event) => {
-            if (event.key === ' ') {
-                this.body.applyImpulse(new Vec3(0, 100, 0));
-            }
+            shape: new CannonBox(new Vec3(...this.size.map((n) => n / 2))),
         });
     }
 
