@@ -1,4 +1,4 @@
-import { Body, Vec3 } from 'cannon-es';
+import { Body } from 'cannon-es';
 import { Scene, Color, Object3D, Object3DEventMap } from 'three';
 
 import Character from '../objects/Character';
