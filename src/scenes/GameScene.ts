@@ -1,13 +1,18 @@
+import { Body, Vec3 } from 'cannon-es';
 import { Scene, Color, Object3D, Object3DEventMap } from 'three';
 
 import Character from '../objects/Character';
 import Room from '../objects/Room';
 import BasicLights from '../lights/BasicLights';
+import { world } from '../globals';
 
-type UpdateChild = Object3D<Object3DEventMap> & { update?: () => void };
+type SceneChild = Object3D<Object3DEventMap> & {
+    update?: () => void;
+    body?: Body;
+};
 
 class GameScene extends Scene {
-    children: UpdateChild[];
+    children: SceneChild[];
 
     constructor() {
         // Call parent Scene() constructor
@@ -20,6 +25,9 @@ class GameScene extends Scene {
 
         // Add meshes to scene
         this.add(...this.children);
+        for (const child of this.children) {
+            child.body && world.addBody(child.body);
+        }
     }
 
     update(): void {

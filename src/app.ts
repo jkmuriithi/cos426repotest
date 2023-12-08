@@ -6,12 +6,12 @@
  * handles window resizes.
  *
  */
-import { World, Vec3 } from 'cannon-es';
 import Stats from 'stats.js';
 import { WebGLRenderer, PerspectiveCamera, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import GameScene from './scenes/GameScene';
+import { world } from './globals';
 
 // Initialize core ThreeJS components
 const scene = new GameScene();
@@ -46,11 +46,6 @@ controls.enablePan = false;
 controls.minDistance = 4;
 controls.maxDistance = 16;
 controls.update();
-
-// Set up physics sim
-const world = new World({
-    gravity: new Vec3(0, -9.82, 0),
-});
 
 // Render loop
 const onAnimationFrameHandler = () => {
