@@ -49,7 +49,7 @@ class Player extends Character {
     ) {
         super(size, position, color, name);
 
-        this.forwards = this.facing.clone();
+        this.forwards = this.front.clone();
         this.backwards = this.forwards
             .clone()
             .applyAxisAngle(this.upAxis, Math.PI);

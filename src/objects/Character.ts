@@ -26,7 +26,6 @@ class Character extends Group {
     readonly upAxisCannon = new Vec3().copy(this.upAxis as unknown as Vec3);
 
     body: Body;
-    facing = this.front.clone();
 
     constructor(
         size: [number, number, number] = [1, 1, 1],
@@ -82,9 +81,9 @@ class Character extends Group {
      * should face.
      */
     turnToFace(direction: Vector3) {
-        this.quaternion.setFromUnitVectors(this.facing, direction);
+        this.quaternion.setFromUnitVectors(this.front, direction);
         this.body.quaternion.setFromVectors(
-            new Vec3().copy(this.facing as unknown as Vec3),
+            new Vec3().copy(this.front as unknown as Vec3),
             new Vec3().copy(direction as unknown as Vec3)
         );
     }
