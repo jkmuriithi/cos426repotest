@@ -9,7 +9,7 @@ import {
     Mesh,
 } from 'three';
 
-import { camera, world } from '../app';
+import { camera, world } from '../globals';
 import Floor from '../objects/Floor';
 import BasicLights from '../lights/BasicLights';
 import Player from '../objects/Player';
@@ -22,7 +22,7 @@ type SceneChild = Object3D<Object3DEventMap> & {
 class GameScene extends Scene {
     readonly transparentOpacity = 0.35;
 
-    // Change the type of the existing Object3D.children property
+    // Change the type of the superclass Object3D.children property
     declare children: SceneChild[];
 
     private raycaster: Raycaster = new Raycaster();

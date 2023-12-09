@@ -1,25 +1,13 @@
 /**
- * @file Defines global game variables. Sets up the three.js Renderer, Scene,
- * Camera, and the cannon-es world. Starts the render loop and configures a
- * window resize handler.
+ * @file Configures ThreeJS components, starts the render loop, and adds general
+ * event handlers.
  */
-
 import Stats from 'stats.js';
-import { WebGLRenderer, PerspectiveCamera, Vector3 } from 'three';
+import { Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
+import { camera, renderer, world } from './globals';
 import GameScene from './scenes/GameScene';
-import { Vec3, World } from 'cannon-es';
-
-// Global variables
-export const world = new World({
-    gravity: new Vec3(0, -9.82, 0),
-});
-
-// Core ThreeJS components
-export const scene = new GameScene();
-export const camera = new PerspectiveCamera();
-export const renderer = new WebGLRenderer({ antialias: true });
 
 function setup() {
     // Set up camera
@@ -69,6 +57,7 @@ function setup() {
     );
 
     // Render loop
+    const scene = new GameScene();
     const loop = () => {
         stats.begin();
 

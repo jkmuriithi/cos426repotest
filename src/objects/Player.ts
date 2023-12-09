@@ -75,7 +75,7 @@ class Player extends Character {
         this.moveLeft = this.moveLeft || leftKeys.has(code);
         this.moveRight = this.moveRight || rightKeys.has(code);
 
-        if (this.jumpsLeft > 0 && jumpKeys.has(code)) {
+        if (!event.repeat && jumpKeys.has(code) && this.jumpsLeft > 0) {
             this.body.velocity.y += this.jumpVelocity;
             --this.jumpsLeft;
         }
@@ -123,14 +123,11 @@ class Player extends Character {
             this.inputDirection.z += 1;
         }
 
-        // TODO: Make player (or maybe Character) turn towards direction
-        this.inputDirection
-            // .applyQuaternion(this.quaternion)
-            .normalize()
-            .multiplyScalar(this.moveVelocity * dt);
+        // TODO: Make player (or maybe Character) turn towards input direction
+        this.inputDirection.normalize().multiplyScalar(this.moveVelocity * dt);
 
         // TODO: Instead of changing position, make Character use a low-friction
-        // material
+        // material and change velocity
         this.body.position.x += this.inputDirection.x;
         this.body.position.z += this.inputDirection.z;
 
