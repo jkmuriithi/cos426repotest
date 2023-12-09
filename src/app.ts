@@ -23,7 +23,7 @@ export const renderer = new WebGLRenderer({ antialias: true });
 
 function setup() {
     // Set up camera
-    camera.position.set(-9, 5, 10);
+    camera.position.set(-9, 7, 10);
     camera.lookAt(new Vector3(0, 0, 0));
 
     // Set up renderer, canvas, and minor CSS adjustments
@@ -60,6 +60,13 @@ function setup() {
     };
     onWindowResize();
     window.addEventListener('resize', onWindowResize, false);
+
+    // (for debugging) print camera position with 'c'
+    // TODO: remove this
+    window.addEventListener(
+        'keydown',
+        (e) => e.code === 'KeyC' && console.log(camera.position)
+    );
 
     // Render loop
     const loop = () => {

@@ -22,13 +22,20 @@ class Floor extends Group {
     ) {
         // Call parent Group() constructor
         super();
-        this.name = name;
         this.size = size.slice() as [number, number, number];
+        this.name = name;
 
         // Create object
         const geometry = new BoxGeometry(...size);
+
         const material = new MeshLambertMaterial({ color });
-        this.add(new Mesh(geometry, material));
+        material.transparent = true;
+        material.opacity = 1;
+
+        const mesh = new Mesh(geometry, material);
+        mesh.name = name;
+
+        this.add(mesh);
         this.translateOnAxis(new Vector3(...position), 1);
 
         // Add physics body

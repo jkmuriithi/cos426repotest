@@ -29,7 +29,10 @@ class Character extends Group {
         // Create object
         const geometry = new BoxGeometry(...this.size);
         const material = new MeshToonMaterial({ color });
-        this.add(new Mesh(geometry, material));
+        const mesh = new Mesh(geometry, material);
+        mesh.name = name;
+
+        this.add(mesh);
         this.translateOnAxis(new Vector3(...position), 1);
 
         // Add physics body
