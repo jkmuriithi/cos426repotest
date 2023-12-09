@@ -4,8 +4,8 @@ import { ColorRepresentation, Vector3 } from 'three';
 import Character from './Character';
 
 // JS keycode reference: https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values
-const upKeys = new Set(['KeyW', 'ArrowUp']);
-const downKeys = new Set(['KeyS', 'ArrowDown']);
+const forwardsKeys = new Set(['KeyW', 'ArrowUp']);
+const backwardsKeys = new Set(['KeyS', 'ArrowDown']);
 const leftKeys = new Set(['KeyA', 'ArrowLeft']);
 const rightKeys = new Set(['KeyD', 'ArrowRight']);
 const jumpKeys = new Set(['Space']);
@@ -24,11 +24,16 @@ type CollideEvent = {
 class Player extends Character {
     readonly maxJumps = 2;
 
-    private moveUp = false;
-    private moveDown = false;
+    private contactNormal = new Vec3();
+    private moveForwards = false;
+    private moveBackwards = false;
     private moveLeft = false;
     private moveRight = false;
-    private contactNormal = new Vec3();
+
+    private forwards: Vector3;
+    private backwards: Vector3;
+    private left: Vector3;
+    private right: Vector3;
 
     controlsDisabled = false;
     jumpsLeft = 0;
@@ -44,6 +49,17 @@ class Player extends Character {
     ) {
         super(size, position, color, name);
 
+        this.forwards = this.facing.clone();
+        this.backwards = this.forwards
+            .clone()
+            .applyAxisAngle(this.upAxis, Math.PI);
+        this.left = this.forwards
+            .clone()
+            .applyAxisAngle(this.upAxis, Math.PI / 2);
+        this.right = this.forwards
+            .clone()
+            .applyAxisAngle(this.upAxis, -Math.PI / 2);
+
         // Re-enable jumping after collision with some object underneath
         this.body.addEventListener('collide', (e: CollideEvent) => {
             const { contact } = e;
@@ -56,7 +72,7 @@ class Player extends Character {
             }
 
             // If collision normal faces somewhat upwards...
-            if (this.contactNormal.dot(this.upAxis) > 0.5) {
+            if (this.contactNormal.dot(this.upAxisCannon) > 0.5) {
                 this.jumpsLeft = this.maxJumps;
             }
         });
@@ -69,8 +85,8 @@ class Player extends Character {
         if (event.repeat) return;
         const { code } = event;
 
-        this.moveUp = this.moveUp || upKeys.has(code);
-        this.moveDown = this.moveDown || downKeys.has(code);
+        this.moveForwards = this.moveForwards || forwardsKeys.has(code);
+        this.moveBackwards = this.moveBackwards || backwardsKeys.has(code);
         this.moveLeft = this.moveLeft || leftKeys.has(code);
         this.moveRight = this.moveRight || rightKeys.has(code);
 
@@ -83,8 +99,8 @@ class Player extends Character {
     private onKeyUp = (event: KeyboardEvent): void => {
         const { code } = event;
 
-        this.moveUp = this.moveUp && !upKeys.has(code);
-        this.moveDown = this.moveDown && !downKeys.has(code);
+        this.moveForwards = this.moveForwards && !forwardsKeys.has(code);
+        this.moveBackwards = this.moveBackwards && !backwardsKeys.has(code);
         this.moveLeft = this.moveLeft && !leftKeys.has(code);
         this.moveRight = this.moveRight && !rightKeys.has(code);
     };
@@ -99,6 +115,24 @@ class Player extends Character {
         window.removeEventListener('keyup', this.onKeyUp);
     }
 
+    /**
+     * Set the direction that the player moves when going forwards. Other
+     * controls directions are set accordingly. The given direction vector
+     * should be normalized.
+     */
+    setForwardsDirection(direction: Vector3) {
+        this.forwards = direction.clone();
+        this.backwards = this.forwards
+            .clone()
+            .applyAxisAngle(this.upAxis, Math.PI);
+        this.left = this.forwards
+            .clone()
+            .applyAxisAngle(this.upAxis, Math.PI / 2);
+        this.right = this.forwards
+            .clone()
+            .applyAxisAngle(this.upAxis, -Math.PI / 2);
+    }
+
     update(dt: number): void {
         if (this.controlsDisabled) {
             super.update(dt);
@@ -106,19 +140,17 @@ class Player extends Character {
         }
 
         this.inputDirection.set(0, 0, 0);
-
-        // Forwards axis is x, rightwards axis is z
-        if (this.moveUp) {
-            this.inputDirection.x += 1;
+        if (this.moveForwards) {
+            this.inputDirection.add(this.forwards);
         }
-        if (this.moveDown) {
-            this.inputDirection.x -= 1;
+        if (this.moveBackwards) {
+            this.inputDirection.add(this.backwards);
         }
         if (this.moveLeft) {
-            this.inputDirection.z -= 1;
+            this.inputDirection.add(this.left);
         }
         if (this.moveRight) {
-            this.inputDirection.z += 1;
+            this.inputDirection.add(this.right);
         }
 
         // Make player turn towards input direction

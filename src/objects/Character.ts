@@ -22,7 +22,8 @@ class Character extends Group {
     readonly initQuaternion: Quaternion;
     /** Unit vector pointing out of the front of the character. */
     readonly front = new Vector3(1, 0, 0);
-    readonly upAxis = new Vec3(0, 1, 0);
+    readonly upAxis = new Vector3(0, 1, 0);
+    readonly upAxisCannon = new Vec3().copy(this.upAxis as unknown as Vec3);
 
     body: Body;
     facing = this.front.clone();
