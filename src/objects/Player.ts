@@ -23,7 +23,6 @@ type CollideEvent = {
  */
 class Player extends Character {
     readonly maxJumps = 2;
-    readonly upAxis = new Vec3(0, 1, 0);
 
     private moveUp = false;
     private moveDown = false;
@@ -56,7 +55,7 @@ class Player extends Character {
                 this.contactNormal.copy(contact.ni);
             }
 
-            // If collision normal faces somewhat upwards
+            // If collision normal faces somewhat upwards...
             if (this.contactNormal.dot(this.upAxis) > 0.5) {
                 this.jumpsLeft = this.maxJumps;
             }
@@ -67,15 +66,15 @@ class Player extends Character {
 
     // Must be a closure so that "this" is handled properly
     private onKeyDown = (event: KeyboardEvent): void => {
+        if (event.repeat) return;
         const { code } = event;
-        // console.log(`key down: ${code}`);
 
         this.moveUp = this.moveUp || upKeys.has(code);
         this.moveDown = this.moveDown || downKeys.has(code);
         this.moveLeft = this.moveLeft || leftKeys.has(code);
         this.moveRight = this.moveRight || rightKeys.has(code);
 
-        if (!event.repeat && jumpKeys.has(code) && this.jumpsLeft > 0) {
+        if (this.jumpsLeft > 0 && jumpKeys.has(code)) {
             this.body.velocity.y += this.jumpVelocity;
             --this.jumpsLeft;
         }
@@ -83,7 +82,6 @@ class Player extends Character {
 
     private onKeyUp = (event: KeyboardEvent): void => {
         const { code } = event;
-        // console.log(`key up: ${code}`);
 
         this.moveUp = this.moveUp && !upKeys.has(code);
         this.moveDown = this.moveDown && !downKeys.has(code);
@@ -123,11 +121,15 @@ class Player extends Character {
             this.inputDirection.z += 1;
         }
 
-        // TODO: Make player (or maybe Character) turn towards input direction
-        this.inputDirection.normalize().multiplyScalar(this.moveVelocity * dt);
+        // Make player turn towards input direction
+        this.inputDirection.normalize();
+        if (this.inputDirection.length() > 0) {
+            this.turnToFace(this.inputDirection);
+        }
 
-        // TODO: Instead of changing position, make Character use a low-friction
-        // material and change velocity
+        // TODO: Maybe instead of changing position, we make Character use a
+        // low-friction material and change velocity?
+        this.inputDirection.multiplyScalar(this.moveVelocity * dt);
         this.body.position.x += this.inputDirection.x;
         this.body.position.z += this.inputDirection.z;
 

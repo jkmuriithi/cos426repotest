@@ -49,7 +49,7 @@ function setup() {
     onWindowResize();
     window.addEventListener('resize', onWindowResize, false);
 
-    // (for debugging) print camera position with 'c'
+    // Print camera position with 'c' for debugging
     // TODO: remove this
     window.addEventListener(
         'keydown',

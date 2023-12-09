@@ -58,13 +58,12 @@ class GameScene extends Scene {
 
         // Make objects between the camera and the player transparent
         // TODO: Intersect player bounding box instead of player position
-        const cameraPos = camera.position;
         const toPlayer = this.player.position
             .clone()
-            .sub(cameraPos)
+            .sub(camera.position)
             .normalize();
 
-        this.raycaster.set(cameraPos, toPlayer);
+        this.raycaster.set(camera.position, toPlayer);
         const intersections = this.raycaster.intersectObjects(this.children);
 
         // Note: intersections will only contain meshes
@@ -73,7 +72,7 @@ class GameScene extends Scene {
         for (const intersection of intersections) {
             const { object } = intersection as unknown as { object: Mesh };
             if (!object.isMesh) continue;
-            if (object.name === this.player.name) break;
+            if (object.id === this.player.children[0].id) break;
 
             const material = object.material as Material;
             if (material && material.transparent) {
