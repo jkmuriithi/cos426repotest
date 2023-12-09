@@ -93,6 +93,9 @@ class Character extends Group {
         this.body.position.copy(this.initPosition as unknown as Vec3);
         this.quaternion.copy(this.initQuaternion);
         this.body.quaternion.copy(this.initQuaternion as unknown as CannonQuat);
+
+        this.body.velocity.setZero();
+        this.body.angularVelocity.setZero();
     }
 
     update(_: number): void {

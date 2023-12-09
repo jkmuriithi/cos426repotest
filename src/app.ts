@@ -49,15 +49,21 @@ function setup() {
     onWindowResize();
     window.addEventListener('resize', onWindowResize, false);
 
-    // Print camera position with 'c' for debugging
+    const scene = new GameScene();
+    // Debugging helpers
+    // Print camera position with 'c'
     // TODO: remove this
     window.addEventListener(
         'keydown',
         (e) => e.code === 'KeyC' && console.log(camera.position)
     );
+    // Reset character position with 'r'
+    window.addEventListener(
+        'keydown',
+        (e) => e.code === 'KeyR' && scene.player.reset()
+    );
 
     // Render loop
-    const scene = new GameScene();
     const loop = () => {
         stats.begin();
 
