@@ -1,6 +1,7 @@
-import { BODY_TYPES, Body, Box as CannonBox, Vec3 } from 'cannon-es';
+import { Body, Box as CannonBox, Vec3 } from 'cannon-es';
 import {
     BoxGeometry,
+    ColorRepresentation,
     Group,
     Mesh,
     MeshToonMaterial,
@@ -10,19 +11,23 @@ import {
 
 class Character extends Group {
     body: Body;
-    size: [number, number, number] = [1, 3, 1];
-    canJump: boolean = false;
+    size: [number, number, number];
 
-    constructor() {
+    constructor(
+        size: [number, number, number] = [1, 1, 1],
+        position: [number, number, number] = [0, 0, 0],
+        color: ColorRepresentation = 0xffffff,
+        name: string = 'character'
+    ) {
         // Call parent Group() constructor
         super();
 
-        this.name = 'character';
-        const position = [0, 3, 0] as const;
+        this.name = name;
+        this.size = size.slice() as [number, number, number];
 
         // Create object
         const geometry = new BoxGeometry(...this.size);
-        const material = new MeshToonMaterial({ color: 0xe8beac });
+        const material = new MeshToonMaterial({ color });
         this.add(new Mesh(geometry, material));
         this.translateOnAxis(new Vector3(...position), 1);
 
@@ -32,27 +37,9 @@ class Character extends Group {
             position: new Vec3(...position),
             shape: new CannonBox(new Vec3(...this.size.map((n) => n / 2))),
         });
-
-        // Jumping controls
-        this.body.addEventListener('collide', (e: { body: Body }) => {
-            // console.log(e);
-            if (
-                e.body.type === BODY_TYPES.STATIC &&
-                e.body.position.y < this.body.position.y
-            ) {
-                this.canJump = true;
-            }
-        });
-
-        window.addEventListener('keydown', (e) => {
-            if (this.canJump && e.key === ' ') {
-                this.body.velocity.y += 10;
-                this.canJump = false;
-            }
-        });
     }
 
-    update(): void {
+    update(_: number): void {
         this.position.copy(this.body.position as unknown as Vector3);
         this.quaternion.copy(this.body.quaternion as unknown as Quaternion);
     }
