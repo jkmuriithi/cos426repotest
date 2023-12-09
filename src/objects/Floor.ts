@@ -2,28 +2,36 @@ import { Body, Box as CannonBox, Vec3 } from 'cannon-es';
 import {
     Group,
     Mesh,
-    MeshBasicMaterial,
     Vector3,
     Quaternion,
     BoxGeometry,
+    ColorRepresentation,
+    MeshLambertMaterial,
 } from 'three';
 
-class Room extends Group {
+class Floor extends Group {
+    readonly size: [number, number, number];
+
     body: Body;
-    constructor() {
+
+    constructor(
+        size: [number, number, number] = [10, 0.1, 10],
+        position: [number, number, number] = [0, 0, 0],
+        color: ColorRepresentation = 0xffffff,
+        name: string = 'floor'
+    ) {
         // Call parent Group() constructor
         super();
-        this.name = 'room';
-        const size = [10, 0.1, 10];
-        const position = [0, -1, 0] as const;
+        this.name = name;
+        this.size = size.slice() as [number, number, number];
 
-        // Load object
+        // Create object
         const geometry = new BoxGeometry(...size);
-        const material = new MeshBasicMaterial({ color: 0xe8e8e8 });
+        const material = new MeshLambertMaterial({ color });
         this.add(new Mesh(geometry, material));
         this.translateOnAxis(new Vector3(...position), 1);
 
-        // Add physics
+        // Add physics body
         this.body = new Body({
             mass: 0,
             position: new Vec3(...position),
@@ -31,10 +39,10 @@ class Room extends Group {
         });
     }
 
-    update(): void {
+    update(_: number): void {
         this.position.copy(this.body.position as unknown as Vector3);
         this.quaternion.copy(this.body.quaternion as unknown as Quaternion);
     }
 }
 
-export default Room;
+export default Floor;

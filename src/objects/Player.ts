@@ -1,4 +1,4 @@
-import { BODY_TYPES, Body } from 'cannon-es';
+import { Body, ContactEquation, Vec3 } from 'cannon-es';
 import { ColorRepresentation, Vector3 } from 'three';
 
 import Character from './Character';
@@ -10,24 +10,32 @@ const leftKeys = new Set(['KeyA', 'ArrowLeft']);
 const rightKeys = new Set(['KeyD', 'ArrowRight']);
 const jumpKeys = new Set(['Space']);
 
+// Can't find a type for this in cannon
+type CollideEvent = {
+    body: Body;
+    contact: ContactEquation;
+};
+
 /**
  * A user-controlled Character. Code adapted from the cannon-es pointer lock
  * controls example.
  * @see {@link https://github.com/pmndrs/cannon-es/blob/master/examples/js/PointerLockControlsCannon.js}
  */
 class Player extends Character {
+    readonly maxJumps = 2;
+    readonly upAxis = new Vec3(0, 1, 0);
+
+    private moveUp = false;
+    private moveDown = false;
+    private moveLeft = false;
+    private moveRight = false;
+    private contactNormal = new Vec3();
+
     controlsDisabled = false;
-
-    canJump = false; // Question: Should this be true or false initially?
-    moveUp = false;
-    moveDown = false;
-    moveLeft = false;
-    moveRight = false;
-
+    jumpsLeft = 0;
     jumpVelocity = 5;
-    moveVelocity = 4;
-
-    inputDirection = new Vector3(0, 0, 0);
+    moveVelocity = 6;
+    inputDirection = new Vector3();
 
     constructor(
         size: [number, number, number] = [1, 1, 1],
@@ -37,15 +45,20 @@ class Player extends Character {
     ) {
         super(size, position, color, name);
 
-        // Re-enable jumping after floor collision
-        this.body.addEventListener('collide', (e: { body: Body }) => {
-            // TODO: Check collision normal direction instead of y positions
-            if (
-                e.body.type === BODY_TYPES.STATIC &&
-                e.body.position.y < this.body.position.y
-            ) {
-                console.log(e);
-                this.canJump = true;
+        // Re-enable jumping after collision with some object underneath
+        this.body.addEventListener('collide', (e: CollideEvent) => {
+            const { contact } = e;
+
+            this.contactNormal.setZero();
+            if (contact.bi.id === this.body.id) {
+                contact.ni.negate(this.contactNormal);
+            } else {
+                this.contactNormal.copy(contact.ni);
+            }
+
+            // If collision normal faces somewhat upwards
+            if (this.contactNormal.dot(this.upAxis) > 0.5) {
+                this.jumpsLeft = this.maxJumps;
             }
         });
 
@@ -62,9 +75,9 @@ class Player extends Character {
         this.moveLeft = this.moveLeft || leftKeys.has(code);
         this.moveRight = this.moveRight || rightKeys.has(code);
 
-        if (this.canJump && jumpKeys.has(code)) {
+        if (this.jumpsLeft > 0 && jumpKeys.has(code)) {
             this.body.velocity.y += this.jumpVelocity;
-            this.canJump = false;
+            --this.jumpsLeft;
         }
     };
 
@@ -96,6 +109,7 @@ class Player extends Character {
 
         this.inputDirection.set(0, 0, 0);
 
+        // Forwards axis is x, rightwards axis is z
         if (this.moveUp) {
             this.inputDirection.x += 1;
         }

@@ -69,7 +69,7 @@ function setup() {
         renderer.render(scene, camera);
         world.fixedStep();
         scene.update && scene.update(world.dt);
-        console.log(camera.position);
+
         stats.end();
         window.requestAnimationFrame(loop);
     };

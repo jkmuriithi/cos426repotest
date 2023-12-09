@@ -10,8 +10,9 @@ import {
 } from 'three';
 
 class Character extends Group {
-    body: Body;
     size: [number, number, number];
+
+    body: Body;
 
     constructor(
         size: [number, number, number] = [1, 1, 1],
@@ -31,7 +32,7 @@ class Character extends Group {
         this.add(new Mesh(geometry, material));
         this.translateOnAxis(new Vector3(...position), 1);
 
-        // Add physics
+        // Add physics body
         this.body = new Body({
             mass: 1,
             position: new Vec3(...position),
