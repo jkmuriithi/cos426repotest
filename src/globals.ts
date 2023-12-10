@@ -31,7 +31,14 @@ export const character_physics_material = new CannonMaterial();
 const world_character_contact = new ContactMaterial(
     world_physics_material,
     character_physics_material,
-    { friction: 0.0, restitution: 0.0 }
+    {
+        friction: 0.0,
+        restitution: 0.0,
+        frictionEquationRelaxation: 1,
+        contactEquationRelaxation: 1,
+        frictionEquationStiffness: 1e9,
+        contactEquationStiffness: 1e9,
+    }
 );
 world.addContactMaterial(world_character_contact);
 

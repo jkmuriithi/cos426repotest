@@ -5,6 +5,7 @@
  * Sources:
  * @see {@link https://github.com/pmndrs/cannon-es/issues/126}
  * @see {@link https://gafferongames.com/post/fix_your_timestep/}
+ * @see {@link https://stackoverflow.com/questions/16424500/what-would-be-realistic-values-for-gravity-mass-and-contact-material-in-canno}
  *
  * TODO: Refactor large constructors using options pattern
  * TODO: Implement proper dispose methods on all classes with geometry,
@@ -26,6 +27,7 @@ import {
     ORBIT_CONTROLS_ENABLED,
 } from './globals';
 import GameScene from './scenes/GameScene';
+import { GSSolver } from 'cannon-es';
 
 function setup() {
     // Set up camera
@@ -44,6 +46,10 @@ function setup() {
     document.body.style.margin = '0'; // Removes margin around page
     document.body.style.overflow = 'hidden'; // Fix scrolling
     document.body.appendChild(canvas);
+
+    // Set up physics sim
+    (world.solver as GSSolver).iterations += 5;
+    (world.solver as GSSolver).tolerance = 1e-9;
 
     // Set up FPS meter
     const stats = new Stats();
