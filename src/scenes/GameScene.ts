@@ -13,9 +13,9 @@ import {
     DynamicOpacityMaterial,
     ORBIT_CONTROLS_ENABLED,
     WALL_THICKNESS,
-    camera,
-    initCameraPosition,
-    world,
+    CAMERA,
+    INIT_CAMERA_POSITION,
+    WORLD,
 } from '../globals';
 import BasicLights from '../lights/BasicLights';
 import Player from '../characters/Player';
@@ -81,7 +81,7 @@ class GameScene extends Scene {
             if (seen.has(child)) continue;
 
             seen.add(child);
-            child.body && world.addBody(child.body);
+            child.body && WORLD.addBody(child.body);
             descendants.push(...(child.children as SceneChild[]));
         }
     }
@@ -105,8 +105,8 @@ class GameScene extends Scene {
         );
         cameraDisplacement.y = 0;
 
-        camera.position.addVectors(initCameraPosition, cameraDisplacement);
-        camera.lookAt(
+        CAMERA.position.addVectors(INIT_CAMERA_POSITION, cameraDisplacement);
+        CAMERA.lookAt(
             this.player.position
                 .clone()
                 .add(new Vector3(0, -this.player.position.y, 0))
@@ -117,7 +117,7 @@ class GameScene extends Scene {
     private handleMaterialTransparency() {
         const cameraDir = this.player.position
             .clone()
-            .sub(camera.position)
+            .sub(CAMERA.position)
             .normalize();
 
         // Method 1: Checking normal direction
@@ -146,7 +146,7 @@ class GameScene extends Scene {
         }
 
         // Method 2: Checking player intersection
-        this.raycaster.set(camera.position, cameraDir);
+        this.raycaster.set(CAMERA.position, cameraDir);
         const intersections = this.raycaster.intersectObjects(this.children);
         // Note: intersections will only contain meshes
         // @see - {@link https://discourse.threejs.org/t/raycast-intersect-group/14038}

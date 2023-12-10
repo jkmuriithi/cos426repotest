@@ -20,10 +20,10 @@ import { Vector3, PCFSoftShadowMap } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import {
-    camera,
-    renderer,
-    world,
-    initCameraPosition,
+    CAMERA,
+    RENDERER,
+    WORLD,
+    INIT_CAMERA_POSITION,
     ORBIT_CONTROLS_ENABLED,
 } from './globals';
 import GameScene from './scenes/GameScene';
@@ -31,25 +31,25 @@ import { GSSolver } from 'cannon-es';
 
 function setup() {
     // Set up camera
-    camera.position.copy(initCameraPosition);
-    camera.zoom = 0.3;
-    camera.fov = 20;
-    camera.lookAt(new Vector3(0, 0, 0));
+    CAMERA.position.copy(INIT_CAMERA_POSITION);
+    CAMERA.zoom = 0.3;
+    CAMERA.fov = 20;
+    CAMERA.lookAt(new Vector3(0, 0, 0));
 
     // Set up renderer, canvas, and minor CSS adjustments
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = PCFSoftShadowMap;
+    RENDERER.setPixelRatio(window.devicePixelRatio);
+    RENDERER.shadowMap.enabled = true;
+    RENDERER.shadowMap.type = PCFSoftShadowMap;
 
-    const canvas = renderer.domElement;
+    const canvas = RENDERER.domElement;
     canvas.style.display = 'block'; // Removes padding below canvas
     document.body.style.margin = '0'; // Removes margin around page
     document.body.style.overflow = 'hidden'; // Fix scrolling
     document.body.appendChild(canvas);
 
     // Set up physics sim
-    (world.solver as GSSolver).iterations += 5;
-    (world.solver as GSSolver).tolerance = 1e-9;
+    (WORLD.solver as GSSolver).iterations += 5;
+    (WORLD.solver as GSSolver).tolerance = 1e-9;
 
     // Set up FPS meter
     const stats = new Stats();
@@ -63,7 +63,7 @@ function setup() {
     // Set up manual controls
     let controls: OrbitControls | undefined;
     if (ORBIT_CONTROLS_ENABLED) {
-        controls = new OrbitControls(camera, canvas);
+        controls = new OrbitControls(CAMERA, canvas);
         controls.enableDamping = true;
         controls.enablePan = true;
         controls.enableZoom = true;
@@ -76,9 +76,9 @@ function setup() {
     // Resize Handler
     const onWindowResize = () => {
         const { innerHeight, innerWidth } = window;
-        renderer.setSize(innerWidth, innerHeight);
-        camera.aspect = innerWidth / innerHeight;
-        camera.updateProjectionMatrix();
+        RENDERER.setSize(innerWidth, innerHeight);
+        CAMERA.aspect = innerWidth / innerHeight;
+        CAMERA.updateProjectionMatrix();
     };
     onWindowResize();
     window.addEventListener('resize', onWindowResize, false);
@@ -88,7 +88,7 @@ function setup() {
     // TODO: set up debug flags
     window.addEventListener(
         'keydown',
-        (e) => e.code === 'KeyC' && console.log(camera)
+        (e) => e.code === 'KeyC' && console.log(CAMERA)
     );
     // Reset character position with 'r'
     window.addEventListener(
@@ -105,15 +105,15 @@ function setup() {
 
         const time = performance.now() / 1000;
         if (!lastCallTime) {
-            world.step(timeStep);
+            WORLD.step(timeStep);
         } else {
             const dt = time - lastCallTime;
-            world.step(timeStep, dt);
+            WORLD.step(timeStep, dt);
             scene.update(dt);
         }
         lastCallTime = time;
         controls && controls.update();
-        renderer.render(scene, camera);
+        RENDERER.render(scene, CAMERA);
 
         stats.end();
         window.requestAnimationFrame(loop);

@@ -11,7 +11,7 @@ import {
 
 import {
     WALL_THICKNESS,
-    world_physics_material,
+    WALL_PHYSICS_MATERIAL,
     makeDynamic,
     DynamicOpacityConfig,
 } from '../globals';
@@ -84,7 +84,7 @@ class Wall extends Group {
             mass: 0,
             position: new Vec3(...position),
             shape: new CannonBox(new Vec3(...size.map((n) => n / 2))),
-            material: world_physics_material,
+            material: WALL_PHYSICS_MATERIAL,
         });
         this.body.quaternion.setFromVectors(
             new Vec3(0, 1, 0),

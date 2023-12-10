@@ -15,7 +15,7 @@ import {
     Quaternion,
     Vector3,
 } from 'three';
-import { character_physics_material } from '../globals';
+import { CHARACTER_PHYSICS_MATERIAL } from '../globals';
 
 type CharacterOptions = {
     name: string;
@@ -84,7 +84,7 @@ class Character extends Group {
             mass: 1,
             position: new Vec3(...position),
             shape: new CannonBox(new Vec3(...size.map((n) => n / 2))),
-            material: character_physics_material,
+            material: CHARACTER_PHYSICS_MATERIAL,
         });
         this.body.quaternion.copy(this.quaternion as unknown as CannonQuat);
     }
