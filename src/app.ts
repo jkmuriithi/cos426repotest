@@ -6,7 +6,7 @@
  * @see {@link https://gafferongames.com/post/fix_your_timestep/}
  */
 import Stats from 'stats.js';
-import { Vector3, PCFSoftShadowMap, TextureLoader } from 'three';
+import { Vector3, PCFSoftShadowMap } from 'three';
 // import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import {

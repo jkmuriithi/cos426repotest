@@ -12,7 +12,6 @@ import {
     Line,
     Mesh,
     MeshPhongMaterial,
-    MeshToonMaterial,
     Quaternion,
     Vector3,
 } from 'three';
