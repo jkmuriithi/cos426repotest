@@ -12,7 +12,7 @@ import {
 import {
     WALL_THICKNESS,
     world_physics_material,
-    makeDynamicMaterial,
+    makeDynamic,
     DynamicOpacityConfig,
 } from '../globals';
 
@@ -40,6 +40,7 @@ class Wall extends Group {
     };
 
     readonly options: WallOptions;
+
     body: Body;
 
     constructor(options: Partial<WallOptions>) {
@@ -54,7 +55,7 @@ class Wall extends Group {
 
         // Create object
         const geometry = new BoxGeometry(...size);
-        const material = makeDynamicMaterial(
+        const material = makeDynamic(
             new MeshLambertMaterial({
                 color,
             }),

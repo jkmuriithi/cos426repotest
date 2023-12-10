@@ -88,21 +88,29 @@ class GameScene extends Scene {
         }
 
         if (!ORBIT_CONTROLS_ENABLED) {
-            const cameraDisplacement = new Vector3().subVectors(
-                this.player.position,
-                this.player.initPosition
-            );
-            cameraDisplacement.y = 0;
-
-            camera.position.addVectors(initCameraPosition, cameraDisplacement);
-            camera.lookAt(
-                this.player.position
-                    .clone()
-                    .add(new Vector3(0, -this.player.position.y, 0))
-            );
+            this.moveCameraWithPlayer();
         }
 
-        // Make objects between the camera and the player transparent
+        this.handleMaterialTransparency();
+    }
+
+    private moveCameraWithPlayer() {
+        const cameraDisplacement = new Vector3().subVectors(
+            this.player.position,
+            this.player.initPosition
+        );
+        cameraDisplacement.y = 0;
+
+        camera.position.addVectors(initCameraPosition, cameraDisplacement);
+        camera.lookAt(
+            this.player.position
+                .clone()
+                .add(new Vector3(0, -this.player.position.y, 0))
+        );
+    }
+
+    /** Make objects between the camera and the player transparent */
+    private handleMaterialTransparency() {
         const cameraDir = this.player.position
             .clone()
             .sub(camera.position)

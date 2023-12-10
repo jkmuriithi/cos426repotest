@@ -53,7 +53,7 @@ export type DynamicOpacityConfig = Omit<
     'transparent' | 'hasDynamicOpacity'
 >;
 
-export function makeDynamicMaterial<M extends Material>(
+export function makeDynamic<M extends Material>(
     material: M,
     config: DynamicOpacityConfig
 ): DynamicOpacityMaterial {
@@ -62,9 +62,9 @@ export function makeDynamicMaterial<M extends Material>(
     mat.transparent = true;
     mat.hasDynamicOpacity = true;
     mat.opacity = config.highOpacity;
-    for (const key in config) {
+    for (const [key, value] of Object.entries(config)) {
         // @ts-ignore
-        mat[key] = config[key];
+        mat[key] = value;
     }
     if (mat.normal) {
         mat.normal = mat.normal.clone();

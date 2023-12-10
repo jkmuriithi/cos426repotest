@@ -60,25 +60,25 @@ class Player extends Character {
             .clone()
             .applyAxisAngle(this.upAxis, -Math.PI / 2);
 
-        // Re-enable jumping after collision with some object underneath
-        this.body.addEventListener('collide', (e: CollideEvent) => {
-            const { contact } = e;
-
-            this.contactNormal.setZero();
-            if (contact.bi.id === this.body.id) {
-                contact.ni.negate(this.contactNormal);
-            } else {
-                this.contactNormal.copy(contact.ni);
-            }
-
-            // If collision normal faces somewhat upwards...
-            if (this.contactNormal.dot(this.upAxisCannon) > 0.5) {
-                this.jumpsLeft = this.maxJumps;
-            }
-        });
-
         this.connectEventListeners();
     }
+
+    // Re-enable jumping after collision with some object underneath
+    private onCollide = (e: CollideEvent): void => {
+        const { contact } = e;
+
+        this.contactNormal.setZero();
+        if (contact.bi.id === this.body.id) {
+            contact.ni.negate(this.contactNormal);
+        } else {
+            this.contactNormal.copy(contact.ni);
+        }
+
+        // If collision normal faces somewhat upwards...
+        if (this.contactNormal.dot(this.upAxisCannon) > 0.5) {
+            this.jumpsLeft = this.maxJumps;
+        }
+    };
 
     // Must be a closure so that "this" is handled properly
     private onKeyDown = (event: KeyboardEvent): void => {
@@ -108,11 +108,13 @@ class Player extends Character {
     connectEventListeners(): void {
         window.addEventListener('keydown', this.onKeyDown);
         window.addEventListener('keyup', this.onKeyUp);
+        this.body.addEventListener('collide', this.onCollide);
     }
 
     disconnectEventListeners(): void {
         window.removeEventListener('keydown', this.onKeyDown);
         window.removeEventListener('keyup', this.onKeyUp);
+        this.body.removeEventListener('collide', this.onCollide);
     }
 
     /**

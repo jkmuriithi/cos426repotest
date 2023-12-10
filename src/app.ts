@@ -1,13 +1,22 @@
 /**
  * @file Configures ThreeJS components, starts the render loop, and adds general
  * event handlers.
+ *
  * Sources:
  * @see {@link https://github.com/pmndrs/cannon-es/issues/126}
  * @see {@link https://gafferongames.com/post/fix_your_timestep/}
+ *
+ * TODO: Refactor large constructors using options pattern
+ * TODO: Implement proper dispose methods on all classes with geometry,
+ * materials, textures, and lights (make sure to remove Cannon bodies and event
+ * listeners)
+ * TODO: Create Level class and implement game levels as subclasses
+ * TODO: Implement level loading/disposal in GameScene
+ * @see {@link https://threejs.org/docs/#manual/en/introduction/How-to-dispose-of-objects}
  */
 import Stats from 'stats.js';
 import { Vector3, PCFSoftShadowMap } from 'three';
-// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import {
     camera,
@@ -17,7 +26,6 @@ import {
     ORBIT_CONTROLS_ENABLED,
 } from './globals';
 import GameScene from './scenes/GameScene';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 function setup() {
     // Set up camera

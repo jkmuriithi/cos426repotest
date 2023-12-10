@@ -27,6 +27,7 @@ class Room extends Group {
 
     /** The options this room was configured with */
     readonly options: RoomOptions;
+
     floor: Wall;
     leftBackWall: Wall;
     rightBackWall: Wall;
