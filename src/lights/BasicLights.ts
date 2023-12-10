@@ -1,18 +1,37 @@
-import { Group, SpotLight, AmbientLight, HemisphereLight } from 'three';
+import {
+    Group,
+    SpotLight,
+    // AmbientLight,
+    HemisphereLight,
+    // DirectionalLight,
+} from 'three';
 
 class BasicLights extends Group {
+    shadowMapSize = 2048;
+
     constructor() {
         // Invoke parent Group() constructor
         super();
 
-        const dir = new SpotLight(0xffffff, 1.6, 7, 0.8, 1, 1);
-        const ambi = new AmbientLight(0xffffff, 1.32);
-        const hemi = new HemisphereLight(0xffffff, 0x080820, 2.3);
+        const spot1 = new SpotLight(0xffffff, 100, 0, Math.PI / 4, 1, 2);
+        spot1.position.set(0, 10, -5);
+        spot1.target.position.set(10, 0, -5);
+        spot1.castShadow = true;
+        spot1.shadow.mapSize.width = this.shadowMapSize;
+        spot1.shadow.mapSize.height = this.shadowMapSize;
+        this.add(spot1, spot1.target);
 
-        dir.position.set(5, 1, 2);
-        dir.target.position.set(0, 0, 0);
+        const spot2 = new SpotLight(0xffffff, 100, 0, Math.PI / 4, 1, 2);
+        spot2.position.set(20, 10, -5);
+        spot2.target.position.set(10, 0, -5);
+        spot2.castShadow = true;
+        spot2.shadow.mapSize.width = this.shadowMapSize;
+        spot2.shadow.mapSize.height = this.shadowMapSize;
+        this.add(spot2, spot2.target);
 
-        this.add(ambi, hemi, dir);
+        const hemi = new HemisphereLight(0xffffff, 0x080808, 0.8);
+        hemi.position.set(10, 20, -5);
+        this.add(hemi);
     }
 }
 

@@ -9,7 +9,7 @@ import {
     MeshLambertMaterial,
 } from 'three';
 import {
-    EPS,
+    WALL_THICKNESS,
     world_physics_material,
     DynamicOpacityMaterial,
 } from '../globals';
@@ -20,12 +20,12 @@ class Wall extends Group {
     body: Body;
 
     constructor(
-        size: [number, number, number] = [10, EPS, 10],
+        size: [number, number, number] = [10, WALL_THICKNESS, 10],
         position: [number, number, number] = [0, 0, 0],
         direction: [number, number, number] = [0, 1, 0],
         color: ColorRepresentation = 0xffffff,
         name: string = 'floor',
-        lowOpacity: number = 0.3
+        dynamicOpacity: number = 0.3
     ) {
         // Call parent Group() constructor
         super();
@@ -42,10 +42,12 @@ class Wall extends Group {
         material.hasDynamicOpacity = true;
         material.normal = new Vector3(...direction);
         material.highOpacity = 1;
-        material.lowOpacity = lowOpacity;
+        material.lowOpacity = dynamicOpacity;
 
         const mesh = new Mesh(geometry, material);
         mesh.name = name;
+        mesh.receiveShadow = true;
+        mesh.castShadow = true;
         mesh.applyQuaternion(
             new Quaternion().setFromUnitVectors(
                 new Vector3(0, 1, 0),

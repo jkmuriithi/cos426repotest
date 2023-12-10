@@ -6,21 +6,31 @@
  * @see {@link https://gafferongames.com/post/fix_your_timestep/}
  */
 import Stats from 'stats.js';
-import { Vector3 } from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { Vector3, PCFSoftShadowMap, TextureLoader } from 'three';
+// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-import { camera, renderer, world } from './globals';
+import {
+    camera,
+    renderer,
+    world,
+    initCameraPosition,
+    ORBIT_CONTROLS_ENABLED,
+} from './globals';
 import GameScene from './scenes/GameScene';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 function setup() {
     // Set up camera
-    camera.position.set(-90, 70, 100);
-    camera.zoom = 0.2;
+    camera.position.copy(initCameraPosition);
+    camera.zoom = 0.3;
     camera.fov = 20;
     camera.lookAt(new Vector3(0, 0, 0));
 
     // Set up renderer, canvas, and minor CSS adjustments
     renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = PCFSoftShadowMap;
+
     const canvas = renderer.domElement;
     canvas.style.display = 'block'; // Removes padding below canvas
     document.body.style.margin = '0'; // Removes margin around page
@@ -37,12 +47,17 @@ function setup() {
     document.body.appendChild(stats.dom);
 
     // Set up manual controls
-    const controls = new OrbitControls(camera, canvas);
-    controls.enableDamping = true;
-    controls.enablePan = false;
-    controls.minDistance = 4;
-    controls.maxDistance = 16;
-    controls.update();
+    let controls: OrbitControls | undefined;
+    if (ORBIT_CONTROLS_ENABLED) {
+        controls = new OrbitControls(camera, canvas);
+        controls.enableDamping = true;
+        controls.enablePan = true;
+        controls.enableZoom = true;
+        controls.enableRotate = true;
+        controls.minDistance = 2;
+        controls.maxDistance = 100;
+        controls.update();
+    }
 
     // Resize Handler
     const onWindowResize = () => {
@@ -60,7 +75,7 @@ function setup() {
     // TODO: remove this
     window.addEventListener(
         'keydown',
-        (e) => e.code === 'KeyC' && console.log(camera.position)
+        (e) => e.code === 'KeyC' && console.log(camera)
     );
     // Reset character position with 'r'
     window.addEventListener(
@@ -83,7 +98,7 @@ function setup() {
             scene.update && scene.update(dt);
         }
         lastCallTime = time;
-        controls.update();
+        controls && controls.update();
         renderer.render(scene, camera);
 
         stats.end();

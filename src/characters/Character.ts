@@ -11,6 +11,7 @@ import {
     Group,
     Line,
     Mesh,
+    MeshPhongMaterial,
     MeshToonMaterial,
     Quaternion,
     Vector3,
@@ -43,9 +44,14 @@ class Character extends Group {
 
         // Create object
         const geometry = new BoxGeometry(...size);
-        const material = new MeshToonMaterial({ color });
+        const material = new MeshPhongMaterial({
+            color,
+            shininess: 100,
+        });
         const mesh = new Mesh(geometry, material);
         mesh.name = name;
+        mesh.receiveShadow = true;
+        mesh.castShadow = true;
         this.add(mesh);
 
         // (For debugging) draw line facing forwards

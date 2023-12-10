@@ -2,6 +2,7 @@ import { Body, ContactEquation, Vec3 } from 'cannon-es';
 import { ColorRepresentation, Vector3 } from 'three';
 
 import Character from './Character';
+import { FLOAT_EPS, ICE_SKATER_MODE } from '../globals';
 
 // JS keycode reference: https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values
 const forwardsKeys = new Set(['KeyW', 'ArrowUp']);
@@ -154,15 +155,20 @@ class Player extends Character {
 
         // Make player turn towards input direction
         this.inputDirection.normalize();
-        if (this.inputDirection.length() > 0) {
+        if (this.inputDirection.length() > FLOAT_EPS) {
             this.turnToFace(this.inputDirection);
+            // Remove all character spin
+            this.body.angularVelocity.setZero();
         }
 
-        // TODO: Maybe instead of changing position, we make Character use a
-        // low-friction material and change velocity?
         this.inputDirection.multiplyScalar(this.moveVelocity);
-        this.body.velocity.x = this.inputDirection.x;
-        this.body.velocity.z = this.inputDirection.z;
+        if (ICE_SKATER_MODE) {
+            this.body.velocity.x += this.inputDirection.x / 10;
+            this.body.velocity.z += this.inputDirection.z / 10;
+        } else {
+            this.body.velocity.x = this.inputDirection.x;
+            this.body.velocity.z = this.inputDirection.z;
+        }
 
         super.update(dt);
     }

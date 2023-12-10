@@ -3,13 +3,7 @@
  * Vite's build process, so it's best to put any state shared between modules
  * in this file.
  */
-import {
-    Mesh,
-    PerspectiveCamera,
-    Vector3,
-    Material,
-    WebGLRenderer,
-} from 'three';
+import { PerspectiveCamera, Vector3, Material, WebGLRenderer } from 'three';
 import {
     Vec3,
     World,
@@ -17,14 +11,19 @@ import {
     ContactMaterial,
 } from 'cannon-es';
 
+// Game constants
+export const WALL_THICKNESS = 0.1;
+export const ORBIT_CONTROLS_ENABLED = false;
+export const ICE_SKATER_MODE = false;
+export const FLOAT_EPS = 1e-8;
+
 // ThreeJS constants
 export const camera = new PerspectiveCamera();
+export const initCameraPosition = new Vector3(-10, 10, 10);
 export const renderer = new WebGLRenderer({ antialias: true });
-export const EPS = 0.1;
-
 // Cannon-ES constants
 export const world = new World({
-    gravity: new Vec3(0, -9.82, 0),
+    gravity: new Vec3(0, -9.81, 0),
 });
 export const world_physics_material = new CannonMaterial();
 export const character_physics_material = new CannonMaterial();

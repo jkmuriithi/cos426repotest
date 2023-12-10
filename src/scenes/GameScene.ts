@@ -1,15 +1,13 @@
 import { Body } from 'cannon-es';
-import {
-    Scene,
-    Material,
-    Color,
-    Object3D,
-    Object3DEventMap,
-    Vector3,
-    Mesh,
-} from 'three';
+import { Scene, Color, Object3D, Object3DEventMap, Vector3, Mesh } from 'three';
 
-import { DynamicOpacityMaterial, camera, world } from '../globals';
+import {
+    DynamicOpacityMaterial,
+    ORBIT_CONTROLS_ENABLED,
+    camera,
+    initCameraPosition,
+    world,
+} from '../globals';
 import BasicLights from '../lights/BasicLights';
 import Player from '../characters/Player';
 import Room from '../rooms/Room';
@@ -34,14 +32,14 @@ class GameScene extends Scene {
         super();
 
         // Set background to a nice color
-        this.background = new Color(0x7ec0ee);
+        this.background = new Color(0x000000);
 
         // Add meshes to scene
-        this.player = new Player([1, 2, 1], [0, 2, 0], 0xe8beac);
+        this.player = new Player([1, 2, 1], [10, 2, -5], 0xe8beac);
         this.add(
             this.player,
             new BasicLights(),
-            new Room([15, 10, 5], [0, 0, 0], 0xffffff)
+            new Room([30, 10, 20], [10, 0, -5], 0xffffff)
         );
 
         // DFS through all children
@@ -60,6 +58,21 @@ class GameScene extends Scene {
     update(dt: number): void {
         for (const child of this.children) {
             child.update && child.update(dt);
+        }
+
+        if (!ORBIT_CONTROLS_ENABLED) {
+            const cameraDisplacement = new Vector3().subVectors(
+                this.player.position,
+                this.player.initPosition
+            );
+            cameraDisplacement.y = 0;
+
+            camera.position.addVectors(initCameraPosition, cameraDisplacement);
+            camera.lookAt(
+                this.player.position
+                    .clone()
+                    .add(new Vector3(0, -this.player.position.y, 0))
+            );
         }
 
         // Make objects between the camera and the player transparent
