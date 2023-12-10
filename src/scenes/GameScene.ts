@@ -5,29 +5,27 @@ import {
     Color,
     Object3D,
     Object3DEventMap,
-    Raycaster,
-    Mesh,
+    Vector3,
 } from 'three';
 
-import { camera, world } from '../globals';
-import Floor from '../objects/Floor';
+import { DynamicOpacityMaterial, camera, world } from '../globals';
 import BasicLights from '../lights/BasicLights';
-import Player from '../objects/Player';
+import Player from '../characters/Player';
+import Room from '../rooms/Room';
 
 type SceneChild = Object3D<Object3DEventMap> & {
     update?: (dt: number) => void;
     body?: Body;
+    normal?: Vector3;
 };
 
 class GameScene extends Scene {
-    readonly transparentOpacity = 0.35;
+    readonly transparentOpacity = 0.3;
+
+    private prevTransparent: Material[] = [];
 
     // Change the type of the superclass Object3D.children property
     declare children: SceneChild[];
-
-    private raycaster: Raycaster = new Raycaster();
-    private prevTransparent: Material[] = [];
-
     player: Player;
 
     constructor() {
@@ -38,16 +36,23 @@ class GameScene extends Scene {
         this.background = new Color(0x7ec0ee);
 
         // Add meshes to scene
-        this.player = new Player([1, 2, 1], [0, 6, 0], 0xe8beac);
+        this.player = new Player([1, 2, 1], [0, 2, 0], 0xe8beac);
         this.add(
             this.player,
             new BasicLights(),
-            new Floor([10, 0.1, 10], [0, -1, 0], 0xe8e8e8),
-            new Floor([4, 0.1, 4], [0, 1.5, 0], 0xdddddd)
+            new Room([15, 10, 5], [0, 0, 0], 0xffffff)
         );
 
-        for (const child of this.children) {
+        // DFS through all children
+        const descendants = [...this.children];
+        const seen = new Set();
+        while (descendants.length > 0) {
+            const child = descendants.pop() as SceneChild;
+            if (seen.has(child)) continue;
+
+            seen.add(child);
             child.body && world.addBody(child.body);
+            descendants.push(...(child.children as SceneChild[]));
         }
     }
 
@@ -57,37 +62,39 @@ class GameScene extends Scene {
         }
 
         // Make objects between the camera and the player transparent
-        // TODO: Intersect player bounding box instead of player position
-        const toPlayer = this.player.position
+        const cameraDir = this.player.position
             .clone()
             .sub(camera.position)
             .normalize();
 
-        this.raycaster.set(camera.position, toPlayer);
-        const intersections = this.raycaster.intersectObjects(this.children);
+        const dfs = [...this.children];
+        const visited = new Set<Object3D>();
+        const currTransparent = new Set<Material>();
+        while (dfs.length > 0) {
+            const child = dfs.pop() as DynamicOpacityMaterial;
+            if (visited.has(child)) continue;
 
-        // Note: intersections will only contain meshes
-        // @see - {@link https://discourse.threejs.org/t/raycast-intersect-group/14038}
-        const seen = new Set<Material>();
-        for (const intersection of intersections) {
-            const { object } = intersection as unknown as { object: Mesh };
-            if (!object.isMesh) continue;
-            if (object.id === this.player.children[0].id) break;
+            visited.add(child);
+            dfs.push(...child.children);
+            if (child.isMesh && child.normal && child.material) {
+                const normal = child.normal;
+                const material = child.material as Material;
 
-            const material = object.material as Material;
-            if (material && material.transparent) {
-                seen.add(material);
-                material.opacity = this.transparentOpacity;
+                if (material.transparent && cameraDir.dot(normal) > 0) {
+                    material.opacity =
+                        child.name === 'ceiling' ? 0 : this.transparentOpacity;
+                    currTransparent.add(material);
+                }
             }
         }
 
         for (const material of this.prevTransparent) {
-            if (!seen.has(material)) {
+            if (!currTransparent.has(material)) {
                 material.opacity = 1;
             }
         }
 
-        this.prevTransparent = [...seen.values()];
+        this.prevTransparent = [...currTransparent.values()];
     }
 }
 

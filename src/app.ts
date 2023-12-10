@@ -1,6 +1,9 @@
 /**
  * @file Configures ThreeJS components, starts the render loop, and adds general
  * event handlers.
+ * Sources:
+ * @see {@link https://github.com/pmndrs/cannon-es/issues/126}
+ * @see {@link https://gafferongames.com/post/fix_your_timestep/}
  */
 import Stats from 'stats.js';
 import { Vector3 } from 'three';
@@ -11,7 +14,9 @@ import GameScene from './scenes/GameScene';
 
 function setup() {
     // Set up camera
-    camera.position.set(-9, 7, 10);
+    camera.position.set(-90, 70, 100);
+    camera.zoom = 0.2;
+    camera.fov = 20;
     camera.lookAt(new Vector3(0, 0, 0));
 
     // Set up renderer, canvas, and minor CSS adjustments
@@ -63,14 +68,23 @@ function setup() {
         (e) => e.code === 'KeyR' && scene.player.reset()
     );
 
-    // Render loop
+    // Render loop using a "semi-fixed" physics time step
+    const timeStep = 1 / 60;
+    let lastCallTime: number | undefined = undefined;
     const loop = () => {
         stats.begin();
 
+        const time = performance.now() / 1000;
+        if (!lastCallTime) {
+            world.step(timeStep);
+        } else {
+            const dt = time - lastCallTime;
+            world.step(timeStep, dt);
+            scene.update && scene.update(dt);
+        }
+        lastCallTime = time;
         controls.update();
         renderer.render(scene, camera);
-        world.fixedStep();
-        scene.update && scene.update(world.dt);
 
         stats.end();
         window.requestAnimationFrame(loop);

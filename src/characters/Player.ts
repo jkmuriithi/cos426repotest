@@ -37,7 +37,7 @@ class Player extends Character {
     controlsDisabled = false;
     jumpsLeft = 0;
     jumpVelocity = 5;
-    moveVelocity = 6;
+    moveVelocity = 10;
     inputDirection = new Vector3();
 
     constructor(
@@ -160,9 +160,9 @@ class Player extends Character {
 
         // TODO: Maybe instead of changing position, we make Character use a
         // low-friction material and change velocity?
-        this.inputDirection.multiplyScalar(this.moveVelocity * dt);
-        this.body.position.x += this.inputDirection.x;
-        this.body.position.z += this.inputDirection.z;
+        this.inputDirection.multiplyScalar(this.moveVelocity);
+        this.body.velocity.x = this.inputDirection.x;
+        this.body.velocity.z = this.inputDirection.z;
 
         super.update(dt);
     }

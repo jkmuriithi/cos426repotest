@@ -15,6 +15,7 @@ import {
     Quaternion,
     Vector3,
 } from 'three';
+import { character_material } from '../globals';
 
 class Character extends Group {
     readonly size: Vector3;
@@ -62,6 +63,7 @@ class Character extends Group {
             mass: 1,
             position: new Vec3(...position),
             shape: new CannonBox(new Vec3(...size.map((n) => n / 2))),
+            material: character_material,
         });
         this.body.quaternion.copy(this.quaternion as unknown as CannonQuat);
     }
