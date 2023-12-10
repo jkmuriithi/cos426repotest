@@ -22,8 +22,6 @@ type CollideEvent = {
  * @see {@link https://github.com/pmndrs/cannon-es/blob/master/examples/js/PointerLockControlsCannon.js}
  */
 class Player extends Character {
-    readonly maxJumps = 2;
-
     private contactNormal = new Vec3();
     private moveForwards = false;
     private moveBackwards = false;
@@ -35,6 +33,7 @@ class Player extends Character {
     private left: Vector3;
     private right: Vector3;
 
+    maxJumps = 2;
     controlsDisabled = false;
     jumpsLeft = 0;
     jumpVelocity = 5;
