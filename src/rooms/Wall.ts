@@ -8,7 +8,11 @@ import {
     ColorRepresentation,
     MeshLambertMaterial,
 } from 'three';
-import { EPS, world_material, DynamicOpacityMaterial } from '../globals';
+import {
+    EPS,
+    world_physics_material,
+    DynamicOpacityMaterial,
+} from '../globals';
 
 class Wall extends Group {
     readonly size: [number, number, number];
@@ -19,9 +23,9 @@ class Wall extends Group {
         size: [number, number, number] = [10, EPS, 10],
         position: [number, number, number] = [0, 0, 0],
         direction: [number, number, number] = [0, 1, 0],
-        dynamic_opacity: number = 0.3,
         color: ColorRepresentation = 0xffffff,
-        name: string = 'floor'
+        name: string = 'floor',
+        lowOpacity: number = 0.3
     ) {
         // Call parent Group() constructor
         super();
@@ -30,14 +34,17 @@ class Wall extends Group {
 
         // Create object
         const geometry = new BoxGeometry(...size);
-        const material = new MeshLambertMaterial({ color });
+        const material = new MeshLambertMaterial({
+            color,
+        }) as unknown as DynamicOpacityMaterial;
         material.transparent = true;
         material.opacity = 1;
+        material.hasDynamicOpacity = true;
+        material.normal = new Vector3(...direction);
+        material.highOpacity = 1;
+        material.lowOpacity = lowOpacity;
 
-        const mesh = new Mesh(
-            geometry,
-            material
-        ) as unknown as DynamicOpacityMaterial;
+        const mesh = new Mesh(geometry, material);
         mesh.name = name;
         mesh.applyQuaternion(
             new Quaternion().setFromUnitVectors(
@@ -45,7 +52,6 @@ class Wall extends Group {
                 new Vector3(...direction).normalize()
             )
         );
-        mesh.normal = new Vector3(...direction);
 
         this.add(mesh);
         this.translateOnAxis(new Vector3(...position), 1);
@@ -55,7 +61,7 @@ class Wall extends Group {
             mass: 0,
             position: new Vec3(...position),
             shape: new CannonBox(new Vec3(...size.map((n) => n / 2))),
-            material: world_material,
+            material: world_physics_material,
         });
         this.body.quaternion.setFromVectors(
             new Vec3(0, 1, 0),

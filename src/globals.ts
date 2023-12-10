@@ -17,27 +17,31 @@ import {
     ContactMaterial,
 } from 'cannon-es';
 
-// ThreeJS
+// ThreeJS constants
 export const camera = new PerspectiveCamera();
 export const renderer = new WebGLRenderer({ antialias: true });
 export const EPS = 0.1;
 
-export type DynamicOpacityMaterial = Material & {
+// Cannon-ES constants
+export const world = new World({
+    gravity: new Vec3(0, -9.82, 0),
+});
+export const world_physics_material = new CannonMaterial();
+export const character_physics_material = new CannonMaterial();
+const world_character_contact = new ContactMaterial(
+    world_physics_material,
+    character_physics_material,
+    { friction: 0.0 }
+);
+world.addContactMaterial(world_character_contact);
+
+// Types
+export type DynamicOpacityConfig = {
+    transparent: true;
     hasDynamicOpacity: true;
     normal: Vector3;
     lowOpacity: number;
     highOpacity: number;
 };
 
-// Cannon-ES
-export const world = new World({
-    gravity: new Vec3(0, -9.82, 0),
-});
-export const world_material = new CannonMaterial();
-export const character_material = new CannonMaterial();
-const world_character_contact = new ContactMaterial(
-    world_material,
-    character_material,
-    { friction: 0.0 }
-);
-world.addContactMaterial(world_character_contact);
+export type DynamicOpacityMaterial = Material & DynamicOpacityConfig;

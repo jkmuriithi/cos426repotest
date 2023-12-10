@@ -7,8 +7,8 @@ class Room extends Group {
         size: [number, number, number] = [10, 10, 10],
         position: [number, number, number] = [0, 0, 0],
         color: ColorRepresentation = 0xffffff,
-        dynamic_opacity: number = 0.3,
-        name: string = 'room'
+        name: string = 'room',
+        lowOpacity: number = 0.3
     ) {
         super();
 
@@ -18,48 +18,48 @@ class Room extends Group {
             position,
             [0, 1, 0],
             color,
-            dynamic_opacity,
             'floor',
+            0
         );
         const left_back_wall = new Wall(
             [size[0] - EPS, EPS, size[1]],
             [position[0], position[1] + size[1] / 2, position[2] - size[2] / 2],
             [0, 0, 1],
             color,
-            dynamic_opacity,
             'left_back_wall',
+            lowOpacity
         );
         const right_back_wall = new Wall(
             [size[1], EPS, size[2] + EPS],
             [position[0] + size[0] / 2, position[1] + size[1] / 2, position[2]],
             [-1, 0, 0],
             color,
-            dynamic_opacity,
             'right_back_wall',
+            lowOpacity
         );
         const left_front_wall = new Wall(
             left_back_wall.size,
             [position[0], position[1] + size[1] / 2, position[2] + size[2] / 2],
             [0, 0, -1],
             color,
-            dynamic_opacity,
             'left_front_wall',
+            lowOpacity
         );
         const right_front_wall = new Wall(
             right_back_wall.size,
             [position[0] - size[0] / 2, position[1] + size[1] / 2, position[2]],
             [1, 0, 0],
             color,
-            dynamic_opacity,
             'right_front_wall',
+            lowOpacity
         );
         const ceiling = new Wall(
             floor.size,
             [position[0], position[1] + size[1], position[2]],
             [0, -1, 0],
             color,
-            dynamic_opacity,
             'ceiling',
+            lowOpacity
         );
 
         this.add(
@@ -68,7 +68,7 @@ class Room extends Group {
             right_back_wall,
             left_front_wall,
             right_front_wall,
-            ceiling,
+            ceiling
         );
     }
 }

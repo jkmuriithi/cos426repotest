@@ -6,6 +6,7 @@ import {
     Object3D,
     Object3DEventMap,
     Vector3,
+    Mesh,
 } from 'three';
 
 import { DynamicOpacityMaterial, camera, world } from '../globals';
@@ -22,7 +23,7 @@ type SceneChild = Object3D<Object3DEventMap> & {
 class GameScene extends Scene {
     readonly transparentOpacity = 0.3;
 
-    private prevTransparent: Material[] = [];
+    private prevTransparent: DynamicOpacityMaterial[] = [];
 
     // Change the type of the superclass Object3D.children property
     declare children: SceneChild[];
@@ -69,20 +70,22 @@ class GameScene extends Scene {
 
         const dfs = [...this.children];
         const visited = new Set<Object3D>();
-        const currTransparent = new Set<Material>();
+        const currTransparent = new Set<DynamicOpacityMaterial>();
         while (dfs.length > 0) {
-            const child = dfs.pop() as DynamicOpacityMaterial;
+            const child = dfs.pop() as Mesh;
             if (visited.has(child)) continue;
 
             visited.add(child);
             dfs.push(...child.children);
-            if (child.isMesh && child.normal && child.material) {
-                const normal = child.normal;
-                const material = child.material as Material;
+            if (
+                child.isMesh &&
+                (child.material as DynamicOpacityMaterial).hasDynamicOpacity
+            ) {
+                const material = child.material as DynamicOpacityMaterial;
+                const normal = material.normal;
 
                 if (material.transparent && cameraDir.dot(normal) > 0) {
-                    material.opacity =
-                        child.name === 'ceiling' ? 0 : this.transparentOpacity;
+                    material.opacity = material.lowOpacity;
                     currTransparent.add(material);
                 }
             }
@@ -90,7 +93,7 @@ class GameScene extends Scene {
 
         for (const material of this.prevTransparent) {
             if (!currTransparent.has(material)) {
-                material.opacity = 1;
+                material.opacity = material.highOpacity;
             }
         }
 
