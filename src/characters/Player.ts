@@ -1,8 +1,14 @@
-import { Body, ContactEquation, Vec3 } from 'cannon-es';
-import { ColorRepresentation, Vector3 } from 'three';
+import { Vec3 } from 'cannon-es';
+import { Vector3 } from 'three';
 
-import Character from './Character';
-import { FLOAT_EPS, ICE_SKATER_MODE } from '../globals';
+import Character, { CharacterOptions } from './Character';
+import {
+    CollideEvent,
+    FLOAT_EPS,
+    ICE_SKATER_MODE,
+    UP_AXIS,
+    UP_AXIS_CANNON,
+} from '../globals';
 
 // JS keycode reference: https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values
 const forwardsKeys = new Set(['KeyW', 'ArrowUp']);
@@ -11,18 +17,17 @@ const leftKeys = new Set(['KeyA', 'ArrowLeft']);
 const rightKeys = new Set(['KeyD', 'ArrowRight']);
 const jumpKeys = new Set(['Space']);
 
-// Can't find a type for this in cannon
-type CollideEvent = {
-    body: Body;
-    contact: ContactEquation;
-};
-
 /**
  * A user-controlled Character. Code adapted from the cannon-es pointer lock
  * controls example.
  * @see {@link https://github.com/pmndrs/cannon-es/blob/master/examples/js/PointerLockControlsCannon.js}
  */
 class Player extends Character {
+    static readonly defaultOptions: CharacterOptions = {
+        ...Character.defaultOptions,
+        name: 'player',
+    };
+
     private contactNormal = new Vec3();
     private moveForwards = false;
     private moveBackwards = false;
@@ -41,24 +46,15 @@ class Player extends Character {
     moveVelocity = 12;
     inputDirection = new Vector3();
 
-    constructor(
-        size: [number, number, number] = [1, 1, 1],
-        position: [number, number, number] = [0, 0, 0],
-        color: ColorRepresentation = 0xffffff,
-        name: string = 'player'
-    ) {
-        super(size, position, color, name);
+    constructor(options: Partial<CharacterOptions>) {
+        super({ ...Player.defaultOptions, ...options });
 
         this.forwards = this.front.clone();
-        this.backwards = this.forwards
-            .clone()
-            .applyAxisAngle(this.upAxis, Math.PI);
-        this.left = this.forwards
-            .clone()
-            .applyAxisAngle(this.upAxis, Math.PI / 2);
+        this.backwards = this.forwards.clone().applyAxisAngle(UP_AXIS, Math.PI);
+        this.left = this.forwards.clone().applyAxisAngle(UP_AXIS, Math.PI / 2);
         this.right = this.forwards
             .clone()
-            .applyAxisAngle(this.upAxis, -Math.PI / 2);
+            .applyAxisAngle(UP_AXIS, -Math.PI / 2);
 
         this.connectEventListeners();
     }
@@ -75,7 +71,7 @@ class Player extends Character {
         }
 
         // If collision normal faces somewhat upwards...
-        if (this.contactNormal.dot(this.upAxisCannon) > 0.5) {
+        if (this.contactNormal.dot(UP_AXIS_CANNON) > 0.5) {
             this.jumpsLeft = this.maxJumps;
         }
     };
@@ -124,15 +120,11 @@ class Player extends Character {
      */
     setForwardsDirection(direction: Vector3) {
         this.forwards = direction.clone();
-        this.backwards = this.forwards
-            .clone()
-            .applyAxisAngle(this.upAxis, Math.PI);
-        this.left = this.forwards
-            .clone()
-            .applyAxisAngle(this.upAxis, Math.PI / 2);
+        this.backwards = this.forwards.clone().applyAxisAngle(UP_AXIS, Math.PI);
+        this.left = this.forwards.clone().applyAxisAngle(UP_AXIS, Math.PI / 2);
         this.right = this.forwards
             .clone()
-            .applyAxisAngle(this.upAxis, -Math.PI / 2);
+            .applyAxisAngle(UP_AXIS, -Math.PI / 2);
     }
 
     update(dt: number): void {

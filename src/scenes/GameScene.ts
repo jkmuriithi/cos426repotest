@@ -46,7 +46,11 @@ class GameScene extends Scene {
         this.background = new Color(0x000000);
 
         // Add meshes to scene
-        this.player = new Player([1, 2, 1], [10, 2, -5], 0xe8beac);
+        this.player = new Player({
+            size: [1, 2, 1],
+            position: [10, 2, -5],
+            color: 0xe8beac,
+        });
         const room = new Room({
             size: [30, 10, 20],
             position: [10, 0, -5],

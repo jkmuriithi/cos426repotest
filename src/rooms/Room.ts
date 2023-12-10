@@ -12,6 +12,8 @@ type RoomOptions = {
     opacityConfig: DynamicOpacityConfig;
 };
 
+export type { RoomOptions };
+
 class Room extends Group {
     static readonly defaultOptions: RoomOptions = {
         name: 'room',

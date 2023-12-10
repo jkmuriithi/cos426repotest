@@ -17,29 +17,45 @@ import {
 } from 'three';
 import { character_physics_material } from '../globals';
 
+type CharacterOptions = {
+    name: string;
+    size: [number, number, number];
+    position: [number, number, number];
+    color: ColorRepresentation;
+    front: [number, number, number];
+};
+
+export type { CharacterOptions };
+
 class Character extends Group {
-    readonly size: Vector3;
+    static readonly defaultOptions: CharacterOptions = {
+        name: 'character',
+        size: [1, 1, 1],
+        position: [0, 0, 0],
+        color: 0xffffff,
+        front: [1, 0, 0],
+    };
+
+    /** Unit vector pointing out of the front of the character. */
+    readonly front;
     readonly initPosition: Vector3;
     readonly initQuaternion: Quaternion;
-    /** Unit vector pointing out of the front of the character. */
-    readonly front = new Vector3(1, 0, 0);
-    readonly upAxis = new Vector3(0, 1, 0);
-    readonly upAxisCannon = new Vec3().copy(this.upAxis as unknown as Vec3);
+    readonly options: CharacterOptions;
+    readonly size: Vector3;
 
     body: Body;
 
-    constructor(
-        size: [number, number, number] = [1, 1, 1],
-        position: [number, number, number] = [0, 0, 0],
-        color: ColorRepresentation = 0xffffff,
-        name: string = 'character'
-    ) {
+    constructor(options: Partial<CharacterOptions>) {
         // Call parent Group() constructor
         super();
+
+        this.options = { ...Character.defaultOptions, ...options };
+        const { name, size, position, color, front } = this.options;
 
         this.name = name;
         this.size = new Vector3(...size);
         this.initPosition = new Vector3(...position);
+        this.front = new Vector3(...front);
 
         // Create object
         const geometry = new BoxGeometry(...size);
@@ -60,7 +76,7 @@ class Character extends Group {
                 new BufferGeometry().setFromPoints([new Vector3(), this.front])
             )
         );
-        this.translateOnAxis(new Vector3(...position), 1);
+        this.translateOnAxis(this.initPosition, 1);
         this.initQuaternion = this.quaternion.clone();
 
         // Add physics body

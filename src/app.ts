@@ -83,10 +83,9 @@ function setup() {
     onWindowResize();
     window.addEventListener('resize', onWindowResize, false);
 
-    const scene = new GameScene();
     // Debugging helpers
     // Print camera position with 'c'
-    // TODO: remove this
+    // TODO: set up debug flags
     window.addEventListener(
         'keydown',
         (e) => e.code === 'KeyC' && console.log(camera)
@@ -98,6 +97,7 @@ function setup() {
     );
 
     // Render loop using a "semi-fixed" physics time step
+    const scene = new GameScene();
     const timeStep = 1 / 60;
     let lastCallTime: number | undefined = undefined;
     const loop = () => {
@@ -109,7 +109,7 @@ function setup() {
         } else {
             const dt = time - lastCallTime;
             world.step(timeStep, dt);
-            scene.update && scene.update(dt);
+            scene.update(dt);
         }
         lastCallTime = time;
         controls && controls.update();

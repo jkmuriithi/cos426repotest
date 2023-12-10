@@ -25,6 +25,8 @@ type WallOptions = {
     opacityConfig: DynamicOpacityConfig;
 };
 
+export type { WallOptions };
+
 class Wall extends Group {
     static readonly defaultOptions: WallOptions = {
         name: 'wall',
@@ -39,6 +41,7 @@ class Wall extends Group {
         },
     };
 
+    /** The options this wall was configured with */
     readonly options: WallOptions;
 
     body: Body;
