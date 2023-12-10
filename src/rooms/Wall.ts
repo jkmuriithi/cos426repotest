@@ -8,41 +8,58 @@ import {
     ColorRepresentation,
     MeshLambertMaterial,
 } from 'three';
+
 import {
     WALL_THICKNESS,
     world_physics_material,
-    DynamicOpacityMaterial,
+    makeDynamicMaterial,
+    DynamicOpacityConfig,
 } from '../globals';
 
-class Wall extends Group {
-    readonly size: [number, number, number];
+type WallOptions = {
+    name: string;
+    size: [number, number, number];
+    position: [number, number, number];
+    direction: [number, number, number];
+    color: ColorRepresentation;
+    opacityConfig: DynamicOpacityConfig;
+};
 
+class Wall extends Group {
+    static readonly defaultOptions: WallOptions = {
+        name: 'wall',
+        size: [10, WALL_THICKNESS, 10],
+        position: [0, 0, 0],
+        direction: [0, 1, 0],
+        color: 0xffffff,
+        opacityConfig: {
+            detection: 'directional',
+            lowOpacity: 0.3,
+            highOpacity: 1,
+        },
+    };
+
+    readonly options: WallOptions;
     body: Body;
 
-    constructor(
-        size: [number, number, number] = [10, WALL_THICKNESS, 10],
-        position: [number, number, number] = [0, 0, 0],
-        direction: [number, number, number] = [0, 1, 0],
-        color: ColorRepresentation = 0xffffff,
-        name: string = 'floor',
-        dynamicOpacity: number = 0.3
-    ) {
+    constructor(options: Partial<WallOptions>) {
         // Call parent Group() constructor
         super();
-        this.size = size.slice() as [number, number, number];
+
+        this.options = { ...Wall.defaultOptions, ...options };
+        const { name, size, position, direction, color, opacityConfig } =
+            this.options;
+
         this.name = name;
 
         // Create object
         const geometry = new BoxGeometry(...size);
-        const material = new MeshLambertMaterial({
-            color,
-        }) as unknown as DynamicOpacityMaterial;
-        material.transparent = true;
-        material.opacity = 1;
-        material.hasDynamicOpacity = true;
-        material.normal = new Vector3(...direction);
-        material.highOpacity = 1;
-        material.lowOpacity = dynamicOpacity;
+        const material = makeDynamicMaterial(
+            new MeshLambertMaterial({
+                color,
+            }),
+            { ...opacityConfig, normal: new Vector3(...direction).normalize() }
+        );
 
         const mesh = new Mesh(geometry, material);
         mesh.name = name;

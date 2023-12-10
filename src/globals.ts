@@ -21,6 +21,7 @@ export const FLOAT_EPS = 1e-8;
 export const camera = new PerspectiveCamera();
 export const initCameraPosition = new Vector3(-10, 10, 10);
 export const renderer = new WebGLRenderer({ antialias: true });
+
 // Cannon-ES constants
 export const world = new World({
     gravity: new Vec3(0, -9.81, 0),
@@ -34,13 +35,40 @@ const world_character_contact = new ContactMaterial(
 );
 world.addContactMaterial(world_character_contact);
 
-// Types
-export type DynamicOpacityConfig = {
+// Dynamic opacity materials
+export type DynamicOpacityParams = {
+    detection: 'playerIntersection' | 'directional';
     transparent: true;
     hasDynamicOpacity: true;
-    normal: Vector3;
     lowOpacity: number;
     highOpacity: number;
+    /** Only present if type === "directional". */
+    normal?: Vector3;
 };
 
-export type DynamicOpacityMaterial = Material & DynamicOpacityConfig;
+export type DynamicOpacityMaterial = Material & DynamicOpacityParams;
+
+export type DynamicOpacityConfig = Omit<
+    DynamicOpacityParams,
+    'transparent' | 'hasDynamicOpacity'
+>;
+
+export function makeDynamicMaterial<M extends Material>(
+    material: M,
+    config: DynamicOpacityConfig
+): DynamicOpacityMaterial {
+    const mat = material as unknown as DynamicOpacityMaterial;
+
+    mat.transparent = true;
+    mat.hasDynamicOpacity = true;
+    mat.opacity = config.highOpacity;
+    for (const key in config) {
+        // @ts-ignore
+        mat[key] = config[key];
+    }
+    if (mat.normal) {
+        mat.normal = mat.normal.clone();
+    }
+
+    return mat;
+}
