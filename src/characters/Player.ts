@@ -38,7 +38,7 @@ class Player extends Character {
     controlsDisabled = false;
     jumpsLeft = 0;
     jumpVelocity = 5;
-    moveVelocity = 10;
+    moveVelocity = 12;
     inputDirection = new Vector3();
 
     constructor(
@@ -165,8 +165,8 @@ class Player extends Character {
 
         this.inputDirection.multiplyScalar(this.moveVelocity);
         if (ICE_SKATER_MODE) {
-            this.body.velocity.x += this.inputDirection.x / 10;
-            this.body.velocity.z += this.inputDirection.z / 10;
+            this.body.velocity.x += this.inputDirection.x / 20;
+            this.body.velocity.z += this.inputDirection.z / 20;
         } else {
             this.body.velocity.x = this.inputDirection.x;
             this.body.velocity.z = this.inputDirection.z;
