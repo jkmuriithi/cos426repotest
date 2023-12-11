@@ -87,19 +87,25 @@ function setup() {
 
     const levelManager = new LevelManager();
     // Debugging helpers
-    // Print camera position with 'c'
     // TODO: set up debug flags
     window.addEventListener(
         'keydown',
         (e) => e.code === 'KeyC' && console.log(CAMERA)
     );
-    // Reset character position with 'r'
     window.addEventListener(
         'keydown',
         (e) =>
             e.code === 'KeyR' &&
             levelManager.current.player &&
             levelManager.current.player.reset()
+    );
+    window.addEventListener(
+        'keydown',
+        (e) => e.code === 'KeyN' && levelManager.loadNext()
+    );
+    window.addEventListener(
+        'keydown',
+        (e) => e.code === 'KeyP' && levelManager.loadPrevious()
     );
 
     // Render loop using a "semi-fixed" physics time step

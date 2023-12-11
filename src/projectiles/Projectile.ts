@@ -1,7 +1,7 @@
 /* TODO */
 
-import { Group } from "three";
+import { Group } from 'three';
 
-class Projectile extends Group { }
+class Projectile extends Group {}
 
 export default Projectile;

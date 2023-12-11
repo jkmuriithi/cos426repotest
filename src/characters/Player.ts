@@ -166,6 +166,11 @@ class Player extends Character {
 
         super.update(dt);
     }
+
+    dispose() {
+        this.disconnectEventListeners();
+        super.dispose();
+    }
 }
 
 export default Player;

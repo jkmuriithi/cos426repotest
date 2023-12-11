@@ -14,6 +14,7 @@ import {
     WALL_PHYSICS_MATERIAL,
     makeDynamic,
     DynamicOpacityConfig,
+    WORLD,
 } from '../globals';
 
 type WallOptions = {
@@ -95,6 +96,10 @@ class Wall extends Group {
     update(_: number): void {
         this.position.copy(this.body.position as unknown as Vector3);
         this.quaternion.copy(this.body.quaternion as unknown as Quaternion);
+    }
+
+    dispose(): void {
+        WORLD.removeBody(this.body);
     }
 }
 

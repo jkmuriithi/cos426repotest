@@ -7,7 +7,7 @@ import {
 } from 'three';
 import { COLORS } from '../globals';
 
-class BasicLights extends Group {
+class TestLevelTwoLights extends Group {
     shadowMapSize = 512; // resolution of shadow map
 
     constructor() {
@@ -30,10 +30,10 @@ class BasicLights extends Group {
         spot2.shadow.mapSize.height = this.shadowMapSize;
         this.add(spot2, spot2.target);
 
-        const hemi = new HemisphereLight(COLORS.WHITE, COLORS.GRAY, 0.1);
+        const hemi = new HemisphereLight(COLORS.WHITE, COLORS.GRAY, 0.5);
         hemi.position.set(10, 20, -5);
         this.add(hemi);
     }
 }
 
-export default BasicLights;
+export default TestLevelTwoLights;

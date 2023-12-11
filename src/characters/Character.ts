@@ -15,7 +15,7 @@ import {
     Quaternion,
     Vector3,
 } from 'three';
-import { CHARACTER_PHYSICS_MATERIAL, COLORS } from '../globals';
+import { CHARACTER_PHYSICS_MATERIAL, COLORS, WORLD } from '../globals';
 
 type CharacterOptions = {
     name: string;
@@ -124,6 +124,10 @@ class Character extends Group {
     update(_: number): void {
         this.position.copy(this.body.position as unknown as Vector3);
         this.quaternion.copy(this.body.quaternion as unknown as Quaternion);
+    }
+
+    dispose() {
+        WORLD.removeBody(this.body);
     }
 }
 

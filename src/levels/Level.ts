@@ -29,11 +29,13 @@ class Level extends Scene {
 
     // Change the type of the superclass Object3D.children property
     declare children: LevelChild[];
+    initCameraPosition = INIT_CAMERA_POSITION;
     player: Player | null = null;
 
     constructor() {
         // Call parent Scene() constructor
         super();
+        CAMERA.position.copy(this.initCameraPosition);
     }
 
     update(dt: number): void {
@@ -69,11 +71,8 @@ class Level extends Scene {
             if (seen.has(child)) continue;
 
             seen.add(child);
-            if (child.dispose) {
-                child.dispose();
-            } else {
-                dfs.push(...(child.children as LevelChild[]));
-            }
+            dfs.push(...(child.children as LevelChild[]));
+            child.dispose && child.dispose();
         }
     }
 
@@ -86,7 +85,7 @@ class Level extends Scene {
         );
         cameraDisplacement.y = 0;
 
-        CAMERA.position.addVectors(INIT_CAMERA_POSITION, cameraDisplacement);
+        CAMERA.position.addVectors(this.initCameraPosition, cameraDisplacement);
         CAMERA.lookAt(
             this.player.position
                 .clone()
@@ -102,6 +101,7 @@ class Level extends Scene {
             .clone()
             .sub(CAMERA.position)
             .normalize();
+        const playerDistSq = cameraDir.lengthSq();
 
         // Method 1: Checking normal direction
         const dfs = [...this.children];
@@ -112,10 +112,14 @@ class Level extends Scene {
             if (visited.has(child)) continue;
 
             visited.add(child);
-            dfs.push(...child.children);
             if (child.isMesh) {
                 const material = child.material as DynamicOpacityMaterial;
+                const dist = child.position
+                    .clone()
+                    .projectOnVector(cameraDir)
+                    .lengthSq();
                 if (
+                    dist <= playerDistSq &&
                     material.hasDynamicOpacity &&
                     material.detection === 'directional'
                 ) {
@@ -125,6 +129,8 @@ class Level extends Scene {
                         material.opacity = material.lowOpacity;
                     }
                 }
+            } else {
+                dfs.push(...child.children);
             }
         }
 

@@ -1,12 +1,15 @@
-import { Color } from 'three';
-import Level from './Level';
+import { Color, Vector3 } from 'three';
+
 import { COLORS, WALL_THICKNESS } from '../globals';
-import Wall from '../rooms/Wall';
-import BasicLights from '../lights/BasicLights';
-import Room from '../rooms/Room';
+import Level from './Level';
 import Player from '../characters/Player';
+import Room from '../rooms/Room';
+import Wall from '../rooms/Wall';
+import TestLevelTwoLights from '../lights/TestLevelTwoLights';
 
 class TestLevelTwo extends Level {
+    initCameraPosition = new Vector3(-10, 20, 10);
+
     constructor() {
         super();
 
@@ -39,7 +42,7 @@ class TestLevelTwo extends Level {
             },
         });
 
-        this.add(this.player, room, platform, new BasicLights());
+        this.add(this.player, room, platform, new TestLevelTwoLights());
     }
 }
 
