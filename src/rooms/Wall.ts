@@ -9,13 +9,8 @@ import {
     MeshLambertMaterial,
 } from 'three';
 
-import {
-    WALL_THICKNESS,
-    WALL_PHYSICS_MATERIAL,
-    makeDynamic,
-    DynamicOpacityConfig,
-    WORLD,
-} from '../globals';
+import { WALL_THICKNESS, WALL_PHYSICS_MATERIAL, WORLD } from '../globals';
+import { makeDynamic, DynamicOpacityConfig } from '../opacity';
 
 type WallOptions = {
     name: string;

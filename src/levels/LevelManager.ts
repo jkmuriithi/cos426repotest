@@ -1,4 +1,3 @@
-import { STARTING_LEVEL } from '../globals';
 import Level from './Level';
 import TestLevelOne from './TestLevelOne';
 import TestLevelTwo from './TestLevelTwo';
@@ -6,7 +5,7 @@ import TestLevelTwo from './TestLevelTwo';
 type LevelCreationFunction = () => Level;
 
 class LevelManager {
-    private currentIndex: number = STARTING_LEVEL;
+    private currentIndex: number;
 
     current: Level;
     levels: LevelCreationFunction[] = [
@@ -14,31 +13,34 @@ class LevelManager {
         () => new TestLevelTwo(),
     ];
 
-    constructor() {
-        this.currentIndex = 0;
+    constructor(start = 0) {
+        console.assert(start >= 0 && start < this.levels.length);
+
+        this.currentIndex = start;
         this.current = this.levels[this.currentIndex]();
-        this.current.addPhysics();
+        this.current.load();
     }
 
     get index() {
         return this.currentIndex;
     }
 
-    loadNext() {
+    async loadNext() {
         if (this.currentIndex === this.levels.length - 1) {
             // handle end game
         } else {
             this.current.dispose();
             this.current = this.levels[++this.currentIndex]();
-            this.current.addPhysics();
+            await this.current.load();
         }
     }
 
-    loadPrevious() {
+    async loadPrevious() {
         if (this.currentIndex === 0) return;
+
         this.current.dispose();
         this.current = this.levels[--this.currentIndex]();
-        this.current.addPhysics();
+        await this.current.load();
     }
 
     update(dt: number) {

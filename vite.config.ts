@@ -9,6 +9,7 @@ export default defineConfig({
         alias: {
             // Allows to use "@assets" instead of specific assets folder path
             '@assets': path.resolve(__dirname, './src/assets'),
+            '@models': path.resolve(__dirname, './src/assets/models'),
         },
     },
 });

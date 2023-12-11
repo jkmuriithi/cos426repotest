@@ -1,14 +1,9 @@
-import {
-    Group,
-    SpotLight,
-    // AmbientLight,
-    HemisphereLight,
-    // DirectionalLight,
-} from 'three';
-import { COLORS } from '../globals';
+import { Group, SpotLight, HemisphereLight } from 'three';
+
+import { COLORS, SHADOW_MAP_SIZE } from '../globals';
 
 class TestLevelOneLights extends Group {
-    shadowMapSize = 512; // resolution of shadow map
+    shadowMapSize = SHADOW_MAP_SIZE;
 
     constructor() {
         // Invoke parent Group() constructor

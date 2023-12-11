@@ -9,12 +9,12 @@ import {
 } from 'three';
 
 import {
-    DynamicOpacityMaterial,
     ORBIT_CONTROLS_ENABLED,
     CAMERA,
     INIT_CAMERA_POSITION,
     WORLD,
 } from '../globals';
+import { DynamicOpacityMaterial } from '../opacity';
 import Player from '../characters/Player';
 
 type LevelChild = Object3D<Object3DEventMap> & {
@@ -35,7 +35,18 @@ class Level extends Scene {
     constructor() {
         // Call parent Scene() constructor
         super();
+    }
+
+    /** Load file data in here using async-await if necessary */
+    async load() {
+        // Adjust camera
         CAMERA.position.copy(this.initCameraPosition);
+        this.player && CAMERA.lookAt(this.player.position);
+
+        // Add physics objects to sim
+        this.traverse((child: LevelChild) => {
+            child.body && WORLD.addBody(child.body);
+        });
     }
 
     update(dt: number): void {
@@ -50,20 +61,11 @@ class Level extends Scene {
         this.handleMaterialTransparency();
     }
 
-    addPhysics() {
-        const dfs = [...this.children];
-        const seen = new Set();
-        while (dfs.length > 0) {
-            const child = dfs.pop() as LevelChild;
-            if (seen.has(child)) continue;
-
-            seen.add(child);
-            child.body && WORLD.addBody(child.body);
-            dfs.push(...(child.children as LevelChild[]));
-        }
-    }
+    // TODO: Implement this
+    reset() {}
 
     dispose() {
+        // Custom DFS doesn't blow the call stack, .traverse() does
         const dfs = [...this.children];
         const seen = new Set();
         while (dfs.length > 0) {
@@ -104,35 +106,28 @@ class Level extends Scene {
         const playerDistSq = cameraDir.lengthSq();
 
         // Method 1: Checking normal direction
-        const dfs = [...this.children];
-        const visited = new Set<Object3D>();
         const currTransparent = new Set<DynamicOpacityMaterial>();
-        while (dfs.length > 0) {
-            const child = dfs.pop() as Mesh;
-            if (visited.has(child)) continue;
-
-            visited.add(child);
-            if (child.isMesh) {
+        this.traverse((c) => {
+            const child = c as Mesh & { material: DynamicOpacityMaterial };
+            if (
+                child.isMesh &&
+                child.material.hasDynamicOpacity &&
+                child.material.detection === 'directional'
+            ) {
                 const material = child.material as DynamicOpacityMaterial;
                 const dist = child.position
                     .clone()
                     .projectOnVector(cameraDir)
                     .lengthSq();
-                if (
-                    dist <= playerDistSq &&
-                    material.hasDynamicOpacity &&
-                    material.detection === 'directional'
-                ) {
+                if (dist <= playerDistSq) {
                     const normal = material.normal as Vector3;
                     if (material.transparent && cameraDir.dot(normal) > 0) {
                         currTransparent.add(material);
                         material.opacity = material.lowOpacity;
                     }
                 }
-            } else {
-                dfs.push(...child.children);
             }
-        }
+        });
 
         // Method 2: Checking player intersection
         this.raycaster.set(CAMERA.position, cameraDir);

@@ -18,25 +18,26 @@
  * @see {@link https://threejs.org/docs/#manual/en/introduction/How-to-dispose-of-objects}
  */
 import Stats from 'stats.js';
-import { Vector3, PCFSoftShadowMap } from 'three';
+import { PCFSoftShadowMap } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import {
     CAMERA,
     RENDERER,
     WORLD,
-    INIT_CAMERA_POSITION,
     ORBIT_CONTROLS_ENABLED,
+    HOTKEYS_ENABLED,
+    STARTING_LEVEL,
+    WALL_PHYSICS_MATERIAL,
+    CHARACTER_PHYSICS_MATERIAL,
 } from './globals';
-import { GSSolver } from 'cannon-es';
+import { ContactMaterial, GSSolver } from 'cannon-es';
 import LevelManager from './levels/LevelManager';
 
 function setup() {
     // Set up camera
-    CAMERA.position.copy(INIT_CAMERA_POSITION);
     CAMERA.zoom = 0.3;
     CAMERA.fov = 20;
-    CAMERA.lookAt(new Vector3(0, 0, 0));
 
     // Set up renderer, canvas, and minor CSS adjustments
     RENDERER.setPixelRatio(window.devicePixelRatio);
@@ -52,6 +53,16 @@ function setup() {
     // Set up physics sim
     (WORLD.solver as GSSolver).iterations += 5;
     (WORLD.solver as GSSolver).tolerance = 1e-9;
+    WORLD.addContactMaterial(
+        new ContactMaterial(WALL_PHYSICS_MATERIAL, CHARACTER_PHYSICS_MATERIAL, {
+            friction: 0,
+            restitution: 0,
+            frictionEquationRelaxation: 1,
+            contactEquationRelaxation: 1,
+            frictionEquationStiffness: 1e9,
+            contactEquationStiffness: 1e9,
+        })
+    );
 
     // Set up FPS meter
     const stats = new Stats();
@@ -85,28 +96,26 @@ function setup() {
     onWindowResize();
     window.addEventListener('resize', onWindowResize, false);
 
-    const levelManager = new LevelManager();
-    // Debugging helpers
-    // TODO: set up debug flags
-    window.addEventListener(
-        'keydown',
-        (e) => e.code === 'KeyC' && console.log(CAMERA)
-    );
-    window.addEventListener(
-        'keydown',
-        (e) =>
-            e.code === 'KeyR' &&
-            levelManager.current.player &&
-            levelManager.current.player.reset()
-    );
-    window.addEventListener(
-        'keydown',
-        (e) => e.code === 'KeyN' && levelManager.loadNext()
-    );
-    window.addEventListener(
-        'keydown',
-        (e) => e.code === 'KeyP' && levelManager.loadPrevious()
-    );
+    const levelManager = new LevelManager(STARTING_LEVEL);
+    if (HOTKEYS_ENABLED) {
+        window.addEventListener('keydown', (e) => {
+            switch (e.code) {
+                case 'KeyC':
+                    console.log(CAMERA);
+                    break;
+                case 'KeyR':
+                    const player = levelManager.current.player;
+                    player && player.reset();
+                    break;
+                case 'KeyN':
+                    levelManager.loadNext();
+                    break;
+                case 'KeyP':
+                    levelManager.loadPrevious();
+                    break;
+            }
+        });
+    }
 
     // Render loop using a "semi-fixed" physics time step
     const timeStep = 1 / 60;

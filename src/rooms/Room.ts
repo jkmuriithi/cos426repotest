@@ -1,8 +1,9 @@
 import { ColorRepresentation, Group } from 'three';
 
-import Wall from './Wall';
 import { WALL_THICKNESS } from '../globals';
-import { DynamicOpacityConfig, COLORS } from '../globals';
+import { COLORS } from '../globals';
+import { DynamicOpacityConfig } from '../opacity';
+import Wall from './Wall';
 
 type RoomOptions = {
     name: string;

@@ -1,10 +1,15 @@
-import { Color, Vector3 } from 'three';
+import { Color, Mesh, Vector3 } from 'three';
+
 import Level from './Level';
 import { COLORS, WALL_THICKNESS } from '../globals';
 import Wall from '../rooms/Wall';
 import TestLevelOneLights from '../lights/TestLevelOneLights';
 import Room from '../rooms/Room';
 import Player from '../characters/Player';
+import PhysicsObject, { createModelFromGLTF } from '../objects';
+
+// Use flying saucer since plane model is two halves for some reason
+import MODEL from '@models/flyingsaucer.glb?url';
 
 class TestLevelOne extends Level {
     initCameraPosition = new Vector3(-10, 10, 10);
@@ -42,6 +47,20 @@ class TestLevelOne extends Level {
         });
 
         this.add(this.player, room, platform, new TestLevelOneLights());
+    }
+
+    async load() {
+        // Load models from files
+        const gltfModel = await createModelFromGLTF(MODEL);
+        const mesh = gltfModel.children[0] as Mesh;
+        this.add(
+            new PhysicsObject(mesh, {
+                position: [10, 8, -5],
+                scale: 0.01,
+            })
+        );
+
+        await super.load();
     }
 }
 
