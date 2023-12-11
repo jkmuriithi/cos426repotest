@@ -7,12 +7,14 @@
  * @see {@link https://gafferongames.com/post/fix_your_timestep/}
  * @see {@link https://stackoverflow.com/questions/16424500/what-would-be-realistic-values-for-gravity-mass-and-contact-material-in-canno}
  *
- * TODO: Refactor large constructors using options pattern
  * TODO: Implement proper dispose methods on all classes with geometry,
  * materials, textures, and lights (make sure to remove Cannon bodies and event
  * listeners)
  * TODO: Create Level class and implement game levels as subclasses
  * TODO: Implement level loading/disposal in GameScene
+ * TODO: Enemies (ranged and melee)
+ * TODO: Projectiles
+ * TODO: Wall and Character texturing
  * @see {@link https://threejs.org/docs/#manual/en/introduction/How-to-dispose-of-objects}
  */
 import Stats from 'stats.js';
@@ -26,8 +28,8 @@ import {
     INIT_CAMERA_POSITION,
     ORBIT_CONTROLS_ENABLED,
 } from './globals';
-import GameScene from './scenes/GameScene';
 import { GSSolver } from 'cannon-es';
+import LevelManager from './levels/LevelManager';
 
 function setup() {
     // Set up camera
@@ -83,6 +85,7 @@ function setup() {
     onWindowResize();
     window.addEventListener('resize', onWindowResize, false);
 
+    const levelManager = new LevelManager();
     // Debugging helpers
     // Print camera position with 'c'
     // TODO: set up debug flags
@@ -93,11 +96,13 @@ function setup() {
     // Reset character position with 'r'
     window.addEventListener(
         'keydown',
-        (e) => e.code === 'KeyR' && scene.player.reset()
+        (e) =>
+            e.code === 'KeyR' &&
+            levelManager.current.player &&
+            levelManager.current.player.reset()
     );
 
     // Render loop using a "semi-fixed" physics time step
-    const scene = new GameScene();
     const timeStep = 1 / 60;
     let lastCallTime: number | undefined = undefined;
     const loop = () => {
@@ -109,11 +114,11 @@ function setup() {
         } else {
             const dt = time - lastCallTime;
             WORLD.step(timeStep, dt);
-            scene.update(dt);
+            levelManager.update(dt);
         }
         lastCallTime = time;
         controls && controls.update();
-        RENDERER.render(scene, CAMERA);
+        RENDERER.render(levelManager.current, CAMERA);
 
         stats.end();
         window.requestAnimationFrame(loop);

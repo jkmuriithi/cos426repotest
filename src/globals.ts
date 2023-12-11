@@ -16,8 +16,18 @@ import {
 export const WALL_THICKNESS = 0.1;
 export const FLOAT_EPS = 1e-8;
 
+// Colors
+export const COLORS = {
+    WHITE: 0xffffff,
+    BLACK: 0x000000,
+    GRAY: 0x080808,
+    RED: 0xff0000,
+    PLAYER: 0xe8beac,
+    BARBIE: 0xffc0cb,
+};
+
 // Debug flags
-export const ORBIT_CONTROLS_ENABLED = false;
+export const ORBIT_CONTROLS_ENABLED = true;
 export const ICE_SKATER_MODE = false;
 
 // ThreeJS
@@ -38,8 +48,8 @@ WORLD.addContactMaterial(
         restitution: 0,
         frictionEquationRelaxation: 1,
         contactEquationRelaxation: 1,
-        frictionEquationStiffness: 1000000000,
-        contactEquationStiffness: 1000000000,
+        frictionEquationStiffness: 1e9,
+        contactEquationStiffness: 1e9,
     })
 );
 

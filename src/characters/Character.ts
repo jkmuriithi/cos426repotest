@@ -15,7 +15,7 @@ import {
     Quaternion,
     Vector3,
 } from 'three';
-import { CHARACTER_PHYSICS_MATERIAL } from '../globals';
+import { CHARACTER_PHYSICS_MATERIAL, COLORS } from '../globals';
 
 type CharacterOptions = {
     name: string;
@@ -32,7 +32,7 @@ class Character extends Group {
         name: 'character',
         size: [1, 1, 1],
         position: [0, 0, 0],
-        color: 0xffffff,
+        color: COLORS.WHITE,
         front: [1, 0, 0],
     };
 

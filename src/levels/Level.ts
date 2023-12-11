@@ -1,7 +1,6 @@
 import { Body } from 'cannon-es';
 import {
     Scene,
-    Color,
     Object3D,
     Object3DEventMap,
     Vector3,
@@ -12,78 +11,29 @@ import {
 import {
     DynamicOpacityMaterial,
     ORBIT_CONTROLS_ENABLED,
-    WALL_THICKNESS,
     CAMERA,
     INIT_CAMERA_POSITION,
     WORLD,
 } from '../globals';
-import BasicLights from '../lights/BasicLights';
 import Player from '../characters/Player';
-import Room from '../rooms/Room';
-import Wall from '../rooms/Wall';
 
-type SceneChild = Object3D<Object3DEventMap> & {
+type LevelChild = Object3D<Object3DEventMap> & {
     update?: (dt: number) => void;
+    dispose?: () => void;
     body?: Body;
-    normal?: Vector3;
 };
 
-class GameScene extends Scene {
-    readonly transparentOpacity = 0.3;
-
+class Level extends Scene {
     private raycaster: Raycaster = new Raycaster();
     private prevTransparent: DynamicOpacityMaterial[] = [];
 
     // Change the type of the superclass Object3D.children property
-    declare children: SceneChild[];
-    player: Player;
+    declare children: LevelChild[];
+    player: Player | null = null;
 
     constructor() {
         // Call parent Scene() constructor
         super();
-
-        // Set background to a nice color
-        this.background = new Color(0x000000);
-
-        // Add meshes to scene
-        this.player = new Player({
-            size: [1, 2, 1],
-            position: [10, 2, -5],
-            color: 0xe8beac,
-        });
-        const room = new Room({
-            size: [30, 10, 20],
-            position: [10, 0, -5],
-            color: 0xffffff,
-        });
-
-        // Add platform in the middle of the room
-        const { size, position, opacityConfig, color } = room.options;
-        const platform = new Wall({
-            name: 'platform',
-            size: [size[0] / 4, WALL_THICKNESS, size[2] / 4],
-            position: [position[0], position[1] + size[1] / 4, position[2]],
-            direction: [0, -1, 0],
-            color,
-            opacityConfig: {
-                ...opacityConfig,
-                detection: 'playerIntersection',
-            },
-        });
-
-        this.add(this.player, room, platform, new BasicLights());
-
-        // DFS through all children
-        const descendants = [...this.children];
-        const seen = new Set();
-        while (descendants.length > 0) {
-            const child = descendants.pop() as SceneChild;
-            if (seen.has(child)) continue;
-
-            seen.add(child);
-            child.body && WORLD.addBody(child.body);
-            descendants.push(...(child.children as SceneChild[]));
-        }
     }
 
     update(dt: number): void {
@@ -98,7 +48,38 @@ class GameScene extends Scene {
         this.handleMaterialTransparency();
     }
 
+    addPhysics() {
+        const dfs = [...this.children];
+        const seen = new Set();
+        while (dfs.length > 0) {
+            const child = dfs.pop() as LevelChild;
+            if (seen.has(child)) continue;
+
+            seen.add(child);
+            child.body && WORLD.addBody(child.body);
+            dfs.push(...(child.children as LevelChild[]));
+        }
+    }
+
+    dispose() {
+        const dfs = [...this.children];
+        const seen = new Set();
+        while (dfs.length > 0) {
+            const child = dfs.pop() as LevelChild;
+            if (seen.has(child)) continue;
+
+            seen.add(child);
+            if (child.dispose) {
+                child.dispose();
+            } else {
+                dfs.push(...(child.children as LevelChild[]));
+            }
+        }
+    }
+
     private moveCameraWithPlayer() {
+        if (!this.player) return;
+
         const cameraDisplacement = new Vector3().subVectors(
             this.player.position,
             this.player.initPosition
@@ -115,6 +96,8 @@ class GameScene extends Scene {
 
     /** Make objects between the camera and the player transparent */
     private handleMaterialTransparency() {
+        if (!this.player) return;
+
         const cameraDir = this.player.position
             .clone()
             .sub(CAMERA.position)
@@ -175,4 +158,4 @@ class GameScene extends Scene {
     }
 }
 
-export default GameScene;
+export default Level;

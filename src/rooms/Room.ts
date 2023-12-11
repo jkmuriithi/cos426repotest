@@ -2,7 +2,7 @@ import { ColorRepresentation, Group } from 'three';
 
 import Wall from './Wall';
 import { WALL_THICKNESS } from '../globals';
-import { DynamicOpacityConfig } from '../globals';
+import { DynamicOpacityConfig, COLORS } from '../globals';
 
 type RoomOptions = {
     name: string;
@@ -19,7 +19,7 @@ class Room extends Group {
         name: 'room',
         size: [10, 10, 10],
         position: [0, 0, 0],
-        color: 0xffffff,
+        color: COLORS.WHITE,
         opacityConfig: {
             detection: 'directional',
             lowOpacity: 0.3,
