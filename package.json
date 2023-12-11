@@ -6,12 +6,7 @@
     "version": "0.1.0",
     "title": "roguelife",
     "description": "A 2.5D beat-em-up based on the hardest situations in life. Created as a final project for COS426.",
-    "keywords": [
-        "Princeton",
-        "graphics",
-        "three.js",
-        "COS 426"
-    ],
+    "keywords": ["Princeton", "graphics", "three.js", "COS 426"],
     "scripts": {
         "start": "vite",
         "build": "tsc && vite build",
@@ -29,9 +24,7 @@
         "@types/three": "^0.158.3",
         "prettier": "^3.1.0",
         "typescript": "^5.2.2",
-        "vite": "^5.0.0"
-    },
-    "optionalDependencies": {
+        "vite": "^5.0.0",
         "rollup": "^4.7.0"
     },
     "prettier": {
