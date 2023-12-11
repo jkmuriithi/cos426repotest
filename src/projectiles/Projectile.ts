@@ -1,5 +1,5 @@
-import { Group, Mesh, Vector3 } from 'three';
-import { Body, Shape, Vec3 } from 'cannon-es';
+import { Group, Mesh, Object3D, Vector3 } from 'three';
+import { Body, Vec3 } from 'cannon-es';
 
 import type Player from '../characters/Player';
 import { WORLD } from '../globals';
@@ -37,10 +37,11 @@ class Projectile extends Group {
  * model when creating projectiles.
  */
 class ProjectileFactory {
-    mesh: Mesh;
-    shape: Shape;
+    object: Object3D;
 
-    constructor() {}
+    constructor(obj: Object3D) {
+        this.object = obj.clone();
+    }
 }
 
 export { Projectile, ProjectileFactory };

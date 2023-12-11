@@ -4,17 +4,42 @@
  * Sometimes models are broken! Use this online model viewer for a sanity check:
  * https://www.creators3d.com/online-viewer
  */
-import { Body, Box, Trimesh, Vec3 } from 'cannon-es';
-import { BufferGeometry, Group, Mesh, Quaternion, Vector3 } from 'three';
+import {
+    Body,
+    Box,
+    ConvexPolyhedron,
+    Sphere as CannonSphere,
+    Trimesh,
+    Vec3,
+    Shape,
+    Material,
+} from 'cannon-es';
+import {
+    Box3,
+    BufferGeometry,
+    Group,
+    Mesh,
+    Object3D,
+    Quaternion,
+    Sphere,
+    Vector3,
+} from 'three';
 import { PRINT_MODELS_ON_LOAD, WALL_PHYSICS_MATERIAL, WORLD } from './globals';
-import { GLTFLoader, MTLLoader, OBJLoader } from 'three/examples/jsm/Addons.js';
+import {
+    ConvexHull,
+    GLTFLoader,
+    MTLLoader,
+    OBJLoader,
+    VertexNode,
+} from 'three/examples/jsm/Addons.js';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 /**
  * @example
  * import MODEL_URL from "@assets/models/paperplane.glb?url";
- *
- * const model = await createModelFromGLTF(MODEL_URL); // this is the model
- * const mesh = model.children[0]; // this should be the mesh
+ * const model = await createModelFromGLTF(MODEL_URL);
+ * // console.log the model to find the appropriate child
+ * const object = model.children[0];
  *
  * @see {@link https://discourse.threejs.org/t/parts-of-glb-object-disappear-in-certain-angles-and-zoom/21295/5}
  */
@@ -50,50 +75,182 @@ async function createModelFromOBJ(
 }
 
 /**
- * Creates a trimesh collision body from some geometry. Not super useful since
- * Cannon only calculates Trimesh collision with planes.
+ * Extracts all of the geometries from an object and puts them in an array.
+ */
+function extractGeometries(object: Object3D): BufferGeometry[] {
+    const geometries = [];
+
+    const dfs = [...object.children];
+    const seen = new Set();
+    while (dfs.length > 0) {
+        const child = dfs.pop() as unknown as Mesh;
+        if (seen.has(child)) continue;
+
+        if (child.isMesh) {
+            geometries.push(child.geometry);
+        } else {
+            dfs.push(...(child as unknown as Object3D).children);
+        }
+    }
+
+    return geometries;
+}
+
+function mergedGeometry(object: Object3D, useGroups?: boolean) {
+    const geometries = extractGeometries(object);
+    if (geometries.length === 1) {
+        return geometries[0];
+    } else {
+        return mergeGeometries(geometries, useGroups);
+    }
+}
+
+/**
+ * Creates a box collision body from the bounding box of the input geometry.
+ */
+function createBox(object: Object3D, scale: number = 1): Box {
+    const geometries = extractGeometries(object);
+    geometries[0].computeBoundingBox();
+
+    const boundingBox = geometries[0].boundingBox!.clone();
+    for (const geometry of geometries) {
+        geometry.computeBoundingBox();
+        boundingBox.union(geometry.boundingBox as Box3);
+    }
+
+    const dims = boundingBox.max.clone().sub(boundingBox.min);
+    return new Box(new Vec3(...dims.toArray().map((c) => (c * scale) / 2)));
+}
+
+/**
+ * Creates a sphere collision body from the bounding sphere of the input
+ * geometry.
+ */
+function createSphere(object: Object3D, scale: number = 1): CannonSphere {
+    const geometries = extractGeometries(object);
+    geometries[0].computeBoundingSphere();
+
+    const sphere = geometries[0].boundingSphere!.clone();
+    for (const geometry of geometries) {
+        geometry.computeBoundingSphere();
+        sphere.union(geometry.boundingSphere as Sphere);
+    }
+
+    return new CannonSphere(sphere.radius * scale);
+}
+
+/**
+ * Creates a trimesh collision body from the input object's geometry. Not super
+ * useful since Cannon only calculates Trimesh collision with planes.
  *
  * Sources:
  * @see {@link https://sbcode.net/threejs/convexgeometry/}
  */
-function createTrimesh(geometry: BufferGeometry): Trimesh {
-    let points: Float32Array;
-    if (geometry.getIndex() !== null) {
-        points = geometry.toNonIndexed().getAttribute('position')
-            .array as Float32Array;
-    } else {
-        points = geometry.getAttribute('position').array as Float32Array;
+function createTrimesh(object: Object3D, scale = 1): Trimesh {
+    const points: number[] = [];
+    for (const geometry of extractGeometries(object)) {
+        const geometryClone = geometry.clone();
+        if (scale !== 1) {
+            geometryClone.scale(scale, scale, scale);
+        }
+
+        let curr: Float32Array;
+        if (geometryClone.getIndex() !== null) {
+            curr = geometryClone.toNonIndexed().getAttribute('position')
+                .array as Float32Array;
+        } else {
+            curr = geometryClone.getAttribute('position').array as Float32Array;
+        }
+
+        points.push(...curr);
     }
 
     const indices = Object.keys(points).map(Number);
     return new Trimesh(points as unknown as number[], indices);
 }
 
-// function createConvexPolyhedron(geometry: BufferGeometry): ConvexPolyhedron {
-//     let values: Float32Array;
-//     if (geometry.getIndex() !== null) {
-//         values = geometry.toNonIndexed().getAttribute('position')
-//             .array as Float32Array;
-//     } else {
-//         values = geometry.getAttribute('position').array as Float32Array;
-//     }
+/**
+ * Creates a convex polyhedron collision body using the convex hull of the input
+ * geometry. Unless the given geometry is **really** low-poly, it's probably
+ * best to use a simpler collision shape for the sake of performance.
+ *
+ * Sources:
+ * @see {@link https://github.com/pmndrs/cannon-es/issues/103}
+ */
+function createConvexPolyhedron(object: Object3D, scale = 1): ConvexPolyhedron {
+    // Compute geometry point vectors from vector coordinates
+    const points = [];
+    for (const geometry of extractGeometries(object)) {
+        let coords: Float32Array;
+        const geometryClone = geometry.clone();
 
-//     const points: Vector3[] = [];
-//     for (let i = 0; i < values.length / 3; ++i) {
-//         points.push(new Vector3(values[i], values[i + 1], values[i + 2]));
-//     }
-//     const hull = new ConvexHull().setFromPoints(points);
+        if (scale !== 1) {
+            geometryClone.scale(scale, scale, scale);
+        }
+        if (geometryClone.getIndex() !== null) {
+            coords = geometryClone.toNonIndexed().getAttribute('position')
+                .array as Float32Array;
+        } else {
+            coords = geometryClone.getAttribute('position')
+                .array as Float32Array;
+        }
 
-//     return new ConvexPolyhedron({ vertices: hull.vertices, faces: hull.faces });
-// }
+        for (let i = 0; i < coords.length; i += 3) {
+            points.push(new Vector3(coords[i], coords[i + 1], coords[i + 2]));
+        }
+    }
 
-export { createModelFromGLTF, createModelFromOBJ, createTrimesh };
+    // Traverse convex hull to create face mappings
+    const hull = new ConvexHull().setFromPoints(points);
+
+    const vertexIndices = new Map<VertexNode, number>();
+    for (let i = 0; i < hull.vertices.length; ++i) {
+        vertexIndices.set(hull.vertices[i], i);
+    }
+
+    const faceMappings: number[][] = [];
+    for (const face of hull.faces) {
+        const curr = [];
+        // Traverse halfedges to get the indices of this face's vertices
+        const initial = face.edge;
+        let he = initial;
+        do {
+            const idx = vertexIndices.get(he.vertex);
+            curr.push(idx);
+            he = he.next;
+        } while (he !== initial);
+        faceMappings.push(curr as number[]);
+    }
+
+    return new ConvexPolyhedron({
+        vertices: hull.vertices.map((v) =>
+            new Vec3().copy(v.point as unknown as Vec3)
+        ),
+        faces: faceMappings,
+        normals: hull.faces.map((f) =>
+            new Vec3().copy(f.normal as unknown as Vec3)
+        ),
+    });
+}
+
+export {
+    extractGeometries,
+    mergedGeometry,
+    createModelFromGLTF,
+    createModelFromOBJ,
+    createBox,
+    createSphere,
+    createTrimesh,
+    createConvexPolyhedron,
+};
 
 type PhysicsObjectOptions = {
     name: string;
     scale: number;
     position: [number, number, number];
     direction: [number, number, number];
+    colllisionShape?: Shape;
+    collisionMaterial: Material;
 };
 
 export type { PhysicsObjectOptions };
@@ -105,25 +262,31 @@ class PhysicsObject extends Group {
         scale: 1,
         position: [0, 0, 0],
         direction: [0, 1, 0],
+        colllisionShape: undefined,
+        collisionMaterial: WALL_PHYSICS_MATERIAL,
     };
 
     readonly options: PhysicsObjectOptions;
 
     body: Body;
 
-    constructor(mesh: Mesh, options: Partial<PhysicsObjectOptions>) {
+    constructor(input: Object3D, options: Partial<PhysicsObjectOptions>) {
         super();
 
         this.options = { ...PhysicsObject.defaultOptions, ...options };
-        const { name, scale, position, direction } = this.options;
+        const {
+            name,
+            scale,
+            position,
+            direction,
+            colllisionShape,
+            collisionMaterial,
+        } = this.options;
 
         this.name = name;
 
-        const meshClone = mesh.clone();
-        meshClone.geometry.computeBoundingBox();
-        meshClone.geometry.center();
-
-        this.add(meshClone);
+        const object = input.clone();
+        this.add(object);
         this.scale.set(scale, scale, scale);
         this.translateOnAxis(new Vector3(...position), 1);
         this.applyQuaternion(
@@ -133,16 +296,12 @@ class PhysicsObject extends Group {
             )
         );
 
-        const box = meshClone.geometry.boundingBox;
-        const dims = box!.max.clone().sub(box!.min);
-
+        const shape = colllisionShape || createBox(object, scale);
         this.body = new Body({
             mass: 1,
-            material: WALL_PHYSICS_MATERIAL,
+            material: collisionMaterial,
             position: new Vec3(...position),
-            shape: new Box(
-                new Vec3(...dims.toArray().map((c) => (c * scale) / 2))
-            ),
+            shape,
         });
         this.body.quaternion.setFromVectors(
             new Vec3(0, 1, 0),
