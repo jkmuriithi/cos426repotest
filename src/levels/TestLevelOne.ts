@@ -66,6 +66,7 @@ class TestLevelOne extends Level {
             new PhysicsObject(saucer, {
                 position: [2, 8, -5],
                 scale: 0.01,
+                mass: 40,
                 colllisionShape: createBox(saucer, 0.005),
             })
         );

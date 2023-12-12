@@ -249,6 +249,7 @@ type PhysicsObjectOptions = {
     scale: number;
     position: [number, number, number];
     direction: [number, number, number];
+    mass: 1;
     colllisionShape?: Shape;
     collisionMaterial: Material;
 };
@@ -262,6 +263,7 @@ class PhysicsObject extends Group {
         scale: 1,
         position: [0, 0, 0],
         direction: [0, 1, 0],
+        mass: 1,
         colllisionShape: undefined,
         collisionMaterial: WALL_PHYSICS_MATERIAL,
     };
@@ -279,6 +281,7 @@ class PhysicsObject extends Group {
             scale,
             position,
             direction,
+            mass,
             colllisionShape,
             collisionMaterial,
         } = this.options;
@@ -298,10 +301,10 @@ class PhysicsObject extends Group {
 
         const shape = colllisionShape || createBox(object, scale);
         this.body = new Body({
-            mass: 1,
+            mass,
+            shape,
             material: collisionMaterial,
             position: new Vec3(...position),
-            shape,
         });
         this.body.quaternion.setFromVectors(
             new Vec3(0, 1, 0),
