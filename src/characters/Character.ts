@@ -1,10 +1,9 @@
-import { Vec3 } from 'cannon-es';
+import { Quaternion as CannonQuat } from 'cannon-es';
 import {
     BoxGeometry,
     BufferGeometry,
     ColorRepresentation,
     Line,
-    Material,
     Mesh,
     MeshPhongMaterial,
     Vector3,
@@ -14,7 +13,9 @@ import {
     CHARACTER_PHYSICS_MATERIAL,
     COLORS,
     DRAW_CHARACTER_DIRECTION_LINE,
+    FLOAT_EPS,
     PROJECTILE_QUEUE,
+    UP_AXIS_THREE,
 } from '../globals';
 import PhysicsObject, { PhysicsObjectOptions } from '../PhysicsObject';
 
@@ -22,7 +23,6 @@ type CharacterOptions = PhysicsObjectOptions & {
     color: ColorRepresentation;
     front: [number, number, number];
     health: number;
-    material?: Material | Material[];
     size: [number, number, number];
 };
 
@@ -48,17 +48,12 @@ class Character extends PhysicsObject {
 
     constructor(options: Partial<CharacterOptions>) {
         const opts = { ...Character.defaultOptions, ...options };
-        const { color, front, health, material, size } = opts;
+        const { color, front, health, size } = opts;
 
         // Create object
         const geometry = new BoxGeometry(...size);
-        let mesh;
-        if (material) {
-            mesh = new Mesh(geometry, material);
-        } else {
-            const mat = new MeshPhongMaterial({ color, shininess: 100 });
-            mesh = new Mesh(geometry, mat);
-        }
+        const material = new MeshPhongMaterial({ color, shininess: 100 });
+        const mesh = new Mesh(geometry, material);
         mesh.receiveShadow = true;
         mesh.castShadow = true;
 
@@ -85,11 +80,15 @@ class Character extends PhysicsObject {
      * should face.
      */
     turnToFace(direction: Vector3) {
-        this.quaternion.setFromUnitVectors(this.front, direction);
-        this.body.quaternion.setFromVectors(
-            new Vec3().copy(this.front as unknown as Vec3),
-            new Vec3().copy(direction as unknown as Vec3)
-        );
+        if (direction.angleTo(this.front.clone().negate()) < FLOAT_EPS) {
+            // Prevent character flipping upside down when turning backwards by
+            // manually rotating them horizontally
+            this.quaternion.copy(this.initQuaternion);
+            this.rotateOnAxis(UP_AXIS_THREE, Math.PI);
+        } else {
+            this.quaternion.setFromUnitVectors(this.front, direction);
+        }
+        this.body.quaternion.copy(this.quaternion as unknown as CannonQuat);
     }
 
     fireProjectile() {

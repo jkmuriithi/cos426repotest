@@ -114,6 +114,8 @@ class Level extends Scene {
     }
 
     /** Make objects between the camera and the player transparent */
+    // FIXME: Doesn't handle dynamic materials if a mesh uses an array of
+    // different materials
     private handleMaterialTransparency() {
         if (!this.player) return;
 
@@ -193,13 +195,14 @@ class Level extends Scene {
                 position: sender.position.clone().add(dir).toArray(),
                 direction: dir.clone().toArray(),
             });
-            proj.body.applyImpulse(
-                new Vec3().copy(dir.multiplyScalar(40) as unknown as Vec3)
-            );
 
             this.add(proj);
             WORLD.addBody(proj.body);
             this.projectiles.push(proj);
+
+            proj.body.applyImpulse(
+                new Vec3().copy(dir.multiplyScalar(40) as unknown as Vec3)
+            );
         }
     }
 }

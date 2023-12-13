@@ -86,8 +86,8 @@ class PhysicsObject extends Group {
             mass,
             shape,
             material: collisionMaterial,
-            position: new Vec3(...position),
         });
+        this.body.position.copy(this.position as unknown as Vec3);
         this.body.quaternion.copy(this.quaternion as unknown as CannonQuat);
     }
 

@@ -1,4 +1,4 @@
-import { Color, Mesh, MeshPhongMaterial, Vector3 } from 'three';
+import { Color, MeshPhongMaterial, Vector3 } from 'three';
 
 import Level from './Level';
 import PhysicsObject from '../PhysicsObject';
@@ -15,6 +15,7 @@ import NUNCHUCKS from '@models/nunchucks.glb?url';
 import SAUCER from '@models/flyingsaucer.glb?url';
 
 import KOOL_AID_MAN from '@textures/BEAM.jpg';
+import { setMaterial } from '../utils';
 
 class TestLevelOne extends Level {
     initCameraPosition = new Vector3(-10, 10, 10);
@@ -34,11 +35,14 @@ class TestLevelOne extends Level {
             size: [1, 2, 1],
             position: [10, 6, -5],
             color: COLORS.PLAYER,
-            material: new MeshPhongMaterial({
+        });
+        setMaterial(
+            this.player,
+            new MeshPhongMaterial({
                 color: COLORS.PLAYER,
                 map: kool[0],
-            }),
-        });
+            })
+        );
 
         this.enemies = [
             new MeleeEnemy({
@@ -76,9 +80,12 @@ class TestLevelOne extends Level {
             position: [10, 0, -5],
             color: COLORS.WHITE,
         });
-        (room.floor.children[0] as Mesh).material = new MeshPhongMaterial({
-            color: COLORS.RED,
-        });
+        setMaterial(
+            room.floor,
+            new MeshPhongMaterial({
+                color: COLORS.RED,
+            })
+        );
 
         // Add platform in the middle of the room
         const { size, position, opacityConfig, color } = room.options;

@@ -59,4 +59,3 @@ export type CollideEvent = {
     body: Body;
     contact: ContactEquation;
 };
-true;

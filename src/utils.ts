@@ -1,7 +1,7 @@
 /**
  * @file General utility functions which are useful for handling Object3D
  */
-import { BufferGeometry, Mesh, Object3D, Scene } from 'three';
+import { BufferGeometry, Material, Mesh, Object3D } from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 /**
@@ -9,7 +9,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
  * Useful for when Object3D.traverse blows the function call stack.
  */
 export function dfsTraverse(
-    object: Scene | Object3D,
+    object: Object3D,
     callback: (child: Object3D) => void,
     includeSelf: boolean = false
 ) {
@@ -31,7 +31,7 @@ export function dfsTraverse(
  * the callback returns true.
  */
 export function dfsFind(
-    object: Scene | Object3D,
+    object: Object3D,
     callback: (child: Object3D) => boolean,
     includeSelf: boolean = false
 ): Object3D[] {
@@ -55,16 +55,33 @@ export function dfsFind(
 }
 
 /** Extracts all of the geometries from an object and puts them in an array. */
-export function geometriesOf(object: Scene | Object3D): BufferGeometry[] {
-    const meshes = dfsFind(object, (c) => (c as Mesh).isMesh, true) as Mesh[];
-    return meshes.map((mesh) => mesh.geometry);
+export function geometriesOf(object: Object3D | Mesh): BufferGeometry[] {
+    if (object instanceof Mesh) {
+        return [object.geometry];
+    } else {
+        const meshes = dfsFind(object, (c) => c instanceof Mesh) as Mesh[];
+        return meshes.map((mesh) => mesh.geometry);
+    }
 }
 
-export function mergedGeometry(object: Object3D, useGroups?: boolean) {
-    const geometries = geometriesOf(object);
-    if (geometries.length === 1) {
-        return geometries[0];
+/** Sets all of the meshes in the given object to use the given material */
+export function setMaterial(
+    object: Object3D | Mesh,
+    material: Material | Material[]
+): void {
+    if (object instanceof Mesh) {
+        object.material = material;
     } else {
+        const meshes = dfsFind(object, (c) => c instanceof Mesh) as Mesh[];
+        meshes.forEach((mesh) => (mesh.material = material));
+    }
+}
+
+export function mergedGeometry(object: Object3D | Mesh, useGroups?: boolean) {
+    if (object instanceof Mesh) {
+        return object.geometry;
+    } else {
+        const geometries = geometriesOf(object);
         return mergeGeometries(geometries, useGroups);
     }
 }
