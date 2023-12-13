@@ -29,18 +29,20 @@ class LevelManager {
         if (this.currentIndex === this.levels.length - 1) {
             // handle end game
         } else {
+            const next = this.levels[++this.currentIndex]();
+            await next.load(); // Wait for load before switching levels
             this.current.dispose();
-            this.current = this.levels[++this.currentIndex]();
-            await this.current.load();
+            this.current = next;
         }
     }
 
     async loadPrevious() {
         if (this.currentIndex === 0) return;
 
+        const prev = this.levels[--this.currentIndex]();
+        await prev.load();
         this.current.dispose();
-        this.current = this.levels[--this.currentIndex]();
-        await this.current.load();
+        this.current = prev;
     }
 
     update(dt: number) {

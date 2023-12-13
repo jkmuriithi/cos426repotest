@@ -104,8 +104,7 @@ function setup() {
                     console.log(CAMERA);
                     break;
                 case 'KeyR':
-                    const player = levelManager.current.player;
-                    player && player.reset();
+                    levelManager.current.reset();
                     break;
                 case 'KeyN':
                     levelManager.loadNext();

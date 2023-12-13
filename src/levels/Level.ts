@@ -16,10 +16,15 @@ import {
 } from '../globals';
 import { DynamicOpacityMaterial } from '../opacity';
 import Player from '../characters/Player';
+import Enemy from '../characters/Enemy';
+import { dfsTraverse, dfsFind } from '../models';
+import Room from '../rooms/Room';
 
 type LevelChild = Object3D<Object3DEventMap> & {
     update?: (dt: number) => void;
     dispose?: () => void;
+    reset?: () => void;
+    setPlayerPosition?: (pos: Vector3) => void;
     body?: Body;
 };
 
@@ -30,7 +35,9 @@ class Level extends Scene {
     // Change the type of the superclass Object3D.children property
     declare children: LevelChild[];
     initCameraPosition = INIT_CAMERA_POSITION;
-    player: Player | null = null;
+    room: Room = new Room();
+    player?: Player;
+    enemies?: Enemy[];
 
     constructor() {
         // Call parent Scene() constructor
@@ -52,6 +59,9 @@ class Level extends Scene {
     update(dt: number): void {
         for (const child of this.children) {
             child.update && child.update(dt);
+            this.player &&
+                child.setPlayerPosition &&
+                child.setPlayerPosition(this.player.position);
         }
 
         if (!ORBIT_CONTROLS_ENABLED) {
@@ -61,21 +71,18 @@ class Level extends Scene {
         this.handleMaterialTransparency();
     }
 
-    // TODO: Implement this
-    reset() {}
+    reset() {
+        dfsTraverse(this, (child) => {
+            const c = child as LevelChild;
+            c.reset && c.reset();
+        });
+    }
 
     dispose() {
-        // Custom DFS doesn't blow the call stack, .traverse() does
-        const dfs = [...this.children];
-        const seen = new Set();
-        while (dfs.length > 0) {
-            const child = dfs.pop() as LevelChild;
-            if (seen.has(child)) continue;
-
-            seen.add(child);
-            dfs.push(...(child.children as LevelChild[]));
-            child.dispose && child.dispose();
-        }
+        dfsTraverse(this, (child) => {
+            const c = child as LevelChild;
+            c.dispose && c.dispose();
+        });
     }
 
     private moveCameraWithPlayer() {
@@ -104,18 +111,20 @@ class Level extends Scene {
             .sub(CAMERA.position)
             .normalize();
         const playerDistSq = cameraDir.lengthSq();
+        const currTransparent = new Set<DynamicOpacityMaterial>();
 
         // Method 1: Checking normal direction
-        const currTransparent = new Set<DynamicOpacityMaterial>();
-        this.traverse((c) => {
-            const child = c as Mesh & { material: DynamicOpacityMaterial };
+        const meshes = dfsFind(
+            this,
+            (child) => (child as Mesh).isMesh
+        ) as Mesh[];
+        meshes.forEach((mesh) => {
+            const material = mesh.material as DynamicOpacityMaterial;
             if (
-                child.isMesh &&
-                child.material.hasDynamicOpacity &&
-                child.material.detection === 'directional'
+                material.hasDynamicOpacity &&
+                material.detection === 'directional'
             ) {
-                const material = child.material as DynamicOpacityMaterial;
-                const dist = child.position
+                const dist = mesh.position
                     .clone()
                     .projectOnVector(cameraDir)
                     .lengthSq();

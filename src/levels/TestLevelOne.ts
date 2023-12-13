@@ -6,10 +6,14 @@ import Wall from '../rooms/Wall';
 import TestLevelOneLights from '../lights/TestLevelOneLights';
 import Room from '../rooms/Room';
 import Player from '../characters/Player';
-import PhysicsObject, { createBox, createModelFromGLTF } from '../objects';
+import PhysicsObject from '../PhysicsObject';
+import { createBox } from '../collision';
+import { createModelFromGLTF } from '../models';
 
 import NUNCHUCKS from '@models/nunchucks.glb?url';
 import SAUCER from '@models/flyingsaucer.glb?url';
+import MeleeEnemy from '../characters/MeleeEnemy';
+import RangedEnemy from '../characters/RangedEnemy';
 
 class TestLevelOne extends Level {
     initCameraPosition = new Vector3(-10, 10, 10);
@@ -26,14 +30,25 @@ class TestLevelOne extends Level {
             position: [10, 6, -5],
             color: COLORS.PLAYER,
         });
-        const room = new Room({
+        this.room = new Room({
             size: [30, 10, 20],
             position: [10, 0, -5],
             color: COLORS.WHITE,
         });
+        this.enemies = [
+            new MeleeEnemy({
+                size: [1, 2, 1],
+                position: [10, 8, -5],
+                color: COLORS.RED,
+            }),
+            new RangedEnemy({
+                size: [1, 2, 1],
+                position: [12, 8, -5],
+                color: COLORS.BLACK,
+            }),
+        ];
 
-        // Add platform in the middle of the room
-        const { size, position, opacityConfig, color } = room.options;
+        const { size, position, opacityConfig, color } = this.room.options;
         const platform = new Wall({
             name: 'platform',
             size: [size[0] / 4, WALL_THICKNESS, size[2] / 4],
@@ -45,8 +60,16 @@ class TestLevelOne extends Level {
                 detection: 'playerIntersection',
             },
         });
+        this.room.add(platform);
 
-        this.add(this.player, room, platform, new TestLevelOneLights());
+        // Add platform in the middle of the room
+
+        this.add(
+            this.player,
+            ...this.enemies,
+            this.room,
+            new TestLevelOneLights()
+        );
     }
 
     async load() {

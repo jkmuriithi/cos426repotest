@@ -38,7 +38,7 @@ class Room extends Group {
     rightFrontWall: Wall;
     ceiling: Wall;
 
-    constructor(options: Partial<RoomOptions>) {
+    constructor(options?: Partial<RoomOptions>) {
         super();
 
         this.options = { ...Room.defaultOptions, ...options };

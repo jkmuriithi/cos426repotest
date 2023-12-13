@@ -1,56 +1,44 @@
-import { Body, Box as CannonBox, Vec3 } from 'cannon-es';
 import {
-    Group,
     Mesh,
     Vector3,
-    Quaternion,
     BoxGeometry,
     ColorRepresentation,
     MeshLambertMaterial,
 } from 'three';
 
-import { WALL_THICKNESS, WALL_PHYSICS_MATERIAL, WORLD } from '../globals';
+import { WALL_THICKNESS } from '../globals';
 import { makeDynamic, DynamicOpacityConfig } from '../opacity';
+import PhysicsObject, { PhysicsObjectOptions } from '../PhysicsObject';
 
-type WallOptions = {
-    name: string;
+type WallOptions = PhysicsObjectOptions & {
     size: [number, number, number];
-    position: [number, number, number];
-    direction: [number, number, number];
     color: ColorRepresentation;
     opacityConfig: DynamicOpacityConfig;
 };
 
 export type { WallOptions };
 
-class Wall extends Group {
+class Wall extends PhysicsObject {
     static readonly defaultOptions: WallOptions = {
+        ...PhysicsObject.defaultOptions,
         name: 'wall',
         size: [10, WALL_THICKNESS, 10],
-        position: [0, 0, 0],
-        direction: [0, 1, 0],
         color: 0xffffff,
         opacityConfig: {
             detection: 'directional',
             lowOpacity: 0.3,
             highOpacity: 1,
         },
+        mass: 0,
+        cloneInputObject: false,
     };
 
-    /** The options this wall was configured with */
     readonly options: WallOptions;
 
-    body: Body;
-
-    constructor(options: Partial<WallOptions>) {
+    constructor(options?: Partial<WallOptions>) {
         // Call parent Group() constructor
-        super();
-
-        this.options = { ...Wall.defaultOptions, ...options };
-        const { name, size, position, direction, color, opacityConfig } =
-            this.options;
-
-        this.name = name;
+        const opts = { ...Wall.defaultOptions, ...options };
+        const { name, size, direction, color, opacityConfig } = opts;
 
         // Create object
         const geometry = new BoxGeometry(...size);
@@ -65,36 +53,9 @@ class Wall extends Group {
         mesh.name = name;
         mesh.receiveShadow = true;
         mesh.castShadow = true;
-        mesh.applyQuaternion(
-            new Quaternion().setFromUnitVectors(
-                new Vector3(0, 1, 0),
-                new Vector3(...direction).normalize()
-            )
-        );
 
-        this.add(mesh);
-        this.translateOnAxis(new Vector3(...position), 1);
-
-        // Add physics body
-        this.body = new Body({
-            mass: 0,
-            position: new Vec3(...position),
-            shape: new CannonBox(new Vec3(...size.map((n) => n / 2))),
-            material: WALL_PHYSICS_MATERIAL,
-        });
-        this.body.quaternion.setFromVectors(
-            new Vec3(0, 1, 0),
-            new Vec3(...direction)
-        );
-    }
-
-    update(_: number): void {
-        this.position.copy(this.body.position as unknown as Vector3);
-        this.quaternion.copy(this.body.quaternion as unknown as Quaternion);
-    }
-
-    dispose(): void {
-        WORLD.removeBody(this.body);
+        super(mesh, opts);
+        this.options = opts;
     }
 }
 

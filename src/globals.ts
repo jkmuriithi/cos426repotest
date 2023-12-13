@@ -37,6 +37,7 @@ export const HOTKEYS_ENABLED = true;
 export const ORBIT_CONTROLS_ENABLED = true;
 export const ICE_SKATER_MODE = false;
 export const PRINT_MODELS_ON_LOAD = true;
+export const DRAW_CHARACTER_DIRECTION_LINE = true;
 
 // ThreeJS
 export const UP_AXIS = new Vector3(0, 1, 0);
@@ -57,3 +58,4 @@ export type CollideEvent = {
     body: Body;
     contact: ContactEquation;
 };
+true;
