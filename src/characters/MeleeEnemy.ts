@@ -39,10 +39,6 @@ class MeleeEnemy extends Enemy {
         }
         super.update(dt);
     }
-
-    dispose(): void {
-        super.dispose();
-    }
 }
 
 export default MeleeEnemy;

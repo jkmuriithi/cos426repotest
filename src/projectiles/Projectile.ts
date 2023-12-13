@@ -1,36 +1,6 @@
-import { Group, Mesh, Object3D, Vector3 } from 'three';
-import { Body, Vec3 } from 'cannon-es';
+import { Object3D } from 'three';
 
-import type Player from '../characters/Player';
-import { WORLD } from '../globals';
-
-type ProjectileInfo = {
-    force: number;
-    direction: Vector3;
-    startingPoint: Vector3;
-    sender: Player;
-};
-
-export type { ProjectileInfo };
-
-class Projectile extends Group {
-    body: Body;
-
-    constructor(mesh: Mesh, body: Body, info: ProjectileInfo) {
-        super();
-        this.add(mesh);
-        this.body = body;
-
-        const force = new Vec3()
-            .copy(info.direction as unknown as Vec3)
-            .scale(info.force);
-        this.body.applyImpulse(force);
-    }
-
-    dispose() {
-        WORLD.removeBody(this.body);
-    }
-}
+import { PhysicsObjectOptions } from '../PhysicsObject';
 
 /**
  * Loading GLTFs is expensive, so we use a factory to avoid reloading the same
@@ -38,10 +8,14 @@ class Projectile extends Group {
  */
 class ProjectileFactory {
     object: Object3D;
+    options?: Partial<PhysicsObjectOptions>;
 
-    constructor(obj: Object3D) {
+    constructor(obj: Object3D, options?: Partial<PhysicsObjectOptions>) {
         this.object = obj.clone();
+        this.options = options;
     }
+
+    createProjectile() {}
 }
 
-export { Projectile, ProjectileFactory };
+export default ProjectileFactory;

@@ -1,4 +1,4 @@
-import { Body } from 'cannon-es';
+import { Body, Vec3 } from 'cannon-es';
 import {
     Scene,
     Object3D,
@@ -6,6 +6,8 @@ import {
     Vector3,
     Mesh,
     Raycaster,
+    BoxGeometry,
+    MeshPhongMaterial,
 } from 'three';
 
 import {
@@ -13,18 +15,20 @@ import {
     CAMERA,
     INIT_CAMERA_POSITION,
     WORLD,
+    PROJECTILE_QUEUE,
 } from '../globals';
-import { DynamicOpacityMaterial } from '../opacity';
-import Player from '../characters/Player';
-import Enemy from '../characters/Enemy';
 import { dfsTraverse, dfsFind } from '../models';
-import Room from '../rooms/Room';
+import { DynamicOpacityMaterial } from '../opacity';
+import PhysicsObject from '../PhysicsObject';
+
+import type Player from '../characters/Player';
+import type Enemy from '../characters/Enemy';
+import type Character from '../characters/Character';
 
 type LevelChild = Object3D<Object3DEventMap> & {
     update?: (dt: number) => void;
     dispose?: () => void;
     reset?: () => void;
-    setPlayerPosition?: (pos: Vector3) => void;
     body?: Body;
 };
 
@@ -35,12 +39,11 @@ class Level extends Scene {
     // Change the type of the superclass Object3D.children property
     declare children: LevelChild[];
     initCameraPosition = INIT_CAMERA_POSITION;
-    room: Room = new Room();
     player?: Player;
-    enemies?: Enemy[];
+    enemies: Enemy[] = [];
+    projectiles: PhysicsObject[] = [];
 
     constructor() {
-        // Call parent Scene() constructor
         super();
     }
 
@@ -51,7 +54,7 @@ class Level extends Scene {
         this.player && CAMERA.lookAt(this.player.position);
 
         // Add physics objects to sim
-        this.traverse((child: LevelChild) => {
+        dfsTraverse(this, (child: LevelChild) => {
             child.body && WORLD.addBody(child.body);
         });
     }
@@ -59,9 +62,12 @@ class Level extends Scene {
     update(dt: number): void {
         for (const child of this.children) {
             child.update && child.update(dt);
-            this.player &&
-                child.setPlayerPosition &&
-                child.setPlayerPosition(this.player.position);
+        }
+
+        if (this.player) {
+            for (const enemy of this.enemies) {
+                enemy.setPlayerPosition(this.player.position);
+            }
         }
 
         if (!ORBIT_CONTROLS_ENABLED) {
@@ -69,9 +75,15 @@ class Level extends Scene {
         }
 
         this.handleMaterialTransparency();
+        this.handleProjectiles();
     }
 
     reset() {
+        while (this.projectiles.length > 0) {
+            const proj = this.projectiles.pop() as PhysicsObject;
+            this.remove(proj);
+        }
+
         dfsTraverse(this, (child) => {
             const c = child as LevelChild;
             c.reset && c.reset();
@@ -114,10 +126,7 @@ class Level extends Scene {
         const currTransparent = new Set<DynamicOpacityMaterial>();
 
         // Method 1: Checking normal direction
-        const meshes = dfsFind(
-            this,
-            (child) => (child as Mesh).isMesh
-        ) as Mesh[];
+        const meshes = dfsFind(this, (c) => (c as Mesh).isMesh) as Mesh[];
         meshes.forEach((mesh) => {
             const material = mesh.material as DynamicOpacityMaterial;
             if (
@@ -165,6 +174,35 @@ class Level extends Scene {
         }
 
         this.prevTransparent = [...currTransparent.values()];
+    }
+
+    private handleProjectiles() {
+        // Create projectiles in the order they were fired
+        // TODO: Limit to one projectile per frome?
+        PROJECTILE_QUEUE.reverse();
+        const geometry = new BoxGeometry(0.3, 0.3, 0.3);
+        const material = new MeshPhongMaterial({ color: 0x00ff00 });
+        const mesh = new Mesh(geometry, material);
+        while (PROJECTILE_QUEUE.length > 0) {
+            const sender = PROJECTILE_QUEUE.pop() as Character;
+            const dir = sender.front
+                .clone()
+                .applyQuaternion(sender.quaternion)
+                .normalize();
+
+            const proj = new PhysicsObject(mesh, {
+                position: sender.position.clone().add(dir).toArray(),
+                direction: dir.clone().toArray(),
+            });
+            proj.body.applyImpulse(
+                new Vec3().copy(dir.multiplyScalar(40) as unknown as Vec3)
+            );
+
+            console.log(proj);
+            this.add(proj);
+            WORLD.addBody(proj.body);
+            this.projectiles.push(proj);
+        }
     }
 }
 

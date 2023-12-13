@@ -14,13 +14,14 @@ import {
     ContactEquation,
 } from 'cannon-es';
 
-import type { ProjectileInfo } from './projectiles/Projectile';
+import type Character from './characters/Character';
 
 // Game
-export let PROJECTILE_QUEUE: ProjectileInfo[] = [];
+export let PROJECTILE_QUEUE: Character[] = [];
+export const UP_AXIS = [0, 1, 0] as const;
 export const STARTING_LEVEL = 0;
 export const WALL_THICKNESS = 0.1;
-export const FLOAT_EPS = 1e-8;
+export const FLOAT_EPS = 1e-6;
 
 // Colors
 export const COLORS = {
@@ -34,20 +35,20 @@ export const COLORS = {
 
 // Debug feature flags
 export const HOTKEYS_ENABLED = true;
-export const ORBIT_CONTROLS_ENABLED = true;
+export const ORBIT_CONTROLS_ENABLED = false;
 export const ICE_SKATER_MODE = false;
 export const PRINT_MODELS_ON_LOAD = true;
 export const DRAW_CHARACTER_DIRECTION_LINE = true;
 
 // ThreeJS
-export const UP_AXIS = new Vector3(0, 1, 0);
+export const UP_AXIS_THREE = new Vector3(...UP_AXIS);
 export const CAMERA = new PerspectiveCamera();
 export const INIT_CAMERA_POSITION = new Vector3(-10, 10, 10);
 export const RENDERER = new WebGLRenderer({ antialias: true });
 export const SHADOW_MAP_SIZE = 512;
 
 // Cannon-ES
-export const UP_AXIS_CANNON = new Vec3().copy(UP_AXIS as unknown as Vec3);
+export const UP_AXIS_CANNON = new Vec3(...UP_AXIS);
 export const WORLD = new World({ gravity: new Vec3(0, -9.81, 0) });
 
 export const WALL_PHYSICS_MATERIAL = new CannonMaterial();

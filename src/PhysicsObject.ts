@@ -7,7 +7,12 @@ import {
 } from 'cannon-es';
 import { Group, Object3D, Vector3, Quaternion } from 'three';
 
-import { UP_AXIS, WALL_PHYSICS_MATERIAL, WORLD } from './globals';
+import {
+    UP_AXIS,
+    UP_AXIS_THREE,
+    WALL_PHYSICS_MATERIAL,
+    WORLD,
+} from './globals';
 import { createBox } from './collision';
 
 type PhysicsObjectOptions = {
@@ -29,7 +34,7 @@ class PhysicsObject extends Group {
         name: 'physicsObject',
         scale: 1,
         position: [0, 0, 0],
-        direction: [0, 1, 0],
+        direction: [...UP_AXIS],
         mass: 1,
         colllisionShape: undefined,
         collisionMaterial: WALL_PHYSICS_MATERIAL,
@@ -69,7 +74,7 @@ class PhysicsObject extends Group {
         this.translateOnAxis(new Vector3(...position), 1);
         this.applyQuaternion(
             new Quaternion().setFromUnitVectors(
-                UP_AXIS,
+                UP_AXIS_THREE,
                 new Vector3(...direction).normalize()
             )
         );

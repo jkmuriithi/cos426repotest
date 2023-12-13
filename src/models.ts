@@ -8,6 +8,7 @@
 import { Group, Object3D, BufferGeometry, Mesh, Scene } from 'three';
 import { GLTFLoader, OBJLoader, MTLLoader } from 'three/examples/jsm/Addons.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+
 import { PRINT_MODELS_ON_LOAD } from './globals';
 
 /**
@@ -56,9 +57,10 @@ async function createModelFromOBJ(
  */
 function dfsTraverse(
     object: Scene | Object3D,
-    callback: (child: Object3D) => void
+    callback: (child: Object3D) => void,
+    includeSelf: boolean = false
 ) {
-    const dfs = [...object.children];
+    const dfs = includeSelf ? [object] : [...object.children];
     const seen = new Set();
     while (dfs.length > 0) {
         const child = dfs.pop() as Object3D;
@@ -77,11 +79,12 @@ function dfsTraverse(
  */
 function dfsFind(
     object: Scene | Object3D,
-    callback: (child: Object3D) => boolean
+    callback: (child: Object3D) => boolean,
+    includeSelf: boolean = false
 ): Object3D[] {
     const result = [];
 
-    const dfs = [...object.children];
+    const dfs = includeSelf ? [object] : [...object.children];
     const seen = new Set();
     while (dfs.length > 0) {
         const child = dfs.pop() as Object3D;
@@ -99,12 +102,8 @@ function dfsFind(
 }
 
 /** Extracts all of the geometries from an object and puts them in an array. */
-function geometriesOf(object: Scene | Object3D | Mesh): BufferGeometry[] {
-    if ((object as Mesh).isMesh) {
-        return [(object as Mesh).geometry];
-    }
-
-    const meshes = dfsFind(object, (child) => (child as Mesh).isMesh) as Mesh[];
+function geometriesOf(object: Scene | Object3D): BufferGeometry[] {
+    const meshes = dfsFind(object, (c) => (c as Mesh).isMesh, true) as Mesh[];
     return meshes.map((mesh) => mesh.geometry);
 }
 

@@ -36,7 +36,6 @@ class Wall extends PhysicsObject {
     readonly options: WallOptions;
 
     constructor(options?: Partial<WallOptions>) {
-        // Call parent Group() constructor
         const opts = { ...Wall.defaultOptions, ...options };
         const { name, size, direction, color, opacityConfig } = opts;
 

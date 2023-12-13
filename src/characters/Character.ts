@@ -14,6 +14,7 @@ import {
     CHARACTER_PHYSICS_MATERIAL,
     COLORS,
     DRAW_CHARACTER_DIRECTION_LINE,
+    PROJECTILE_QUEUE,
 } from '../globals';
 import PhysicsObject, { PhysicsObjectOptions } from '../PhysicsObject';
 
@@ -95,6 +96,10 @@ class Character extends PhysicsObject {
             new Vec3().copy(this.front as unknown as Vec3),
             new Vec3().copy(direction as unknown as Vec3)
         );
+    }
+
+    fireProjectile() {
+        PROJECTILE_QUEUE.push(this);
     }
 }
 

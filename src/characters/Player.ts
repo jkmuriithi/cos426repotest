@@ -6,7 +6,7 @@ import {
     CollideEvent,
     FLOAT_EPS,
     ICE_SKATER_MODE,
-    UP_AXIS,
+    UP_AXIS_THREE,
     UP_AXIS_CANNON,
 } from '../globals';
 
@@ -15,6 +15,7 @@ const forwardsKeys = new Set(['KeyW', 'ArrowUp']);
 const backwardsKeys = new Set(['KeyS', 'ArrowDown']);
 const leftKeys = new Set(['KeyA', 'ArrowLeft']);
 const rightKeys = new Set(['KeyD', 'ArrowRight']);
+const fireKeys = new Set(['KeyQ']);
 const jumpKeys = new Set(['Space']);
 
 /**
@@ -50,11 +51,15 @@ class Player extends Character {
         super({ ...Player.defaultOptions, ...options });
 
         this.forwards = this.front.clone();
-        this.backwards = this.forwards.clone().applyAxisAngle(UP_AXIS, Math.PI);
-        this.left = this.forwards.clone().applyAxisAngle(UP_AXIS, Math.PI / 2);
+        this.backwards = this.forwards
+            .clone()
+            .applyAxisAngle(UP_AXIS_THREE, Math.PI);
+        this.left = this.forwards
+            .clone()
+            .applyAxisAngle(UP_AXIS_THREE, Math.PI / 2);
         this.right = this.forwards
             .clone()
-            .applyAxisAngle(UP_AXIS, -Math.PI / 2);
+            .applyAxisAngle(UP_AXIS_THREE, -Math.PI / 2);
 
         this.connectEventListeners();
     }
@@ -77,6 +82,7 @@ class Player extends Character {
     };
 
     // Must be a closure so that "this" is handled properly
+    // TODO: Handle repeated fire
     private onKeyDown = (event: KeyboardEvent): void => {
         if (event.repeat) return;
         const { code } = event;
@@ -86,6 +92,9 @@ class Player extends Character {
         this.moveLeft = this.moveLeft || leftKeys.has(code);
         this.moveRight = this.moveRight || rightKeys.has(code);
 
+        if (fireKeys.has(code)) {
+            this.fireProjectile();
+        }
         if (this.jumpsLeft > 0 && jumpKeys.has(code)) {
             this.body.velocity.y += this.jumpVelocity;
             --this.jumpsLeft;
@@ -120,11 +129,15 @@ class Player extends Character {
      */
     setForwardsDirection(direction: Vector3) {
         this.forwards = direction.clone();
-        this.backwards = this.forwards.clone().applyAxisAngle(UP_AXIS, Math.PI);
-        this.left = this.forwards.clone().applyAxisAngle(UP_AXIS, Math.PI / 2);
+        this.backwards = this.forwards
+            .clone()
+            .applyAxisAngle(UP_AXIS_THREE, Math.PI);
+        this.left = this.forwards
+            .clone()
+            .applyAxisAngle(UP_AXIS_THREE, Math.PI / 2);
         this.right = this.forwards
             .clone()
-            .applyAxisAngle(UP_AXIS, -Math.PI / 2);
+            .applyAxisAngle(UP_AXIS_THREE, -Math.PI / 2);
     }
 
     update(dt: number): void {
