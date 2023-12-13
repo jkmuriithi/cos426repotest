@@ -15,7 +15,7 @@ const forwardsKeys = new Set(['KeyW', 'ArrowUp']);
 const backwardsKeys = new Set(['KeyS', 'ArrowDown']);
 const leftKeys = new Set(['KeyA', 'ArrowLeft']);
 const rightKeys = new Set(['KeyD', 'ArrowRight']);
-const fireKeys = new Set(['KeyQ']);
+const fireKeys = new Set(['Enter']);
 const jumpKeys = new Set(['Space']);
 
 /**

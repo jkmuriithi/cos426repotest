@@ -99,6 +99,7 @@ class Level extends Scene {
         while (this.createdProjectiles.length > 0) {
             const proj = this.createdProjectiles.pop() as PhysicsObject;
             this.remove(proj);
+            proj.dispose();
         }
 
         dfsTraverse(this, (child: Object3D | PhysicsObject) => {
