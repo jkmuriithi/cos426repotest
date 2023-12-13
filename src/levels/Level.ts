@@ -19,7 +19,7 @@ import {
 } from '../globals';
 import { dfsTraverse, dfsFind } from '../utils';
 import { DynamicOpacityMaterial } from '../opacity';
-import PhysicsObject from '../PhysicsObject';
+import PhysicsObject, { PhysicsObjectOptions } from '../PhysicsObject';
 
 import type Player from '../characters/Player';
 import type Enemy from '../characters/Enemy';
@@ -32,16 +32,32 @@ type LevelChild = Object3D<Object3DEventMap> & {
     body?: Body;
 };
 
+type ProjectileConfig = {
+    /** The object launched as a projectile. */
+    object: Object3D;
+    /** The magnitude of the impluse applied to the projectile. */
+    speed: number;
+    /** Configuration params for the projectile PhysicsObject. */
+    options?: Partial<Omit<PhysicsObjectOptions, 'position' | 'direction'>>;
+};
+
 class Level extends Scene {
     private raycaster: Raycaster = new Raycaster();
     private prevTransparent: DynamicOpacityMaterial[] = [];
+    private createdProjectiles: PhysicsObject[] = [];
 
     // Change the type of the superclass Object3D.children property
     declare children: LevelChild[];
     initCameraPosition = INIT_CAMERA_POSITION;
+    projectileConfig: ProjectileConfig = {
+        object: new Mesh(
+            new BoxGeometry(0.5, 0.5, 0.5),
+            new MeshPhongMaterial({ color: 0x00ff00 })
+        ),
+        speed: 30,
+    };
     player?: Player;
     enemies: Enemy[] = [];
-    projectiles: PhysicsObject[] = [];
 
     /**
      * Subclasses should override this method to add objects to the level,
@@ -53,8 +69,10 @@ class Level extends Scene {
         this.player && CAMERA.lookAt(this.player.position);
 
         // Add physics objects to sim
-        dfsTraverse(this, (child: LevelChild) => {
-            child.body && WORLD.addBody(child.body);
+        dfsTraverse(this, (child: Object3D | PhysicsObject) => {
+            if (child instanceof PhysicsObject) {
+                WORLD.addBody(child.body);
+            }
         });
     }
 
@@ -78,14 +96,15 @@ class Level extends Scene {
     }
 
     reset() {
-        while (this.projectiles.length > 0) {
-            const proj = this.projectiles.pop() as PhysicsObject;
+        while (this.createdProjectiles.length > 0) {
+            const proj = this.createdProjectiles.pop() as PhysicsObject;
             this.remove(proj);
         }
 
-        dfsTraverse(this, (child) => {
-            const c = child as LevelChild;
-            c.reset && c.reset();
+        dfsTraverse(this, (child: Object3D | PhysicsObject) => {
+            if (child instanceof PhysicsObject) {
+                child.reset();
+            }
         });
     }
 
@@ -181,9 +200,6 @@ class Level extends Scene {
     private handleProjectiles() {
         // Create projectiles in the order they were fired
         PROJECTILE_QUEUE.reverse();
-        const geometry = new BoxGeometry(0.4, 0.4, 0.4);
-        const material = new MeshPhongMaterial({ color: 0x00ff00 });
-        const mesh = new Mesh(geometry, material);
         while (PROJECTILE_QUEUE.length > 0) {
             const sender = PROJECTILE_QUEUE.pop() as Character;
             const dir = sender.front
@@ -191,17 +207,22 @@ class Level extends Scene {
                 .applyQuaternion(sender.quaternion)
                 .normalize();
 
-            const proj = new PhysicsObject(mesh, {
+            const proj = new PhysicsObject(this.projectileConfig.object, {
+                ...this.projectileConfig.options,
                 position: sender.position.clone().add(dir).toArray(),
                 direction: dir.clone().toArray(),
             });
 
             this.add(proj);
             WORLD.addBody(proj.body);
-            this.projectiles.push(proj);
+            this.createdProjectiles.push(proj);
 
             proj.body.applyImpulse(
-                new Vec3().copy(dir.multiplyScalar(40) as unknown as Vec3)
+                new Vec3().copy(
+                    dir.multiplyScalar(
+                        this.projectileConfig.speed
+                    ) as unknown as Vec3
+                )
             );
         }
     }

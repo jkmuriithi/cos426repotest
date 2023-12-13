@@ -94,6 +94,11 @@ class Character extends PhysicsObject {
     fireProjectile() {
         PROJECTILE_QUEUE.push(this);
     }
+
+    // TODO: Do some animation
+    takeDamage(damage: number) {
+        this.health -= damage;
+    }
 }
 
 export default Character;

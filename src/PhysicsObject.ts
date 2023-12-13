@@ -103,8 +103,9 @@ class PhysicsObject extends Group {
 
     reset(): void {
         this.position.copy(this.initPosition);
-        this.body.position.copy(this.initPosition as unknown as Vec3);
         this.quaternion.copy(this.initQuaternion);
+
+        this.body.position.copy(this.initPosition as unknown as Vec3);
         this.body.quaternion.copy(this.initQuaternion as unknown as CannonQuat);
 
         this.body.velocity.setZero();
