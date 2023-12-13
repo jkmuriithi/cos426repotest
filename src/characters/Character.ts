@@ -8,7 +8,6 @@ import {
     BoxGeometry,
     BufferGeometry,
     ColorRepresentation,
-    CubeTextureLoader,
     Group,
     Line,
     Mesh,
