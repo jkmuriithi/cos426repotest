@@ -8,11 +8,13 @@ import {
     BoxGeometry,
     BufferGeometry,
     ColorRepresentation,
+    CubeTextureLoader,
     Group,
     Line,
     Mesh,
     MeshPhongMaterial,
     Quaternion,
+    TextureLoader,
     Vector3,
 } from 'three';
 import { CHARACTER_PHYSICS_MATERIAL, COLORS, WORLD } from '../globals';
@@ -59,11 +61,26 @@ class Character extends Group {
 
         // Create object
         const geometry = new BoxGeometry(...size);
-        const material = new MeshPhongMaterial({
-            color,
-            shininess: 100,
+        // placeholder textures
+        const textureFilenames = [
+            'BEAM.jpg',
+            'BEAM.jpg',
+            'BEAM.jpg',
+            'BEAM.jpg',
+            'BEAM.jpg',
+            'BEAM.jpg',
+        ];
+        const loader = new TextureLoader();
+        loader.setPath('src/assets/textures/');
+        const materials = textureFilenames.map((textureFilename) => {
+            const mat = new MeshPhongMaterial({
+                color, // default color
+                shininess: 100,
+                map: loader.load(textureFilename),
+            });
+            return mat;
         });
-        const mesh = new Mesh(geometry, material);
+        const mesh = new Mesh(geometry, materials);
         mesh.name = name;
         mesh.receiveShadow = true;
         mesh.castShadow = true;
