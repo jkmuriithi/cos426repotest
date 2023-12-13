@@ -9,9 +9,7 @@ import TestLevelTwoLights from '../lights/TestLevelTwoLights';
 class TestLevelTwo extends Level {
     initCameraPosition = new Vector3(-10, 20, 10);
 
-    constructor() {
-        super();
-
+    async load() {
         // Set background to a nice color
         this.background = new Color(COLORS.BLACK);
 
@@ -28,6 +26,8 @@ class TestLevelTwo extends Level {
         });
 
         this.add(this.player, room, new TestLevelTwoLights());
+
+        await super.load();
     }
 }
 

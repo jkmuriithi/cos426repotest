@@ -52,7 +52,7 @@ function setup() {
 
     // Set up physics sim
     (WORLD.solver as GSSolver).iterations += 5;
-    (WORLD.solver as GSSolver).tolerance = 1e-9;
+    (WORLD.solver as GSSolver).tolerance = 0;
     WORLD.addContactMaterial(
         new ContactMaterial(WALL_PHYSICS_MATERIAL, CHARACTER_PHYSICS_MATERIAL, {
             friction: 0,

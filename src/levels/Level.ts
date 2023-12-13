@@ -43,11 +43,10 @@ class Level extends Scene {
     enemies: Enemy[] = [];
     projectiles: PhysicsObject[] = [];
 
-    constructor() {
-        super();
-    }
-
-    /** Load file data in here using async-await if necessary */
+    /**
+     * Subclasses should override this method to add objects to the level,
+     * and then call "await super.load()".
+     */
     async load() {
         // Adjust camera
         CAMERA.position.copy(this.initCameraPosition);
@@ -176,11 +175,11 @@ class Level extends Scene {
         this.prevTransparent = [...currTransparent.values()];
     }
 
+    // TODO: Limit to one projectile per frome?
     private handleProjectiles() {
         // Create projectiles in the order they were fired
-        // TODO: Limit to one projectile per frome?
         PROJECTILE_QUEUE.reverse();
-        const geometry = new BoxGeometry(0.3, 0.3, 0.3);
+        const geometry = new BoxGeometry(0.4, 0.4, 0.4);
         const material = new MeshPhongMaterial({ color: 0x00ff00 });
         const mesh = new Mesh(geometry, material);
         while (PROJECTILE_QUEUE.length > 0) {
@@ -198,7 +197,6 @@ class Level extends Scene {
                 new Vec3().copy(dir.multiplyScalar(40) as unknown as Vec3)
             );
 
-            console.log(proj);
             this.add(proj);
             WORLD.addBody(proj.body);
             this.projectiles.push(proj);
