@@ -4,9 +4,9 @@ import {
     BufferGeometry,
     ColorRepresentation,
     Line,
+    Material,
     Mesh,
     MeshPhongMaterial,
-    TextureLoader,
     Vector3,
 } from 'three';
 
@@ -19,10 +19,11 @@ import {
 import PhysicsObject, { PhysicsObjectOptions } from '../PhysicsObject';
 
 type CharacterOptions = PhysicsObjectOptions & {
-    size: [number, number, number];
     color: ColorRepresentation;
     front: [number, number, number];
-    textureFilenames?: string[];
+    health: number;
+    material?: Material | Material[];
+    size: [number, number, number];
 };
 
 export type { CharacterOptions };
@@ -31,10 +32,10 @@ class Character extends PhysicsObject {
     static readonly defaultOptions: CharacterOptions = {
         ...PhysicsObject.defaultOptions,
         name: 'character',
-        size: [1, 1, 1],
         color: COLORS.WHITE,
         front: [1, 0, 0],
-        textureFilenames: undefined,
+        health: 100,
+        size: [1, 1, 1],
         collisionMaterial: CHARACTER_PHYSICS_MATERIAL,
         cloneInputObject: false,
     };
@@ -43,28 +44,20 @@ class Character extends PhysicsObject {
     readonly front: Vector3;
     readonly options: CharacterOptions;
 
+    health: number;
+
     constructor(options: Partial<CharacterOptions>) {
         const opts = { ...Character.defaultOptions, ...options };
-        const { size, color, front, textureFilenames } = opts;
+        const { color, front, health, material, size } = opts;
 
         // Create object
         const geometry = new BoxGeometry(...size);
         let mesh;
-        if (textureFilenames) {
-            const loader = new TextureLoader();
-            loader.setPath('src/assets/textures/');
-            const materials = textureFilenames.map((filename) => {
-                const mat = new MeshPhongMaterial({
-                    color,
-                    shininess: 100,
-                    map: loader.load(filename),
-                });
-                return mat;
-            });
-            mesh = new Mesh(geometry, materials);
-        } else {
-            const material = new MeshPhongMaterial({ color, shininess: 100 });
+        if (material) {
             mesh = new Mesh(geometry, material);
+        } else {
+            const mat = new MeshPhongMaterial({ color, shininess: 100 });
+            mesh = new Mesh(geometry, mat);
         }
         mesh.receiveShadow = true;
         mesh.castShadow = true;
@@ -72,6 +65,7 @@ class Character extends PhysicsObject {
         super(mesh, opts);
         this.options = opts;
         this.front = new Vector3(...front);
+        this.health = health;
 
         // (For debugging) draw line facing forwards
         if (DRAW_CHARACTER_DIRECTION_LINE) {

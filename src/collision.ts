@@ -7,7 +7,8 @@ import {
 } from 'cannon-es';
 import { Box3, Object3D, Sphere, Vector3 } from 'three';
 import { ConvexHull, VertexNode } from 'three/examples/jsm/Addons.js';
-import { geometriesOf } from './models';
+
+import { geometriesOf } from './utils';
 
 /**
  * Creates a box collision body from the bounding box of the input geometry.

@@ -17,7 +17,7 @@ import {
     WORLD,
     PROJECTILE_QUEUE,
 } from '../globals';
-import { dfsTraverse, dfsFind } from '../models';
+import { dfsTraverse, dfsFind } from '../utils';
 import { DynamicOpacityMaterial } from '../opacity';
 import PhysicsObject from '../PhysicsObject';
 

@@ -1,9 +1,8 @@
-import { Color, Vector3 } from 'three';
+import { Color, Mesh, MeshPhongMaterial, Vector3 } from 'three';
 
 import Level from './Level';
 import PhysicsObject from '../PhysicsObject';
-import { createBox } from '../collision';
-import { createModelFromGLTF } from '../models';
+import { loadModelFromGLTF, loadTexturesFromImages } from '../loaders';
 import { COLORS, WALL_THICKNESS } from '../globals';
 import Room from '../rooms/Room';
 import Wall from '../rooms/Wall';
@@ -15,13 +14,18 @@ import TestLevelOneLights from '../lights/TestLevelOneLights';
 import NUNCHUCKS from '@models/nunchucks.glb?url';
 import SAUCER from '@models/flyingsaucer.glb?url';
 
+import KOOL_AID_MAN from '@textures/BEAM.jpg';
+
 class TestLevelOne extends Level {
     initCameraPosition = new Vector3(-10, 10, 10);
 
     async load() {
         // Load models from files
-        const chucks = await createModelFromGLTF(NUNCHUCKS);
-        const saucer = await createModelFromGLTF(SAUCER);
+        const chucks = await loadModelFromGLTF(NUNCHUCKS);
+        const saucer = await loadModelFromGLTF(SAUCER);
+
+        // Load textures from files
+        const kool = await loadTexturesFromImages([KOOL_AID_MAN]);
 
         this.background = new Color(COLORS.BLACK);
 
@@ -30,6 +34,10 @@ class TestLevelOne extends Level {
             size: [1, 2, 1],
             position: [10, 6, -5],
             color: COLORS.PLAYER,
+            material: new MeshPhongMaterial({
+                color: COLORS.PLAYER,
+                map: kool[0],
+            }),
         });
 
         this.enemies = [
@@ -58,8 +66,7 @@ class TestLevelOne extends Level {
             new PhysicsObject(saucer, {
                 position: [2, 8, -5],
                 scale: 0.01,
-                mass: 40,
-                colllisionShape: createBox(saucer, 0.005),
+                mass: 0,
             })
         );
 
@@ -68,6 +75,9 @@ class TestLevelOne extends Level {
             size: [30, 10, 20],
             position: [10, 0, -5],
             color: COLORS.WHITE,
+        });
+        (room.floor.children[0] as Mesh).material = new MeshPhongMaterial({
+            color: COLORS.RED,
         });
 
         // Add platform in the middle of the room
