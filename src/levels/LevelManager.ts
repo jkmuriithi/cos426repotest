@@ -1,17 +1,19 @@
 import Level from './Level';
 import TestLevelOne from './TestLevelOne';
 import TestLevelTwo from './TestLevelTwo';
+import OfficeStart from './OfficeStart';
 
 type LevelCreationFunction = () => Level;
 
 class LevelManager {
-    private currentIndex: number;
-
-    current: Level;
-    levels: LevelCreationFunction[] = [
+    readonly levels: LevelCreationFunction[] = [
         () => new TestLevelOne(),
         () => new TestLevelTwo(),
+        () => new OfficeStart(),
     ];
+
+    private currentIndex: number;
+    current: Level;
 
     constructor(start = 0) {
         console.assert(start >= 0 && start < this.levels.length);
@@ -30,7 +32,7 @@ class LevelManager {
             // handle end game
         } else {
             const next = this.levels[++this.currentIndex]();
-            await next.load(); // Wait for load before switching levels
+            await next.load();
             this.current.dispose();
             this.current = next;
         }

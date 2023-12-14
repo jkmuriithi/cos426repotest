@@ -1,3 +1,4 @@
+import { FLOAT_EPS } from '../globals';
 import { CharacterOptions } from './Character';
 import Enemy from './Enemy';
 
@@ -12,6 +13,19 @@ class RangedEnemy extends Enemy {
     }
 
     update(dt: number): void {
+        if (!this.player_pos) {
+            super.update(dt);
+            return;
+        }
+
+        const shootDirection = this.player_pos.clone().sub(this.position);
+        shootDirection.y = 0;
+        // Make enemy turn toward player
+        if (shootDirection.length() > FLOAT_EPS) {
+            this.turnToFace(shootDirection);
+            // Remove all character spin
+            this.body.angularVelocity.setZero();
+        }
         super.update(dt);
     }
 

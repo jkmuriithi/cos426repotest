@@ -16,6 +16,7 @@ import {
     INIT_CAMERA_POSITION,
     WORLD,
     PROJECTILE_QUEUE,
+    PROJECTILE_LIMIT,
 } from '../globals';
 import { dfsTraverse, dfsFind } from '../utils';
 import { DynamicOpacityMaterial } from '../opacity';
@@ -48,6 +49,8 @@ class Level extends Scene {
 
     // Change the type of the superclass Object3D.children property
     declare children: LevelChild[];
+    loaded = false;
+    complete = false;
     initCameraPosition = INIT_CAMERA_POSITION;
     projectileConfig: ProjectileConfig = {
         object: new Mesh(
@@ -74,6 +77,8 @@ class Level extends Scene {
                 WORLD.addBody(child.body);
             }
         });
+
+        this.loaded = true;
     }
 
     update(dt: number): void {
@@ -226,6 +231,15 @@ class Level extends Scene {
                 )
             );
         }
+
+        // Remove projectiles over limit
+        this.createdProjectiles.reverse();
+        while (this.createdProjectiles.length > PROJECTILE_LIMIT) {
+            const proj = this.createdProjectiles.pop() as PhysicsObject;
+            this.remove(proj);
+            proj.dispose();
+        }
+        this.createdProjectiles.reverse();
     }
 }
 

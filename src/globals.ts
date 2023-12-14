@@ -17,9 +17,10 @@ import {
 import type Character from './characters/Character';
 
 // Game
-export let PROJECTILE_QUEUE: Character[] = [];
+export const PROJECTILE_QUEUE: Character[] = [];
+export const PROJECTILE_LIMIT = 20;
 export const UP_AXIS = [0, 1, 0] as const;
-export const STARTING_LEVEL = 0;
+export const STARTING_LEVEL = 2;
 export const WALL_THICKNESS = 0.1;
 export const FLOAT_EPS = 1e-6;
 
@@ -35,7 +36,7 @@ export const COLORS = {
 
 // Debug feature flags
 export const HOTKEYS_ENABLED = true;
-export const ORBIT_CONTROLS_ENABLED = false;
+export const ORBIT_CONTROLS_ENABLED = true;
 export const ICE_SKATER_MODE = false;
 export const PRINT_ASSETS_ON_LOAD = true;
 export const DRAW_CHARACTER_DIRECTION_LINE = true;
