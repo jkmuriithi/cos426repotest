@@ -10,7 +10,6 @@ import Player from '../characters/Player';
 import OfficeStartLights from '../lights/OfficeStartLights';
 
 // models
-import WINDOW_SMALL from '@models/squarewindow.glb?url';
 import WINDOW_LARGE from '@models/windowlarge.glb?url';
 import WATER_COOLER from '@models/watercooler.glb?url';
 import CUBICLE from '@models/cubicle.glb?url';
