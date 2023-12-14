@@ -14,15 +14,7 @@ import { geometriesOf } from './utils';
  * Creates a box collision body from the bounding box of the input geometry.
  */
 function createBox(object: Object3D, scale: number = 1): Box {
-    const geometries = geometriesOf(object);
-    geometries[0].computeBoundingBox();
-
-    const boundingBox = geometries[0].boundingBox!.clone();
-    for (const geometry of geometries) {
-        geometry.computeBoundingBox();
-        boundingBox.union(geometry.boundingBox as Box3);
-    }
-
+    const boundingBox = new Box3().setFromObject(object, true);
     const dims = boundingBox.max.clone().sub(boundingBox.min);
     return new Box(new Vec3(...dims.toArray().map((c) => (c * scale) / 2)));
 }
@@ -50,7 +42,7 @@ function createSphere(object: Object3D, scale: number = 1): CannonSphere {
  *
  * Sources:
  * @see {@link https://sbcode.net/threejs/convexgeometry/}
- */
+     */
 function createTrimesh(object: Object3D, scale = 1): Trimesh {
     const points: number[] = [];
     for (const geometry of geometriesOf(object)) {

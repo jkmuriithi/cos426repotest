@@ -1,4 +1,4 @@
-import { Body, Vec3 } from 'cannon-es';
+import { BODY_TYPES, Body, Vec3 } from 'cannon-es';
 import {
     Scene,
     Object3D,
@@ -17,14 +17,15 @@ import {
     WORLD,
     PROJECTILE_QUEUE,
     PROJECTILE_LIMIT,
+    CollideEvent,
 } from '../globals';
 import { dfsTraverse, dfsFind } from '../utils';
 import { DynamicOpacityMaterial } from '../opacity';
 import PhysicsObject, { PhysicsObjectOptions } from '../PhysicsObject';
+import Character from '../characters/Character';
 
 import type Player from '../characters/Player';
-import type Enemy from '../characters/Enemy';
-import type Character from '../characters/Character';
+import Enemy from '../characters/Enemy';
 
 type LevelChild = Object3D<Object3DEventMap> & {
     update?: (dt: number) => void;
@@ -38,6 +39,7 @@ type ProjectileConfig = {
     object: Object3D;
     /** The magnitude of the impluse applied to the projectile. */
     speed: number;
+    damage: number;
     /** Configuration params for the projectile PhysicsObject. */
     options?: Partial<Omit<PhysicsObjectOptions, 'position' | 'direction'>>;
 };
@@ -45,7 +47,9 @@ type ProjectileConfig = {
 class Level extends Scene {
     private raycaster: Raycaster = new Raycaster();
     private prevTransparent: DynamicOpacityMaterial[] = [];
+    private bodyToEnemy: Map<number, Enemy> = new Map();
     private createdProjectiles: PhysicsObject[] = [];
+    private activeProjectiles: Set<PhysicsObject> = new Set();
 
     // Change the type of the superclass Object3D.children property
     declare children: LevelChild[];
@@ -57,7 +61,8 @@ class Level extends Scene {
             new BoxGeometry(0.5, 0.5, 0.5),
             new MeshPhongMaterial({ color: 0x00ff00 })
         ),
-        speed: 30,
+        damage: 35,
+        speed: 50,
     };
     player?: Player;
     enemies: Enemy[] = [];
@@ -72,9 +77,12 @@ class Level extends Scene {
         this.player && CAMERA.lookAt(this.player.position);
 
         // Add physics objects to sim
-        dfsTraverse(this, (child: Object3D | PhysicsObject) => {
+        dfsTraverse(this, (child: Object3D | PhysicsObject | Enemy) => {
             if (child instanceof PhysicsObject) {
                 WORLD.addBody(child.body);
+            }
+            if (child instanceof Enemy) {
+                this.bodyToEnemy.set(child.body.id, child);
             }
         });
 
@@ -87,8 +95,19 @@ class Level extends Scene {
         }
 
         if (this.player) {
-            for (const enemy of this.enemies) {
-                enemy.setPlayerPosition(this.player.position);
+            // TODO: Add killed enemies to special list and reset level
+            if (this.player.health < 0) {
+            } else {
+                for (let i = 0; i < this.enemies.length; ++i) {
+                    const enemy = this.enemies[i];
+                    if (enemy.health < 0) {
+                        this.remove(enemy);
+                        enemy.dispose();
+                        this.enemies.splice(i, 1);
+                    } else {
+                        enemy.setPlayerPosition(this.player.position);
+                    }
+                }
             }
         }
 
@@ -101,13 +120,16 @@ class Level extends Scene {
     }
 
     reset() {
+        // reset projectiles
+        this.activeProjectiles.clear();
         while (this.createdProjectiles.length > 0) {
             const proj = this.createdProjectiles.pop() as PhysicsObject;
             this.remove(proj);
             proj.dispose();
         }
 
-        dfsTraverse(this, (child: Object3D | PhysicsObject) => {
+        // reset character health and position
+        dfsTraverse(this, (child: Object3D | PhysicsObject | Character) => {
             if (child instanceof PhysicsObject) {
                 child.reset();
             }
@@ -142,54 +164,59 @@ class Level extends Scene {
     // FIXME: Doesn't handle dynamic materials if a mesh uses an array of
     // different materials
     private handleMaterialTransparency() {
-        if (!this.player) return;
+        if (!this.player && this.enemies.length == 0) return;
 
-        const cameraDir = this.player.position
-            .clone()
-            .sub(CAMERA.position)
-            .normalize();
-        const playerDistSq = cameraDir.lengthSq();
+        const characters = [this.player, ...this.enemies] as Character[];
         const currTransparent = new Set<DynamicOpacityMaterial>();
+        for (const char of characters) {
+            const cameraDir = char.position
+                .clone()
+                .sub(CAMERA.position)
+                .normalize();
+            const playerDistSq = cameraDir.lengthSq();
 
-        // Method 1: Checking normal direction
-        const meshes = dfsFind(this, (c) => (c as Mesh).isMesh) as Mesh[];
-        meshes.forEach((mesh) => {
-            const material = mesh.material as DynamicOpacityMaterial;
-            if (
-                material.hasDynamicOpacity &&
-                material.detection === 'directional'
-            ) {
-                const dist = mesh.position
-                    .clone()
-                    .projectOnVector(cameraDir)
-                    .lengthSq();
-                if (dist <= playerDistSq) {
-                    const normal = material.normal as Vector3;
-                    if (material.transparent && cameraDir.dot(normal) > 0) {
-                        currTransparent.add(material);
-                        material.opacity = material.lowOpacity;
+            // Method 1: Checking normal direction
+            const meshes = dfsFind(this, (c) => (c as Mesh).isMesh) as Mesh[];
+            meshes.forEach((mesh) => {
+                const material = mesh.material as DynamicOpacityMaterial;
+                if (
+                    material.hasDynamicOpacity &&
+                    material.detection === 'directional'
+                ) {
+                    const dist = mesh.position
+                        .clone()
+                        .projectOnVector(cameraDir)
+                        .lengthSq();
+                    if (dist <= playerDistSq) {
+                        const normal = material.normal as Vector3;
+                        if (material.transparent && cameraDir.dot(normal) > 0) {
+                            currTransparent.add(material);
+                            material.opacity = material.lowOpacity;
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        // Method 2: Checking player intersection
-        this.raycaster.set(CAMERA.position, cameraDir);
-        const intersections = this.raycaster.intersectObjects(this.children);
-        // Note: intersections will only contain meshes
-        // @see - {@link https://discourse.threejs.org/t/raycast-intersect-group/14038}
-        for (const intersection of intersections) {
-            const { object } = intersection as unknown as { object: Mesh };
-            if (object.id === this.player.children[0].id) break;
-            if (!object.isMesh) continue;
+            // Method 2: Checking player intersection
+            this.raycaster.set(CAMERA.position, cameraDir);
+            const intersections = this.raycaster.intersectObjects(
+                this.children
+            );
+            // Note: intersections will only contain meshes
+            // @see - {@link https://discourse.threejs.org/t/raycast-intersect-group/14038}
+            for (const intersection of intersections) {
+                const { object } = intersection as unknown as { object: Mesh };
+                if (object.id === char.children[0].id) break;
+                if (!object.isMesh) continue;
 
-            const material = object.material as DynamicOpacityMaterial;
-            if (
-                material.hasDynamicOpacity &&
-                material.detection === 'playerIntersection'
-            ) {
-                currTransparent.add(material);
-                material.opacity = material.lowOpacity;
+                const material = object.material as DynamicOpacityMaterial;
+                if (
+                    material.hasDynamicOpacity &&
+                    material.detection === 'characterIntersection'
+                ) {
+                    currTransparent.add(material);
+                    material.opacity = material.lowOpacity;
+                }
             }
         }
 
@@ -221,7 +248,31 @@ class Level extends Scene {
 
             this.add(proj);
             WORLD.addBody(proj.body);
+            this.activeProjectiles.add(proj);
             this.createdProjectiles.push(proj);
+
+            proj.body.addEventListener('collide', (e: CollideEvent) => {
+                if (!this.player) return;
+                if (!this.activeProjectiles.has(proj)) return;
+
+                const other = e.body;
+                if (other.id === sender.body.id) return;
+
+                if (other.id === this.player.body.id) {
+                    if (this.bodyToEnemy.has(sender.body.id)) {
+                        this.player.takeDamage(this.projectileConfig.damage);
+                        this.activeProjectiles.delete(proj);
+                    }
+                } else if (sender.id === this.player.body.id) {
+                    const enemy = this.bodyToEnemy.get(other.id);
+                    if (enemy) {
+                        enemy.takeDamage(this.projectileConfig.damage);
+                        this.activeProjectiles.delete(proj);
+                    }
+                } else if (other.type === BODY_TYPES.STATIC) {
+                    this.activeProjectiles.delete(proj);
+                }
+            });
 
             proj.body.applyImpulse(
                 new Vec3().copy(

@@ -26,7 +26,7 @@ async function loadModelFromGLTF(gltfUrl: string): Promise<Group> {
     }
 
     gltf.scene.traverse((object) => (object.frustumCulled = false));
-    const box = new Box3().setFromObject(gltf.scene);
+    const box = new Box3().setFromObject(gltf.scene, true);
     const center = box.getCenter(new Vector3());
 
     gltf.scene.position.x += gltf.scene.position.x - center.x;
@@ -52,7 +52,7 @@ async function loadModelFromOBJ(
     }
 
     obj.traverse((object) => (object.frustumCulled = false));
-    const box = new Box3().setFromObject(obj);
+    const box = new Box3().setFromObject(obj, true);
     const center = box.getCenter(new Vector3());
 
     obj.position.x += obj.position.x - center.x;

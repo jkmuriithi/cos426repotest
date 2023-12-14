@@ -8,6 +8,7 @@
  */
 import { PerspectiveCamera, Vector3, WebGLRenderer } from 'three';
 import {
+    Body,
     Vec3,
     World,
     Material as CannonMaterial,
@@ -28,7 +29,7 @@ export const FLOAT_EPS = 1e-6;
 export const COLORS = {
     WHITE: 0xffffff,
     BLACK: 0x000000,
-    GRAY: 0x080808,
+    GRAY: 0x999999,
     RED: 0xff0000,
     PLAYER: 0xe8beac,
     BARBIE: 0xffc0cb,

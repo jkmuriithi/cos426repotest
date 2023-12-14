@@ -2,6 +2,7 @@ import Level from './Level';
 import TestLevelOne from './TestLevelOne';
 import TestLevelTwo from './TestLevelTwo';
 import OfficeStart from './OfficeStart';
+import BankRobbery from './BankRobbery';
 
 type LevelCreationFunction = () => Level;
 
@@ -10,6 +11,7 @@ class LevelManager {
         () => new TestLevelOne(),
         () => new TestLevelTwo(),
         () => new OfficeStart(),
+        () => new BankRobbery(),
     ];
 
     private currentIndex: number;

@@ -18,6 +18,7 @@ import {
     UP_AXIS_THREE,
 } from '../globals';
 import PhysicsObject, { PhysicsObjectOptions } from '../PhysicsObject';
+import { boundingSphereOf } from '../utils';
 
 type CharacterOptions = PhysicsObjectOptions & {
     color: ColorRepresentation;
@@ -63,16 +64,22 @@ class Character extends PhysicsObject {
         this.health = health;
 
         // (For debugging) draw line facing forwards
+        const sphere = boundingSphereOf(this);
         if (DRAW_CHARACTER_DIRECTION_LINE) {
             this.add(
                 new Line(
                     new BufferGeometry().setFromPoints([
                         new Vector3(),
-                        this.front,
+                        this.front.clone().setLength(sphere.radius * 1.05),
                     ])
                 )
             );
         }
+    }
+
+    reset() {
+        super.reset();
+        this.health = this.options.health;
     }
 
     /**

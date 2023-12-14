@@ -6,7 +6,7 @@ import {
     MeshLambertMaterial,
 } from 'three';
 
-import { WALL_THICKNESS } from '../globals';
+import { UP_AXIS_THREE, WALL_THICKNESS } from '../globals';
 import { makeDynamic, DynamicOpacityConfig } from '../opacity';
 import PhysicsObject, { PhysicsObjectOptions } from '../PhysicsObject';
 
@@ -28,8 +28,10 @@ class Wall extends PhysicsObject {
             detection: 'directional',
             lowOpacity: 0.3,
             highOpacity: 1,
+            normal: UP_AXIS_THREE,
         },
         mass: 0,
+        castShadow: false,
         cloneInputObject: false,
     };
 
@@ -50,8 +52,6 @@ class Wall extends PhysicsObject {
 
         const mesh = new Mesh(geometry, material);
         mesh.name = name;
-        mesh.receiveShadow = true;
-        mesh.castShadow = true;
 
         super(mesh, opts);
         this.options = opts;

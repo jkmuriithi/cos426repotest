@@ -1,7 +1,7 @@
 /**
  * @file General utility functions which are useful for handling Object3D
  */
-import { BufferGeometry, Material, Mesh, Object3D } from 'three';
+import { BufferGeometry, Material, Mesh, Object3D, Sphere } from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 /**
@@ -54,14 +54,19 @@ export function dfsFind(
     return result;
 }
 
+/** Extracts all of the meshes from an object and puts them in an array. */
+export function meshesOf(object: Object3D | Mesh): Mesh[] {
+    if (object instanceof Mesh) {
+        return [object];
+    } else {
+        return dfsFind(object, (c) => c instanceof Mesh) as Mesh[];
+    }
+}
+
 /** Extracts all of the geometries from an object and puts them in an array. */
 export function geometriesOf(object: Object3D | Mesh): BufferGeometry[] {
-    if (object instanceof Mesh) {
-        return [object.geometry];
-    } else {
-        const meshes = dfsFind(object, (c) => c instanceof Mesh) as Mesh[];
-        return meshes.map((mesh) => mesh.geometry);
-    }
+    const meshes = meshesOf(object);
+    return meshes.map((mesh) => mesh.geometry);
 }
 
 /** Sets all of the meshes in the given object to use the given material */
@@ -69,12 +74,8 @@ export function setMaterial(
     object: Object3D | Mesh,
     material: Material | Material[]
 ): void {
-    if (object instanceof Mesh) {
-        object.material = material;
-    } else {
-        const meshes = dfsFind(object, (c) => c instanceof Mesh) as Mesh[];
-        meshes.forEach((mesh) => (mesh.material = material));
-    }
+    const meshes = meshesOf(object);
+    meshes.forEach((mesh) => (mesh.material = material));
 }
 
 export function mergedGeometry(object: Object3D | Mesh, useGroups?: boolean) {
@@ -84,4 +85,17 @@ export function mergedGeometry(object: Object3D | Mesh, useGroups?: boolean) {
         const geometries = geometriesOf(object);
         return mergeGeometries(geometries, useGroups);
     }
+}
+
+export function boundingSphereOf(object: Object3D) {
+    const geometries = geometriesOf(object);
+    geometries[0].computeBoundingSphere();
+
+    const sphere = geometries[0].boundingSphere!.clone();
+    for (const geometry of geometries) {
+        geometry.computeBoundingSphere();
+        sphere.union(geometry.boundingSphere as Sphere);
+    }
+
+    return sphere;
 }

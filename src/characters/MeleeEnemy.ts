@@ -14,12 +14,12 @@ class MeleeEnemy extends Enemy {
     }
 
     update(dt: number): void {
-        if (!this.player_pos) {
+        if (!this.playerPos) {
             super.update(dt);
             return;
         }
 
-        const movementDirection = this.player_pos.clone().sub(this.position);
+        const movementDirection = this.playerPos.clone().sub(this.position);
         // Make enemy turn toward player
         movementDirection.y = 0;
 

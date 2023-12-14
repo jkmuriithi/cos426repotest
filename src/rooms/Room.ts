@@ -1,4 +1,4 @@
-import { ColorRepresentation, Group } from 'three';
+import { ColorRepresentation, Group, Vector3 } from 'three';
 
 import { WALL_THICKNESS } from '../globals';
 import { COLORS } from '../globals';
@@ -23,8 +23,9 @@ class Room extends Group {
         color: COLORS.WHITE,
         opacityConfig: {
             detection: 'directional',
-            lowOpacity: 0.3,
+            lowOpacity: 0,
             highOpacity: 1,
+            normal: new Vector3(0, 0, 1),
         },
     };
 

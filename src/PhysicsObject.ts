@@ -14,12 +14,15 @@ import {
     WORLD,
 } from './globals';
 import { createBox } from './collision';
+import { meshesOf } from './utils';
 
 type PhysicsObjectOptions = {
     name: string;
     scale: number;
     position: [number, number, number];
     direction: [number, number, number];
+    castShadow: boolean;
+    receiveShadow: boolean;
     mass: number;
     colllisionShape?: Shape;
     collisionMaterial: Material;
@@ -35,6 +38,8 @@ class PhysicsObject extends Group {
         scale: 1,
         position: [0, 0, 0],
         direction: [...UP_AXIS],
+        castShadow: true,
+        receiveShadow: true,
         mass: 1,
         colllisionShape: undefined,
         collisionMaterial: WALL_PHYSICS_MATERIAL,
@@ -59,6 +64,8 @@ class PhysicsObject extends Group {
             scale,
             position,
             direction,
+            castShadow,
+            receiveShadow,
             mass,
             colllisionShape,
             collisionMaterial,
@@ -78,6 +85,10 @@ class PhysicsObject extends Group {
                 new Vector3(...direction).normalize()
             )
         );
+        meshesOf(this).forEach((mesh) => {
+            mesh.castShadow = castShadow;
+            mesh.receiveShadow = receiveShadow;
+        });
         this.initPosition = this.position.clone();
         this.initQuaternion = this.quaternion.clone();
 

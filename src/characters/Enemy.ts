@@ -10,14 +10,14 @@ class Enemy extends Character {
     };
 
     moveVelocity = 6;
-    player_pos?: Vector3;
+    playerPos?: Vector3;
 
     constructor(options: Partial<CharacterOptions>) {
         super({ ...Enemy.defaultOptions, ...options });
     }
 
     setPlayerPosition(position: Vector3) {
-        this.player_pos = position;
+        this.playerPos = position;
     }
 }
 
