@@ -15,6 +15,7 @@ import {
 } from './globals';
 import { createBox } from './collision';
 import { meshesOf } from './utils';
+import { DynamicOpacityConfig, makeObjectDynamic } from './opacity';
 
 type PhysicsObjectOptions = {
     name: string;
@@ -26,6 +27,7 @@ type PhysicsObjectOptions = {
     mass: number;
     colllisionShape?: Shape;
     collisionMaterial: Material;
+    opacityConfig?: DynamicOpacityConfig;
     cloneInputObject?: boolean;
 };
 
@@ -41,7 +43,6 @@ class PhysicsObject extends Group {
         castShadow: true,
         receiveShadow: true,
         mass: 1,
-        colllisionShape: undefined,
         collisionMaterial: WALL_PHYSICS_MATERIAL,
         cloneInputObject: true,
     };
@@ -69,6 +70,7 @@ class PhysicsObject extends Group {
             mass,
             colllisionShape,
             collisionMaterial,
+            opacityConfig,
             cloneInputObject,
         } = this.options;
 
@@ -89,6 +91,8 @@ class PhysicsObject extends Group {
             mesh.castShadow = castShadow;
             mesh.receiveShadow = receiveShadow;
         });
+        opacityConfig && makeObjectDynamic(this, opacityConfig);
+
         this.initPosition = this.position.clone();
         this.initQuaternion = this.quaternion.clone();
 

@@ -18,6 +18,7 @@ import {
     PROJECTILE_QUEUE,
     PROJECTILE_LIMIT,
     CollideEvent,
+    UP_AXIS_CANNON,
 } from '../globals';
 import { dfsTraverse, dfsFind } from '../utils';
 import { DynamicOpacityMaterial } from '../opacity';
@@ -45,17 +46,22 @@ type ProjectileConfig = {
 };
 
 class Level extends Scene {
+    // Change the type of the superclass Object3D.children property
+    declare children: LevelChild[];
+
     private raycaster: Raycaster = new Raycaster();
     private prevTransparent: DynamicOpacityMaterial[] = [];
     private bodyToEnemy: Map<number, Enemy> = new Map();
+    private killedEnemies: Enemy[] = [];
     private createdProjectiles: PhysicsObject[] = [];
     private activeProjectiles: Set<PhysicsObject> = new Set();
+    private lastContactTime: number = 0;
+    private contactImmunitySecs: number = 0.5;
+    private enemyKnockback = 10;
+    private playerKnockback = 15;
 
-    // Change the type of the superclass Object3D.children property
-    declare children: LevelChild[];
-    loaded = false;
-    complete = false;
     initCameraPosition = INIT_CAMERA_POSITION;
+    complete = false;
     projectileConfig: ProjectileConfig = {
         object: new Mesh(
             new BoxGeometry(0.5, 0.5, 0.5),
@@ -66,6 +72,7 @@ class Level extends Scene {
     };
     player?: Player;
     enemies: Enemy[] = [];
+    portal?: PhysicsObject;
 
     /**
      * Subclasses should override this method to add objects to the level,
@@ -81,12 +88,58 @@ class Level extends Scene {
             if (child instanceof PhysicsObject) {
                 WORLD.addBody(child.body);
             }
-            if (child instanceof Enemy) {
-                this.bodyToEnemy.set(child.body.id, child);
-            }
         });
 
-        this.loaded = true;
+        // Process characters and portals
+        for (const enemy of this.enemies) {
+            this.bodyToEnemy.set(enemy.body.id, enemy);
+        }
+
+        // Handle collisions with portals and enemies
+        if (this.player) {
+            this.portal?.body.addEventListener('collide', (e: CollideEvent) => {
+                if (
+                    this.enemies.length === 0 &&
+                    this.player &&
+                    e.body.id === this.player.body.id
+                ) {
+                    this.complete = true;
+                }
+            });
+
+            for (const enemy of this.enemies) {
+                enemy.body.addEventListener('collide', (e: CollideEvent) => {
+                    if (!this.player) return;
+
+                    if (e.body.id === this.player.body.id) {
+                        if (
+                            WORLD.time - this.lastContactTime >
+                            this.contactImmunitySecs
+                        ) {
+                            this.lastContactTime = WORLD.time;
+                            this.player.takeDamage(enemy.contactDamage);
+                        }
+
+                        const dir = this.player.body.position
+                            .clone()
+                            .vadd(UP_AXIS_CANNON)
+                            .vsub(enemy.body.position);
+                        dir.normalize();
+
+                        enemy.body.applyImpulse(
+                            dir
+                                .clone()
+                                .scale(-this.enemyKnockback)
+                        );
+                        this.player.body.applyImpulse(
+                            dir
+                                .clone()
+                                .scale(this.playerKnockback)
+                        );
+                    }
+                });
+            }
+        }
     }
 
     update(dt: number): void {
@@ -95,19 +148,32 @@ class Level extends Scene {
         }
 
         if (this.player) {
-            // TODO: Add killed enemies to special list and reset level
             if (this.player.health < 0) {
+                this.reset();
             } else {
+                const killed = [];
                 for (let i = 0; i < this.enemies.length; ++i) {
                     const enemy = this.enemies[i];
                     if (enemy.health < 0) {
                         this.remove(enemy);
-                        enemy.dispose();
-                        this.enemies.splice(i, 1);
+                        WORLD.removeBody(enemy.body);
+                        killed.push(enemy);
                     } else {
                         enemy.setPlayerPosition(this.player.position);
                     }
                 }
+
+                for (const enemy of killed) {
+                    const i = this.enemies.indexOf(enemy);
+                    this.enemies.splice(i, 1);
+                }
+
+                this.killedEnemies.push(...killed);
+            }
+
+            if (this.enemies.length === 0) {
+                // make portal to next level visible
+            } else {
             }
         }
 
@@ -128,7 +194,15 @@ class Level extends Scene {
             proj.dispose();
         }
 
-        // reset character health and position
+        // restore enemies
+        while (this.killedEnemies.length > 0) {
+            const enemy = this.killedEnemies.pop() as Enemy;
+            this.enemies.push(enemy);
+            this.add(enemy);
+            WORLD.addBody(enemy.body);
+        }
+
+        // reset all objects
         dfsTraverse(this, (child: Object3D | PhysicsObject | Character) => {
             if (child instanceof PhysicsObject) {
                 child.reset();
@@ -229,7 +303,6 @@ class Level extends Scene {
         this.prevTransparent = [...currTransparent.values()];
     }
 
-    // TODO: Limit to one projectile per frome?
     private handleProjectiles() {
         // Create projectiles in the order they were fired
         PROJECTILE_QUEUE.reverse();
@@ -255,21 +328,20 @@ class Level extends Scene {
                 if (!this.player) return;
                 if (!this.activeProjectiles.has(proj)) return;
 
-                const other = e.body;
-                if (other.id === sender.body.id) return;
+                if (e.body.id === sender.body.id) return;
 
-                if (other.id === this.player.body.id) {
+                if (e.body.id === this.player.body.id) {
                     if (this.bodyToEnemy.has(sender.body.id)) {
                         this.player.takeDamage(this.projectileConfig.damage);
                         this.activeProjectiles.delete(proj);
                     }
-                } else if (sender.id === this.player.body.id) {
-                    const enemy = this.bodyToEnemy.get(other.id);
+                } else if (sender.body.id === this.player.body.id) {
+                    const enemy = this.bodyToEnemy.get(e.body.id);
                     if (enemy) {
                         enemy.takeDamage(this.projectileConfig.damage);
                         this.activeProjectiles.delete(proj);
                     }
-                } else if (other.type === BODY_TYPES.STATIC) {
+                } else if (e.body.type === BODY_TYPES.STATIC) {
                     this.activeProjectiles.delete(proj);
                 }
             });

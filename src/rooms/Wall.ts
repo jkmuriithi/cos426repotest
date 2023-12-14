@@ -7,8 +7,8 @@ import {
 } from 'three';
 
 import { UP_AXIS_THREE, WALL_THICKNESS } from '../globals';
-import { makeDynamic, DynamicOpacityConfig } from '../opacity';
 import PhysicsObject, { PhysicsObjectOptions } from '../PhysicsObject';
+import { DynamicOpacityConfig } from '../opacity';
 
 type WallOptions = PhysicsObjectOptions & {
     size: [number, number, number];
@@ -39,21 +39,21 @@ class Wall extends PhysicsObject {
 
     constructor(options?: Partial<WallOptions>) {
         const opts = { ...Wall.defaultOptions, ...options };
-        const { name, size, direction, color, opacityConfig } = opts;
+        const { name, size, direction, color } = opts;
 
         // Create object
         const geometry = new BoxGeometry(...size);
-        const material = makeDynamic(
-            new MeshLambertMaterial({
-                color,
-            }),
-            { ...opacityConfig, normal: new Vector3(...direction).normalize() }
-        );
-
+        const material = new MeshLambertMaterial({ color });
         const mesh = new Mesh(geometry, material);
         mesh.name = name;
 
-        super(mesh, opts);
+        super(mesh, {
+            ...opts,
+            opacityConfig: {
+                ...opts.opacityConfig,
+                normal: new Vector3(...direction),
+            },
+        });
         this.options = opts;
     }
 }

@@ -8,6 +8,7 @@ import { Box3, Group, Texture, TextureLoader, Vector3 } from 'three';
 import { GLTFLoader, OBJLoader, MTLLoader } from 'three/examples/jsm/Addons.js';
 
 import { PRINT_ASSETS_ON_LOAD } from './globals';
+import { geometriesOf } from './utils';
 
 /**
  * @example
@@ -18,7 +19,10 @@ import { PRINT_ASSETS_ON_LOAD } from './globals';
  *
  * @see {@link https://discourse.threejs.org/t/parts-of-glb-object-disappear-in-certain-angles-and-zoom/21295/5}
  */
-async function loadModelFromGLTF(gltfUrl: string): Promise<Group> {
+async function loadModelFromGLTF(
+    gltfUrl: string,
+    centerGeometry: boolean = false
+): Promise<Group> {
     const loader = new GLTFLoader();
     const gltf = await loader.loadAsync(gltfUrl);
     if (PRINT_ASSETS_ON_LOAD) {
@@ -26,19 +30,26 @@ async function loadModelFromGLTF(gltfUrl: string): Promise<Group> {
     }
 
     gltf.scene.traverse((object) => (object.frustumCulled = false));
+
+    if (centerGeometry) {
+        const box = new Box3().setFromObject(gltf.scene, true);
+        const center = box.getCenter(new Vector3());
+        const adjustment = gltf.scene.position.clone().sub(center).toArray();
+        geometriesOf(gltf.scene).forEach((geo) => geo.translate(...adjustment));
+    }
+
     const box = new Box3().setFromObject(gltf.scene, true);
     const center = box.getCenter(new Vector3());
-
-    gltf.scene.position.x += gltf.scene.position.x - center.x;
-    gltf.scene.position.y += gltf.scene.position.y - center.y;
-    gltf.scene.position.z += gltf.scene.position.z - center.z;
+    const adjustment = gltf.scene.position.clone().sub(center);
+    gltf.scene.position.add(adjustment);
 
     return gltf.scene;
 }
 
 async function loadModelFromOBJ(
     objUrl: string,
-    mtlUrl?: string
+    mtlUrl?: string,
+    centerGeometry: boolean = false
 ): Promise<Group> {
     const loader = new OBJLoader();
     if (mtlUrl) {
@@ -52,12 +63,18 @@ async function loadModelFromOBJ(
     }
 
     obj.traverse((object) => (object.frustumCulled = false));
+
+    if (centerGeometry) {
+        const box = new Box3().setFromObject(obj, true);
+        const center = box.getCenter(new Vector3());
+        const adjustment = obj.position.clone().sub(center).toArray();
+        geometriesOf(obj).forEach((geo) => geo.translate(...adjustment));
+    }
+
     const box = new Box3().setFromObject(obj, true);
     const center = box.getCenter(new Vector3());
-
-    obj.position.x += obj.position.x - center.x;
-    obj.position.y += obj.position.y - center.y;
-    obj.position.z += obj.position.z - center.z;
+    const adjustment = obj.position.clone().sub(center);
+    obj.position.add(adjustment);
 
     return obj;
 }

@@ -46,7 +46,7 @@ export function makeDynamic<M extends Material>(
 export function makeObjectDynamic(
     object: Object3D,
     config: DynamicOpacityConfig
-) {
+): Object3D {
     meshesOf(object).forEach((mesh) => {
         const material = mesh.material;
         if (Array.isArray(material)) {
@@ -57,4 +57,6 @@ export function makeObjectDynamic(
             mesh.material = makeDynamic(material.clone(), config);
         }
     });
+
+    return object;
 }

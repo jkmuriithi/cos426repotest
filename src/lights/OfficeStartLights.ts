@@ -30,7 +30,7 @@ class OfficeStartLights extends Group {
         this.add(hemi);
 
         const window1 = new DirectionalLight(COLORS.WHITE, 1);
-        window1.position.set(15, 7, -12);
+        window1.position.set(17, 5, -21);
         window1.target.position.set(12.5, 7, 4);
         window1.castShadow = true;
         window1.shadow.mapSize.width = this.shadowMapSize;

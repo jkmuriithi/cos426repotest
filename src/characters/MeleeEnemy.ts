@@ -1,15 +1,14 @@
 import { FLOAT_EPS, ICE_SKATER_MODE } from '../globals';
-import { CharacterOptions } from './Character';
-import Enemy from './Enemy';
+import Enemy, { EnemyOptions } from './Enemy';
 
 /* TODO */
 class MeleeEnemy extends Enemy {
-    static readonly defaultOptions: CharacterOptions = {
+    static readonly defaultOptions: EnemyOptions = {
         ...Enemy.defaultOptions,
         name: 'melee-enemy',
     };
 
-    constructor(options: Partial<CharacterOptions>) {
+    constructor(options: Partial<EnemyOptions>) {
         super({ ...MeleeEnemy.defaultOptions, ...options });
     }
 

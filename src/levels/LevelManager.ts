@@ -15,6 +15,7 @@ class LevelManager {
     ];
 
     private currentIndex: number;
+    private waitForNext: boolean = false;
     current: Level;
 
     constructor(start = 0) {
@@ -35,6 +36,7 @@ class LevelManager {
         } else {
             const next = this.levels[++this.currentIndex]();
             await next.load();
+            this.waitForNext = false;
             this.current.dispose();
             this.current = next;
         }
@@ -50,7 +52,14 @@ class LevelManager {
     }
 
     update(dt: number) {
-        this.current.update(dt);
+        if (this.current.complete) {
+            if (!this.waitForNext) {
+                this.waitForNext = true;
+                this.loadNext();
+            }
+        } else {
+            this.current.update(dt);
+        }
     }
 }
 

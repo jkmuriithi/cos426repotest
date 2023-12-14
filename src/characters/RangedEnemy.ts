@@ -1,19 +1,18 @@
 import { Vector3 } from 'three';
-import { FLOAT_EPS, ICE_SKATER_MODE } from '../globals';
-import { CharacterOptions } from './Character';
-import Enemy from './Enemy';
+import { FLOAT_EPS, ICE_SKATER_MODE, WORLD } from '../globals';
+import Enemy, { EnemyOptions } from './Enemy';
 
-type RangedEnemyOptions = CharacterOptions & {
+type RangedEnemyOptions = EnemyOptions & {
     fireRate: number;
 };
 
 class RangedEnemy extends Enemy {
     private initPos?: Vector3;
-    private elapsedTime: number = 0;
+    private lastFiredTime: number = 0;
     static readonly defaultOptions: RangedEnemyOptions = {
         ...Enemy.defaultOptions,
         name: 'ranged-enemy',
-        fireRate: 120,
+        fireRate: 2,
     };
 
     readonly options: RangedEnemyOptions;
@@ -55,10 +54,10 @@ class RangedEnemy extends Enemy {
             // Remove all character spin
             this.body.angularVelocity.setZero();
         }
-        if (this.elapsedTime !== 0 && this.elapsedTime % this.options.fireRate === 0) {
+        if (WORLD.time - this.lastFiredTime > this.options.fireRate) {
+            this.lastFiredTime = WORLD.time;
             this.fireProjectile();
         }
-        this.elapsedTime += 1;
 
         super.update(dt);
     }

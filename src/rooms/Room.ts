@@ -1,6 +1,6 @@
-import { ColorRepresentation, Group, Vector3 } from 'three';
+import { ColorRepresentation, Group } from 'three';
 
-import { WALL_THICKNESS } from '../globals';
+import { WALL_THICKNESS, UP_AXIS_THREE } from '../globals';
 import { COLORS } from '../globals';
 import { DynamicOpacityConfig } from '../opacity';
 import Wall from './Wall';
@@ -25,7 +25,7 @@ class Room extends Group {
             detection: 'directional',
             lowOpacity: 0,
             highOpacity: 1,
-            normal: new Vector3(0, 0, 1),
+            normal: UP_AXIS_THREE,
         },
     };
 

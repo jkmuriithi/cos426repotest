@@ -41,6 +41,9 @@ class Character extends PhysicsObject {
         cloneInputObject: false,
     };
 
+    /** Limits projectile fire rate to once per frame */
+    private firedProjectile: boolean = false;
+
     /** Unit vector pointing out of the front of the character. */
     readonly front: Vector3;
     readonly options: CharacterOptions;
@@ -77,6 +80,11 @@ class Character extends PhysicsObject {
         }
     }
 
+    update(dt: number) {
+        this.firedProjectile = false;
+        super.update(dt);
+    }
+
     reset() {
         super.reset();
         this.health = this.options.health;
@@ -99,7 +107,9 @@ class Character extends PhysicsObject {
     }
 
     fireProjectile() {
-        PROJECTILE_QUEUE.push(this);
+        if (!this.firedProjectile) {
+            PROJECTILE_QUEUE.push(this);
+        }
     }
 
     // TODO: Do some animation
