@@ -19,6 +19,7 @@ import {
     PROJECTILE_LIMIT,
     CollideEvent,
     UP_AXIS_CANNON,
+    FLOAT_EPS,
 } from '../globals';
 import { dfsTraverse, dfsFind } from '../utils';
 import { DynamicOpacityMaterial } from '../opacity';
@@ -238,13 +239,12 @@ class Level extends Scene {
 
         const characters = [this.player, ...this.enemies] as Character[];
         const currTransparent = new Set<DynamicOpacityMaterial>();
-        for (const char of characters) {
-            const cameraDir = char.position
+
+            const playerDistSq = this.player!.position
                 .clone()
                 .sub(CAMERA.position)
-                .normalize();
-            const playerDistSq = cameraDir.lengthSq();
-
+                .normalize().lengthSq();
+            const cameraDir = CAMERA.getWorldDirection(new Vector3());
             // Method 1: Checking normal direction
             const meshes = dfsFind(this, (c) => (c as Mesh).isMesh) as Mesh[];
             meshes.forEach((mesh) => {
@@ -259,7 +259,10 @@ class Level extends Scene {
                         .lengthSq();
                     if (dist <= playerDistSq) {
                         const normal = material.normal as Vector3;
-                        if (material.transparent && cameraDir.dot(normal) > 0) {
+                        if (material.transparent && (this.player.position
+                            .clone()
+                            .sub(CAMERA.position)
+                            .normalize()).dot(normal) > FLOAT_EPS) {
                             currTransparent.add(material);
                             material.opacity = material.lowOpacity;
                         }
@@ -267,7 +270,12 @@ class Level extends Scene {
                 }
             });
 
-            // Method 2: Checking player intersection
+        // Method 2: Checking player intersection
+        for (const char of characters) {
+            const cameraDir = char.position
+                .clone()
+                .sub(CAMERA.position)
+                .normalize();
             this.raycaster.set(CAMERA.position, cameraDir);
             const intersections = this.raycaster.intersectObjects(
                 this.children

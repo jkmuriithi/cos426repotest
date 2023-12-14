@@ -37,7 +37,7 @@ export const COLORS = {
 
 // Debug feature flags
 export const HOTKEYS_ENABLED = true;
-export const ORBIT_CONTROLS_ENABLED = false;
+export const ORBIT_CONTROLS_ENABLED = true;
 export const ICE_SKATER_MODE = false;
 export const PRINT_ASSETS_ON_LOAD = true;
 export const DRAW_CHARACTER_DIRECTION_LINE = true;

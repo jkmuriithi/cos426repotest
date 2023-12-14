@@ -45,7 +45,7 @@ class OfficeStart extends Level {
         const chair = await loadModelFromGLTF(CHAIR);
         const chairTwo = await loadModelFromGLTF(CHAIR_2);
         const door = await loadModelFromGLTF(DOOR, true);
-        const fiddlePlant = await loadModelFromGLTF(FIDDLELEAF); 
+        const fiddlePlant = await loadModelFromGLTF(FIDDLELEAF);
         const clock = await loadModelFromGLTF(CLOCK);
 
         windowNS.castShadow = false;
@@ -110,7 +110,7 @@ class OfficeStart extends Level {
      * Creating objects for the office
      ************************************/
 
-    /* Coords: 
+    /* Coords:
         SE - (0,0,3)
         SW - (0,0,-21)
         NE - (30,0,3)
@@ -235,7 +235,7 @@ class OfficeStart extends Level {
                 detection: 'directional',
                 lowOpacity: 0.2,
                 highOpacity: 1,
-                normal: new Vector3(0, 0, -1),
+                normal: new Vector3(0, 0, 1),
             },
         });
 
@@ -248,7 +248,7 @@ class OfficeStart extends Level {
                 detection: 'directional',
                 lowOpacity: 0.2,
                 highOpacity: 1,
-                normal: new Vector3(0, 0, -1),
+                normal: new Vector3(0, 0, 1),
             },
         });
 
@@ -261,7 +261,7 @@ class OfficeStart extends Level {
                 detection: 'directional',
                 lowOpacity: 0.2,
                 highOpacity: 1,
-                normal: new Vector3(0, 0, -1),
+                normal: new Vector3(0, 0, 1),
             },
         });
 
@@ -345,9 +345,9 @@ class OfficeStart extends Level {
 
 
 
-        
 
-        
+
+
         /****  WINDOWS ****/
         // window 1
         const window1 = new PhysicsObject(windowEW, {
@@ -415,7 +415,7 @@ class OfficeStart extends Level {
             normal: new Vector3(1, 0, 0),
         });
 
-    
+
     /************************************
     * Setting up the room
     ************************************/
@@ -438,7 +438,7 @@ class OfficeStart extends Level {
         this.add(this.portal);
 
         const opacityConfig = room.options.opacityConfig;
-        
+
         /**** WALL DESIGNS ****/
         // Back wall quote
         setMaterial(
