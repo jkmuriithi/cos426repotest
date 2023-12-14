@@ -5,4 +5,6 @@ class Portal extends Room {
         super();
         this.name = 'portal';
     }
-};
+}
+
+export default Portal;

@@ -7,12 +7,8 @@ import { COLORS, UP_AXIS_THREE } from '../globals';
 import { setMaterial } from '../utils';
 import Room from '../rooms/Room';
 import Player from '../characters/Player';
-import RangedEnemy from '../characters/RangedEnemy';
 import OfficeStartLights from '../lights/OfficeStartLights';
 
-import NUNCHUCKS from '@models/nunchucks.glb?url';
-import SAUCER from '@models/flyingsaucer.glb?url';
-// import CURTAINS from '@models/curtains.glb?url';
 import WINDOW_SMALL from '@models/squarewindow.glb?url';
 import WINDOW_LARGE from '@models/windowlarge.glb?url';
 import KOOL_AID_MAN from '@textures/BEAM.jpg';
@@ -176,7 +172,7 @@ class OfficeStart extends Level {
             color: COLORS.WHITE,
         });
 
-        const { size, position, opacityConfig, color } = room.options;
+        const opacityConfig = room.options.opacityConfig;
 
         // SETTING BACK WALL TO QUOTE
         setMaterial(
