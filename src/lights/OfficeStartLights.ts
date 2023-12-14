@@ -18,14 +18,14 @@ class OfficeStartLights extends Group {
         this.add(spot1, spot1.target);
 
         const spot2 = new SpotLight(COLORS.WHITE, 100, 0, Math.PI / 4, 1, 2);
-        spot2.position.set(20, 10, -5);
+        spot2.position.set(15, 10, -5);
         spot2.target.position.set(10, 0, -5);
         spot2.castShadow = true;
         spot2.shadow.mapSize.width = this.shadowMapSize;
         spot2.shadow.mapSize.height = this.shadowMapSize;
         this.add(spot2, spot2.target);
 
-        const hemi = new HemisphereLight(COLORS.WHITE, COLORS.GRAY, 0.1);
+        const hemi = new HemisphereLight(COLORS.WHITE, COLORS.WHITE, 0.1);
         hemi.position.set(10, 20, -5);
         this.add(hemi);
 
@@ -43,6 +43,14 @@ class OfficeStartLights extends Group {
         window2.castShadow = true;
         window2.shadow.mapSize.width = this.shadowMapSize;
         window2.shadow.mapSize.height = this.shadowMapSize;
+        this.add(window2);
+
+        const window4 = new DirectionalLight(COLORS.WHITE, 1);
+        window4.position.set(-4, 5, -7);
+        window4.target.position.set(30, 5, -3);
+        window4.castShadow = true;
+        window4.shadow.mapSize.width = this.shadowMapSize;
+        window4.shadow.mapSize.height = this.shadowMapSize;
         this.add(window2);
 
         // const window2 = new DirectionalLight(COLORS.WHITE, 1);
