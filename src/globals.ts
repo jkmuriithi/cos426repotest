@@ -21,7 +21,7 @@ import type Character from './characters/Character';
 export const PROJECTILE_QUEUE: Character[] = [];
 export const PROJECTILE_LIMIT = 20;
 export const UP_AXIS = [0, 1, 0] as const;
-export const STARTING_LEVEL = 0;
+export const STARTING_LEVEL = 2;
 export const WALL_THICKNESS = 0.2;
 export const FLOAT_EPS = 1e-6;
 
