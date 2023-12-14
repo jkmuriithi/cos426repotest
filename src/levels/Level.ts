@@ -127,14 +127,10 @@ class Level extends Scene {
                         dir.normalize();
 
                         enemy.body.applyImpulse(
-                            dir
-                                .clone()
-                                .scale(-this.enemyKnockback)
+                            dir.clone().scale(-this.enemyKnockback)
                         );
                         this.player.body.applyImpulse(
-                            dir
-                                .clone()
-                                .scale(this.playerKnockback)
+                            dir.clone().scale(this.playerKnockback)
                         );
                     }
                 });
