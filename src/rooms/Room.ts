@@ -121,7 +121,11 @@ class Room extends Group {
 
         this.ceiling = new Wall({
             name: 'ceiling',
-            size: (this.floor.options as WallOptions).size.slice() as [number, number, number],
+            size: (this.floor.options as WallOptions).size.slice() as [
+                number,
+                number,
+                number,
+            ],
             position: [position[0], position[1] + size[1], position[2]],
             direction: [0, -1, 0],
             color,

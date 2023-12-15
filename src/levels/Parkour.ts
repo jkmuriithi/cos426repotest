@@ -1,4 +1,10 @@
-import { Color, LinearFilter, MeshPhongMaterial, NearestFilter, Vector3 } from 'three';
+import {
+    Color,
+    LinearFilter,
+    MeshPhongMaterial,
+    NearestFilter,
+    Vector3,
+} from 'three';
 
 import Level from './Level';
 import PhysicsObject from '../PhysicsObject';
@@ -59,7 +65,7 @@ class Parkour extends Level {
                 speed: 1000,
                 damage: 1,
                 offset: 0.5,
-            }
+            },
         });
         this.player.jumpVelocity = 7;
         const materials = player_textures.map((texture) => {
@@ -195,7 +201,7 @@ class Parkour extends Level {
                 mass: 0,
             }),
             new Wall({
-                size: [2,  WALL_THICKNESS, 2],
+                size: [2, WALL_THICKNESS, 2],
                 position: [22, 22, -5],
                 direction: [0, 0, 1],
                 color: COLORS.WHITE,
@@ -217,7 +223,7 @@ class Parkour extends Level {
                 position: [17, 44, 0],
                 direction: [0, 1, 0],
                 color: COLORS.WHITE,
-            }),
+            })
         );
 
         // Room setup

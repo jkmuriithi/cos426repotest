@@ -42,7 +42,7 @@ function createSphere(object: Object3D, scale: number = 1): CannonSphere {
  *
  * Sources:
  * @see {@link https://sbcode.net/threejs/convexgeometry/}
-     */
+ */
 function createTrimesh(object: Object3D, scale = 1): Trimesh {
     const points: number[] = [];
     for (const geometry of geometriesOf(object)) {
