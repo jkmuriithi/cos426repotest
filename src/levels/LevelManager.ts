@@ -3,6 +3,7 @@ import TestLevelOne from './TestLevelOne';
 import TestLevelTwo from './TestLevelTwo';
 import OfficeStart from './OfficeStart';
 import BankRobbery from './BankRobbery';
+import Parkour from './Parkour';
 
 type LevelCreationFunction = () => Level;
 
@@ -12,6 +13,7 @@ class LevelManager {
         () => new TestLevelTwo(),
         () => new OfficeStart(),
         () => new BankRobbery(),
+        () => new Parkour(),
     ];
 
     private currentIndex: number;

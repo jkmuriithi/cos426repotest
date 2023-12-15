@@ -93,6 +93,8 @@ class PhysicsObject extends Group {
         });
         opacityConfig && makeObjectDynamic(this, opacityConfig);
 
+        object.updateMatrix();
+
         this.initPosition = this.position.clone();
         this.initQuaternion = this.quaternion.clone();
 

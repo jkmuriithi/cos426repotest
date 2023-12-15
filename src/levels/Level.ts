@@ -5,9 +5,10 @@ import {
     Object3DEventMap,
     Vector3,
     Mesh,
-    Raycaster,
     BoxGeometry,
     MeshPhongMaterial,
+    Box3,
+    Ray,
 } from 'three';
 
 import {
@@ -19,15 +20,15 @@ import {
     PROJECTILE_LIMIT,
     CollideEvent,
     UP_AXIS_CANNON,
-    FLOAT_EPS,
 } from '../globals';
-import { dfsTraverse, dfsFind } from '../utils';
-import { DynamicOpacityMaterial } from '../opacity';
+import { dfsFind, dfsTraverse, meshesOf } from '../utils';
+import { DynamicOpacityConfig, DynamicOpacityMaterial } from '../opacity';
 import PhysicsObject, { PhysicsObjectOptions } from '../PhysicsObject';
 import Character from '../characters/Character';
 
 import type Player from '../characters/Player';
 import Enemy from '../characters/Enemy';
+import Wall from '../rooms/Wall';
 
 type LevelChild = Object3D<Object3DEventMap> & {
     update?: (dt: number) => void;
@@ -50,8 +51,7 @@ class Level extends Scene {
     // Change the type of the superclass Object3D.children property
     declare children: LevelChild[];
 
-    private raycaster: Raycaster = new Raycaster();
-    private prevTransparent: DynamicOpacityMaterial[] = [];
+    private prevTransparent: Set<PhysicsObject> = new Set();
     private bodyToEnemy: Map<number, Enemy> = new Map();
     private killedEnemies: Enemy[] = [];
     private createdProjectiles: PhysicsObject[] = [];
@@ -59,7 +59,7 @@ class Level extends Scene {
     private lastContactTime: number = 0;
     private contactImmunitySecs: number = 0.5;
     private enemyKnockback = 10;
-    private playerKnockback = 15;
+    private playerKnockback = 5;
 
     initCameraPosition = INIT_CAMERA_POSITION;
     complete = false;
@@ -237,74 +237,97 @@ class Level extends Scene {
     private handleMaterialTransparency() {
         if (!this.player && this.enemies.length == 0) return;
 
+        const currTransparent = new Set<PhysicsObject>();
+
+        // Method 1: Checking normal direction
+        const thresh = Math.cos(80 * (Math.PI / 180));
+        const cameraDir = this.player!.position.clone()
+            .setComponent(1, 0)
+            .sub(CAMERA.position);
+        const dirDynamicObjects = dfsFind(this, (c) =>
+            Boolean(
+                c instanceof PhysicsObject &&
+                    c.options.opacityConfig &&
+                    c.options.opacityConfig.directional
+            )
+        ) as PhysicsObject[];
+        for (const obj of dirDynamicObjects) {
+            const { normal, lowOpacity } = obj.options
+                .opacityConfig as DynamicOpacityConfig;
+            if (cameraDir.dot(normal) > thresh) {
+                currTransparent.add(obj);
+                meshesOf(obj).forEach((mesh) => {
+                    const material = mesh.material as DynamicOpacityMaterial;
+                    material.opacity = lowOpacity;
+                });
+            }
+        }
+
         const characters = [this.player, ...this.enemies] as Character[];
-        const currTransparent = new Set<DynamicOpacityMaterial>();
+        const dynamicObjects = new Map<Box3, PhysicsObject>();
+        dfsFind(this, (c) =>
+            Boolean(
+                c instanceof PhysicsObject &&
+                    c.options.opacityConfig &&
+                    c.options.opacityConfig.characterIntersection
+            )
+        ).forEach((obj) =>
+            dynamicObjects.set(
+                new Box3().setFromObject(obj, true),
+                obj as PhysicsObject
+            )
+        );
 
-            const playerDistSq = this.player!.position
-                .clone()
-                .sub(CAMERA.position)
-                .normalize().lengthSq();
-            const cameraDir = CAMERA.getWorldDirection(new Vector3());
-            // Method 1: Checking normal direction
-            const meshes = dfsFind(this, (c) => (c as Mesh).isMesh) as Mesh[];
-            meshes.forEach((mesh) => {
-                const material = mesh.material as DynamicOpacityMaterial;
-                if (
-                    material.hasDynamicOpacity &&
-                    material.detection === 'directional'
-                ) {
-                    const dist = mesh.position
-                        .clone()
-                        .projectOnVector(cameraDir)
-                        .lengthSq();
-                    if (dist <= playerDistSq) {
-                        const normal = material.normal as Vector3;
-                        if (material.transparent && (this.player.position
-                            .clone()
-                            .sub(CAMERA.position)
-                            .normalize()).dot(normal) > FLOAT_EPS) {
-                            currTransparent.add(material);
-                            material.opacity = material.lowOpacity;
-                        }
-                    }
-                }
-            });
-
-        // Method 2: Checking player intersection
+        // Method 2: Checking intersection with characters
         for (const char of characters) {
-            const cameraDir = char.position
-                .clone()
-                .sub(CAMERA.position)
-                .normalize();
-            this.raycaster.set(CAMERA.position, cameraDir);
-            const intersections = this.raycaster.intersectObjects(
-                this.children
-            );
-            // Note: intersections will only contain meshes
-            // @see - {@link https://discourse.threejs.org/t/raycast-intersect-group/14038}
-            for (const intersection of intersections) {
-                const { object } = intersection as unknown as { object: Mesh };
-                if (object.id === char.children[0].id) break;
-                if (!object.isMesh) continue;
+            const cameraDir = char.position.clone().sub(CAMERA.position);
+            const distToChar = cameraDir.lengthSq();
+            cameraDir.normalize();
 
-                const material = object.material as DynamicOpacityMaterial;
+            const ray = new Ray(CAMERA.position, cameraDir);
+            for (const [box, obj] of dynamicObjects) {
+                if (currTransparent.has(obj)) continue;
+
+                const intersection = ray.intersectBox(box, new Vector3());
                 if (
-                    material.hasDynamicOpacity &&
-                    material.detection === 'characterIntersection'
+                    intersection &&
+                    intersection.sub(CAMERA.position).lengthSq() < distToChar
                 ) {
-                    currTransparent.add(material);
-                    material.opacity = material.lowOpacity;
+                    currTransparent.add(obj);
+
+                    const { lowOpacity } = obj.options
+                        .opacityConfig as DynamicOpacityConfig;
+                    meshesOf(obj).forEach((mesh) => {
+                        const material =
+                            mesh.material as DynamicOpacityMaterial;
+                        material.opacity = lowOpacity;
+                    });
                 }
             }
         }
 
-        for (const material of this.prevTransparent) {
-            if (!currTransparent.has(material)) {
-                material.opacity = material.highOpacity;
+        // If we made a wall transparent, we need to render it after everything
+        // else
+        for (const obj of currTransparent) {
+            if (obj instanceof Wall) obj.renderOrder = 100;
+        }
+
+        for (const obj of this.prevTransparent) {
+            if (!currTransparent.has(obj)) {
+                if (obj instanceof Wall) {
+                    obj.renderOrder = -100;
+                }
+
+                const { highOpacity } = obj.options
+                    .opacityConfig as DynamicOpacityConfig;
+                meshesOf(obj).forEach((mesh) => {
+                    const material = mesh.material as DynamicOpacityMaterial;
+                    material.opacity = highOpacity;
+                });
             }
         }
 
-        this.prevTransparent = [...currTransparent.values()];
+        this.prevTransparent = currTransparent;
     }
 
     private handleProjectiles() {

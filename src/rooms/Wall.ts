@@ -25,7 +25,7 @@ class Wall extends PhysicsObject {
         size: [10, WALL_THICKNESS, 10],
         color: 0xffffff,
         opacityConfig: {
-            detection: 'directional',
+            directional: true,
             lowOpacity: 0.3,
             highOpacity: 1,
             normal: UP_AXIS_THREE,
@@ -35,7 +35,7 @@ class Wall extends PhysicsObject {
         cloneInputObject: false,
     };
 
-    readonly options: WallOptions;
+    options: WallOptions;
 
     constructor(options?: Partial<WallOptions>) {
         const opts = { ...Wall.defaultOptions, ...options };
@@ -47,14 +47,23 @@ class Wall extends PhysicsObject {
         const mesh = new Mesh(geometry, material);
         mesh.name = name;
 
+        const normal = new Vector3(...direction);
         super(mesh, {
             ...opts,
             opacityConfig: {
                 ...opts.opacityConfig,
-                normal: new Vector3(...direction),
+                normal,
             },
         });
-        this.options = opts;
+        this.options = {
+            ...opts,
+            opacityConfig: {
+                ...opts.opacityConfig,
+                normal,
+            },
+        };
+        // Render walls before everything else
+        this.renderOrder = -100;
     }
 }
 

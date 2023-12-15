@@ -36,8 +36,12 @@ import LevelManager from './levels/LevelManager';
 
 function setup() {
     // Set up camera
+    // CAMERA.far = 1e10;
+    // CAMERA.near = 1e-10;
+
     CAMERA.zoom = 0.3;
     CAMERA.fov = 20;
+    CAMERA.updateProjectionMatrix();
 
     // Set up renderer, canvas, and minor CSS adjustments
     RENDERER.setPixelRatio(window.devicePixelRatio);

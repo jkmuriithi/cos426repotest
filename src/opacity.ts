@@ -1,17 +1,19 @@
 /**
  * @file Global definitions and helper functions for materials which change
  * opacity based on the positions of the camera and the player.
+ * FIXME: These shouldn't be called directly, PhysicsObject should be used
+ * instead.
  */
 import { Vector3, Material, Object3D } from 'three';
 import { meshesOf } from './utils';
 
 export type DynamicOpacityParams = {
-    detection: 'characterIntersection' | 'directional';
     transparent: true;
     hasDynamicOpacity: true;
     lowOpacity: number;
     highOpacity: number;
-    /** Only present if type === "directional". */
+    characterIntersection?: boolean;
+    directional?: boolean;
     normal: Vector3;
 };
 
@@ -30,6 +32,7 @@ export function makeDynamic<M extends Material>(
     const mat = material as unknown as DynamicOpacityMaterial;
 
     mat.transparent = true;
+    mat.alphaHash = false;
     mat.hasDynamicOpacity = true;
     mat.opacity = config.highOpacity;
     for (const [key, value] of Object.entries(config)) {

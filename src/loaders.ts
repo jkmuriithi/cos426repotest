@@ -4,7 +4,13 @@
  * Sometimes loaded models are broken! Use this online model viewer for a sanity
  * check: https://www.creators3d.com/online-viewer
  */
-import { Box3, Group, Texture, TextureLoader, Vector3 } from 'three';
+import {
+    Box3,
+    Group,
+    Texture,
+    TextureLoader,
+    Vector3,
+} from 'three';
 import { GLTFLoader, OBJLoader, MTLLoader } from 'three/examples/jsm/Addons.js';
 
 import { PRINT_ASSETS_ON_LOAD } from './globals';

@@ -3,7 +3,7 @@ import { ColorRepresentation, Group } from 'three';
 import { WALL_THICKNESS, UP_AXIS_THREE } from '../globals';
 import { COLORS } from '../globals';
 import { DynamicOpacityConfig } from '../opacity';
-import Wall from './Wall';
+import Wall, { WallOptions } from './Wall';
 
 type RoomOptions = {
     name: string;
@@ -22,7 +22,7 @@ class Room extends Group {
         position: [0, 0, 0],
         color: COLORS.WHITE,
         opacityConfig: {
-            detection: 'directional',
+            directional: true,
             lowOpacity: 0,
             highOpacity: 1,
             normal: UP_AXIS_THREE,
@@ -87,7 +87,7 @@ class Room extends Group {
 
         this.leftFrontWall = new Wall({
             name: 'leftFrontWall',
-            size: this.leftBackWall.options.size.slice() as [
+            size: (this.leftBackWall.options as WallOptions).size.slice() as [
                 number,
                 number,
                 number,
@@ -104,7 +104,7 @@ class Room extends Group {
 
         this.rightFrontWall = new Wall({
             name: 'rightFrontWall',
-            size: this.rightBackWall.options.size.slice() as [
+            size: (this.rightBackWall.options as WallOptions).size.slice() as [
                 number,
                 number,
                 number,
@@ -121,7 +121,7 @@ class Room extends Group {
 
         this.ceiling = new Wall({
             name: 'ceiling',
-            size: this.floor.options.size.slice() as [number, number, number],
+            size: (this.floor.options as WallOptions).size.slice() as [number, number, number],
             position: [position[0], position[1] + size[1], position[2]],
             direction: [0, -1, 0],
             color,
