@@ -1,7 +1,6 @@
-import { FLOAT_EPS, ICE_SKATER_MODE } from '../globals';
+import { FLOAT_EPS, DEBUG_FLAGS } from '../globals';
 import Enemy, { EnemyOptions } from './Enemy';
 
-/* TODO */
 class MeleeEnemy extends Enemy {
     static readonly defaultOptions: EnemyOptions = {
         ...Enemy.defaultOptions,
@@ -31,7 +30,7 @@ class MeleeEnemy extends Enemy {
             }
 
             movementDirection.multiplyScalar(this.moveVelocity);
-            if (ICE_SKATER_MODE) {
+            if (DEBUG_FLAGS.ICE_SKATER_MODE) {
                 this.body.velocity.x += movementDirection.x / 20;
                 this.body.velocity.z += movementDirection.z / 20;
             } else {

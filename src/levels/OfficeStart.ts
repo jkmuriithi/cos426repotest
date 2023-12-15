@@ -87,15 +87,11 @@ class OfficeStart extends Level {
 
         // Load textures from files
         const motivation = await loadTexturesFromImages([QUOTE]);
-        const player_textures = await loadTexturesFromImages([
-            PLAYER_PX,
-            PLAYER_NX,
-            PLAYER_PY,
-            PLAYER_NY,
-            PLAYER_PZ,
-            PLAYER_NZ,
-        ]);
-        player_textures.map((te) => (te.magFilter = NearestFilter));
+        const player_textures = await loadTexturesFromImages(
+            [PLAYER_PX, PLAYER_NX, PLAYER_PY, PLAYER_NY, PLAYER_PZ, PLAYER_NZ],
+            NearestFilter,
+            LinearFilter
+        );
         const ceil = await loadTexturesFromImages([CEILING]);
         const carp = await loadTexturesFromImages([CARPET]);
 
@@ -114,6 +110,7 @@ class OfficeStart extends Level {
                 object: plane.rotateOnAxis(new Vector3(0, 0, 1), -Math.PI / 2),
                 speed: 50,
                 damage: 35,
+                distanceFromSender: 1.1,
                 options: {
                     scale: 2e-6,
                 },
@@ -121,16 +118,14 @@ class OfficeStart extends Level {
         });
         this.player.jumpVelocity = 7;
 
-        const materials = player_textures.map((texture) => {
-            texture.generateMipmaps = false;
-            texture.minFilter = LinearFilter;
-            const mat = new MeshPhongMaterial({
-                color: COLORS.PLAYER,
-                shininess: 100,
-                map: texture,
-            });
-            return mat;
-        });
+        const materials = player_textures.map(
+            (texture) =>
+                new MeshPhongMaterial({
+                    color: COLORS.PLAYER,
+                    shininess: 100,
+                    map: texture,
+                })
+        );
         setMaterial(this.player, materials);
         this.add(this.player);
 

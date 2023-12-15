@@ -72,7 +72,7 @@ class Parkour extends Level {
                 object: plane,
                 speed: 1000,
                 damage: 1,
-                offset: 0.5,
+                distanceFromSender: 0.5,
             },
         });
         this.player.jumpVelocity = 7;

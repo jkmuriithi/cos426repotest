@@ -7,7 +7,6 @@
  * @see {@link https://gafferongames.com/post/fix_your_timestep/}
  * @see {@link https://stackoverflow.com/questions/16424500/what-would-be-realistic-values-for-gravity-mass-and-contact-material-in-canno}
  *
- * TODO: Wall and Character texturing
  * @see {@link https://threejs.org/docs/#manual/en/introduction/How-to-dispose-of-objects}
  */
 import Stats from 'stats.js';
@@ -18,12 +17,11 @@ import {
     CAMERA,
     RENDERER,
     WORLD,
-    ORBIT_CONTROLS_ENABLED,
-    HOTKEYS_ENABLED,
     STARTING_LEVEL,
     WALL_PHYSICS_MATERIAL,
     CHARACTER_PHYSICS_MATERIAL,
     RENDERER_2D,
+    DEBUG_FLAGS,
 } from './globals';
 import { ContactMaterial, GSSolver } from 'cannon-es';
 import LevelManager from './levels/LevelManager';
@@ -82,7 +80,7 @@ function setup() {
 
     // Set up manual controls
     let controls: OrbitControls | undefined;
-    if (ORBIT_CONTROLS_ENABLED) {
+    if (DEBUG_FLAGS.ORBIT_CONTROLS_ENABLED) {
         controls = new OrbitControls(CAMERA, div);
         controls.enableDamping = true;
         controls.enablePan = true;
@@ -105,7 +103,7 @@ function setup() {
     window.addEventListener('resize', onWindowResize, false);
 
     const levelManager = new LevelManager(STARTING_LEVEL);
-    if (HOTKEYS_ENABLED) {
+    if (DEBUG_FLAGS.HOTKEYS_ENABLED) {
         window.addEventListener('keydown', (e) => {
             switch (e.code) {
                 case 'KeyC':

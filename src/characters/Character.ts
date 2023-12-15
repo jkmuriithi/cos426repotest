@@ -14,7 +14,7 @@ import { CSS2DObject } from 'three/examples/jsm/Addons.js';
 import {
     CHARACTER_PHYSICS_MATERIAL,
     COLORS,
-    DRAW_CHARACTER_DIRECTION_LINE,
+    DEBUG_FLAGS,
     FLOAT_EPS,
     UP_AXIS_THREE,
 } from '../globals';
@@ -27,8 +27,8 @@ type CharacterOptions = PhysicsObjectOptions & {
     front: [number, number, number];
     health: number;
     hasHealthBar: boolean;
-    /** Should be an HTML color. */
-    healthBarColor: string;
+    /** Should be an HTML color name. */
+    healthBarColor: ColorRepresentation;
     healthBarPosition: [number, number, number];
     size: [number, number, number];
     projectileConfig: ProjectileConfig;
@@ -40,8 +40,8 @@ type ProjectileConfig = {
     /** The magnitude of the impluse applied to the projectile. */
     speed: number;
     damage: number;
-    /** Coefficient determining how far a projectile is from the front of a character. */
-    offset?: number;
+    /** How far a projectile is fired from the front of a character. */
+    distanceFromSender?: number;
     /** Configuration params for the projectile PhysicsObject. */
     options?: Partial<Omit<PhysicsObjectOptions, 'position' | 'direction'>>;
 };
@@ -58,7 +58,7 @@ class Character extends PhysicsObject {
         front: [1, 0, 0],
         health: 100,
         hasHealthBar: true,
-        healthBarColor: 'green',
+        healthBarColor: COLORS.HEALTH_BAR,
         healthBarPosition: [0, 2, 0],
         size: [1, 1, 1],
         projectileConfig: {
@@ -80,7 +80,7 @@ class Character extends PhysicsObject {
     health: number;
     firedProjectile: boolean = false;
 
-    constructor(options: Partial<CharacterOptions>) {
+    constructor(options?: Partial<CharacterOptions>) {
         const opts = { ...Character.defaultOptions, ...options };
         const {
             color,
@@ -106,10 +106,9 @@ class Character extends PhysicsObject {
 
         if (hasHealthBar) {
             this.healthBar = createObject2D({
-                textContent: '█'.repeat(Math.floor(health / 10)),
                 style: {
-                    color: healthBarColor,
-                    backgroundColor: healthBarColor,
+                    color: String(healthBarColor),
+                    backgroundColor: String(healthBarColor),
                     fontFamily: 'monospace',
                     fontSize: '7px',
                 },
@@ -118,7 +117,7 @@ class Character extends PhysicsObject {
             this.add(this.healthBar);
         }
 
-        if (DRAW_CHARACTER_DIRECTION_LINE) {
+        if (DEBUG_FLAGS.DRAW_CHARACTER_DIRECTION_LINE) {
             const sphere = boundingSphereOf(this);
             this.add(
                 new Line(
@@ -176,7 +175,6 @@ class Character extends PhysicsObject {
         this.firedProjectile = true;
     }
 
-    // TODO: Do some animation
     takeDamage(damage: number) {
         this.health -= damage;
     }

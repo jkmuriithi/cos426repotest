@@ -5,9 +5,10 @@ import Character, { CharacterOptions } from './Character';
 import {
     CollideEvent,
     FLOAT_EPS,
-    ICE_SKATER_MODE,
     UP_AXIS_THREE,
     UP_AXIS_CANNON,
+    DEBUG_FLAGS,
+    COLORS,
 } from '../globals';
 
 // JS keycode reference: https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values
@@ -28,6 +29,7 @@ class Player extends Character {
     static readonly defaultOptions: CharacterOptions = {
         ...Character.defaultOptions,
         name: 'player',
+        healthBarColor: COLORS.PLAYER_HEALTH_BAR,
     };
 
     private contactNormal = new Vec3();
@@ -83,7 +85,6 @@ class Player extends Character {
     };
 
     // Must be a closure so that "this" is handled properly
-    // TODO: Handle repeated fire
     private onKeyDown = (event: KeyboardEvent): void => {
         if (event.repeat) return;
         const { code } = event;
@@ -170,7 +171,7 @@ class Player extends Character {
         }
 
         this.inputDirection.multiplyScalar(this.moveVelocity);
-        if (ICE_SKATER_MODE) {
+        if (DEBUG_FLAGS.ICE_SKATER_MODE) {
             this.body.velocity.x += this.inputDirection.x / 20;
             this.body.velocity.z += this.inputDirection.z / 20;
         } else {

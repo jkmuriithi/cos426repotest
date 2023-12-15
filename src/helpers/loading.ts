@@ -16,7 +16,7 @@ import {
 import { GLTFLoader, OBJLoader, MTLLoader } from 'three/examples/jsm/Addons.js';
 
 import { geometriesOf } from './object3d';
-import { PRINT_ASSETS_ON_LOAD } from '../globals';
+import { DEBUG_FLAGS } from '../globals';
 
 /**
  * @example
@@ -33,7 +33,7 @@ export async function loadModelFromGLTF(
 ): Promise<Group> {
     const loader = new GLTFLoader();
     const gltf = await loader.loadAsync(gltfUrl);
-    if (PRINT_ASSETS_ON_LOAD) console.log(gltf);
+    if (DEBUG_FLAGS.PRINT_ASSETS_ON_LOAD) console.log(gltf);
 
     gltf.scene.traverse((object) => (object.frustumCulled = false));
 
@@ -64,7 +64,7 @@ export async function loadModelFromOBJ(
     }
 
     const obj = await loader.loadAsync(objUrl);
-    if (PRINT_ASSETS_ON_LOAD) console.log(obj);
+    if (DEBUG_FLAGS.PRINT_ASSETS_ON_LOAD) console.log(obj);
 
     obj.traverse((object) => (object.frustumCulled = false));
 
@@ -96,7 +96,7 @@ export async function loadTexturesFromImages(
 
         if (magFilter) texture.magFilter = magFilter;
         if (minFilter) texture.minFilter = minFilter;
-        if (PRINT_ASSETS_ON_LOAD) console.log(texture);
+        if (DEBUG_FLAGS.PRINT_ASSETS_ON_LOAD) console.log(texture);
 
         textures.push(texture);
     }

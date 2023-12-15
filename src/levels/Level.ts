@@ -2,7 +2,6 @@ import { BODY_TYPES, Body, Vec3 } from 'cannon-es';
 import { Scene, Object3D, Object3DEventMap, Vector3, Box3, Ray } from 'three';
 
 import {
-    ORBIT_CONTROLS_ENABLED,
     CAMERA,
     INIT_CAMERA_POSITION,
     WORLD,
@@ -11,6 +10,7 @@ import {
     UP_AXIS_CANNON,
     RENDER_ORDER_LAST,
     RENDER_ORDER_FIRST,
+    DEBUG_FLAGS,
 } from '../globals';
 import {
     dfsFind,
@@ -186,7 +186,7 @@ class Level extends Scene {
             }
         }
 
-        if (!ORBIT_CONTROLS_ENABLED) {
+        if (!DEBUG_FLAGS.ORBIT_CONTROLS_ENABLED) {
             this.moveCameraWithPlayer();
         }
 
@@ -309,12 +309,12 @@ class Level extends Scene {
                 .applyQuaternion(sender.quaternion)
                 .normalize();
 
-            const offset = config.offset || 1;
+            const distance = config.distanceFromSender || 1;
             const proj = new PhysicsObject(config.object, {
                 ...config.options,
                 position: sender.position
                     .clone()
-                    .add(dir.clone().setLength(offset))
+                    .add(dir.clone().setLength(distance))
                     .toArray(),
                 direction: dir.clone().toArray(),
             });

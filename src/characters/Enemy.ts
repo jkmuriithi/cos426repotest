@@ -22,9 +22,10 @@ class Enemy extends Character {
 
     constructor(options: Partial<EnemyOptions>) {
         const opts = { ...Enemy.defaultOptions, ...options };
+        const { contactDamage } = opts;
 
         super(opts);
-        this.contactDamage = opts.contactDamage;
+        this.contactDamage = contactDamage;
     }
 
     setPlayerPosition(position: Vector3) {

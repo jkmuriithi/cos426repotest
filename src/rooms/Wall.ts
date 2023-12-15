@@ -50,14 +50,14 @@ class Wall extends PhysicsObject {
                 ...opts,
                 opacityConfig: {
                     ...opacityConfig,
-                    normal: new Vector3(...direction),
+                    normal: new Vector3(...direction).normalize(),
                 },
             });
             this.options = {
                 ...opts,
                 opacityConfig: {
                     ...opacityConfig,
-                    normal: new Vector3(...direction),
+                    normal: new Vector3(...direction).normalize(),
                 },
             };
         } else {

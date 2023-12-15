@@ -23,7 +23,6 @@ export const STARTING_LEVEL = 0;
 export const WALL_THICKNESS = 0.4;
 export const FLOAT_EPS = 1e-6;
 
-// Colors
 export const COLORS = {
     WHITE: 0xffffff,
     BLACK: 0x000000,
@@ -32,14 +31,17 @@ export const COLORS = {
     PLAYER: 0xe8beac,
     BARBIE: 0xffc0cb,
     GOLD: 0xffd700,
+    HEALTH_BAR: 'green',
+    PLAYER_HEALTH_BAR: 'blue',
 };
 
-// Debug feature flags
-export const HOTKEYS_ENABLED = true;
-export const ORBIT_CONTROLS_ENABLED = true;
-export const ICE_SKATER_MODE = false;
-export const PRINT_ASSETS_ON_LOAD = true;
-export const DRAW_CHARACTER_DIRECTION_LINE = false;
+export const DEBUG_FLAGS = {
+    HOTKEYS_ENABLED: true,
+    ORBIT_CONTROLS_ENABLED: true,
+    ICE_SKATER_MODE: false,
+    PRINT_ASSETS_ON_LOAD: true,
+    DRAW_CHARACTER_DIRECTION_LINE: false,
+};
 
 // ThreeJS
 export const UP_AXIS_THREE = new Vector3(...UP_AXIS);
