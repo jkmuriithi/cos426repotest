@@ -7,9 +7,12 @@ import {
     Vector2,
 } from 'three';
 
-import { loadModelFromGLTF, loadTexturesFromImages } from '../loaders';
+import {
+    loadModelFromGLTF,
+    loadTexturesFromImages,
+    setMaterial,
+} from '../helpers';
 import { COLORS } from '../globals';
-import { setMaterial } from '../utils';
 
 import Level from './Level';
 import Room from '../rooms/Room';

@@ -8,12 +8,12 @@ import {
 import { Box3, Object3D, Sphere, Vector3 } from 'three';
 import { ConvexHull, VertexNode } from 'three/examples/jsm/Addons.js';
 
-import { geometriesOf } from './utils';
+import { geometriesOf } from './object3d';
 
 /**
  * Creates a box collision body from the bounding box of the input geometry.
  */
-function createBox(object: Object3D, scale: number = 1): Box {
+export function createBox(object: Object3D, scale: number = 1): Box {
     const boundingBox = new Box3().setFromObject(object, true);
     const dims = boundingBox.max.clone().sub(boundingBox.min);
     return new Box(new Vec3(...dims.toArray().map((c) => (c * scale) / 2)));
@@ -23,7 +23,10 @@ function createBox(object: Object3D, scale: number = 1): Box {
  * Creates a sphere collision body from the bounding sphere of the input
  * geometry.
  */
-function createSphere(object: Object3D, scale: number = 1): CannonSphere {
+export function createSphere(
+    object: Object3D,
+    scale: number = 1
+): CannonSphere {
     const geometries = geometriesOf(object);
     geometries[0].computeBoundingSphere();
 
@@ -43,7 +46,7 @@ function createSphere(object: Object3D, scale: number = 1): CannonSphere {
  * Sources:
  * @see {@link https://sbcode.net/threejs/convexgeometry/}
  */
-function createTrimesh(object: Object3D, scale = 1): Trimesh {
+export function createTrimesh(object: Object3D, scale = 1): Trimesh {
     const points: number[] = [];
     for (const geometry of geometriesOf(object)) {
         const geometryClone = geometry.clone();
@@ -74,7 +77,10 @@ function createTrimesh(object: Object3D, scale = 1): Trimesh {
  * Sources:
  * @see {@link https://github.com/pmndrs/cannon-es/issues/103}
  */
-function createConvexPolyhedron(object: Object3D, scale = 1): ConvexPolyhedron {
+export function createConvexPolyhedron(
+    object: Object3D,
+    scale = 1
+): ConvexPolyhedron {
     // Compute geometry point vectors from vector coordinates
     const points = [];
     for (const geometry of geometriesOf(object)) {
@@ -129,5 +135,3 @@ function createConvexPolyhedron(object: Object3D, scale = 1): ConvexPolyhedron {
         ),
     });
 }
-
-export { createBox, createSphere, createTrimesh, createConvexPolyhedron };

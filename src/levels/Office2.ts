@@ -6,16 +6,21 @@ import {
     Vector3,
 } from 'three';
 
+import {
+    loadModelFromGLTF,
+    loadTexturesFromImages,
+    setMaterial,
+} from '../helpers';
+import { COLORS, UP_AXIS_THREE } from '../globals';
+
+// Game Objects
 import Level from './Level';
 import PhysicsObject from '../PhysicsObject';
-import { loadModelFromGLTF, loadTexturesFromImages } from '../loaders';
-import { COLORS, UP_AXIS_THREE } from '../globals';
-import { setMaterial } from '../utils';
 import Room from '../rooms/Room';
 import Player from '../characters/Player';
 import OfficeStartLights from '../lights/Office2Lights';
 
-// models
+// Models
 import WINDOW_LARGE from '@models/windowlarge.glb?url';
 import WATER_COOLER from '@models/watercooler.glb?url';
 import CUBICLE from '@models/cubicle.glb?url';
@@ -29,7 +34,7 @@ import FIDDLELEAF from '@models/Fiddle-leaf Plant.glb?url';
 import CLOCK from '@models/analog.glb?url';
 // import PLANE from '@models/paperplane.glb?url';
 
-// textures
+// Textures
 import PLAYER_PX from '@textures/player_px.jpg';
 import PLAYER_NX from '@textures/player_nx.jpg';
 import PLAYER_PY from '@textures/player_py.jpg';

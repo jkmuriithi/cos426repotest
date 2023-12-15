@@ -13,9 +13,12 @@ import {
     WALL_PHYSICS_MATERIAL,
     WORLD,
 } from './globals';
-import { createBox } from './collision';
-import { meshesOf } from './utils';
-import { DynamicOpacityConfig, makeObjectDynamic } from './opacity';
+import {
+    createBox,
+    meshesOf,
+    DynamicOpacityConfig,
+    makeObjectDynamic,
+} from './helpers';
 
 type PhysicsObjectOptions = {
     name: string;

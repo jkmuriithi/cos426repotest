@@ -1,6 +1,6 @@
 import { Scene } from 'three';
 
-import { createObject2D } from '../utils';
+import { createObject2D } from '../helpers';
 import { CAMERA, STARTING_LEVEL } from '../globals';
 
 import Level from './Level';

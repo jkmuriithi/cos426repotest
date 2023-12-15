@@ -15,8 +15,8 @@ import {
 } from 'three';
 import { GLTFLoader, OBJLoader, MTLLoader } from 'three/examples/jsm/Addons.js';
 
-import { PRINT_ASSETS_ON_LOAD } from './globals';
-import { geometriesOf } from './utils';
+import { geometriesOf } from './object3d';
+import { PRINT_ASSETS_ON_LOAD } from '../globals';
 
 /**
  * @example
@@ -27,7 +27,7 @@ import { geometriesOf } from './utils';
  *
  * @see {@link https://discourse.threejs.org/t/parts-of-glb-object-disappear-in-certain-angles-and-zoom/21295/5}
  */
-async function loadModelFromGLTF(
+export async function loadModelFromGLTF(
     gltfUrl: string,
     centerGeometry: boolean = false
 ): Promise<Group> {
@@ -52,7 +52,7 @@ async function loadModelFromGLTF(
     return gltf.scene;
 }
 
-async function loadModelFromOBJ(
+export async function loadModelFromOBJ(
     objUrl: string,
     mtlUrl?: string,
     centerGeometry: boolean = false
@@ -83,7 +83,7 @@ async function loadModelFromOBJ(
     return obj;
 }
 
-async function loadTexturesFromImages(
+export async function loadTexturesFromImages(
     imgUrls: string[],
     magFilter?: MagnificationTextureFilter,
     minFilter?: MinificationTextureFilter
@@ -103,5 +103,3 @@ async function loadTexturesFromImages(
 
     return textures;
 }
-
-export { loadModelFromGLTF, loadModelFromOBJ, loadTexturesFromImages };

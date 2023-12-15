@@ -6,7 +6,7 @@
  */
 import { Vector3, Material, Object3D } from 'three';
 
-import { meshesOf } from './utils';
+import { meshesOf } from './object3d';
 
 export type DynamicOpacityParams = {
     transparent: true;

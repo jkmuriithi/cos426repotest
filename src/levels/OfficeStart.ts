@@ -7,9 +7,13 @@ import {
 } from 'three';
 
 // Helpers and constants
-import { loadModelFromGLTF, loadTexturesFromImages } from '../loaders';
+import {
+    meshesOf,
+    setMaterial,
+    loadModelFromGLTF,
+    loadTexturesFromImages,
+} from '../helpers';
 import { COLORS, UP_AXIS_THREE, WALL_THICKNESS } from '../globals';
-import { meshesOf, setMaterial } from '../utils';
 
 // Game objects
 import Level from './Level';

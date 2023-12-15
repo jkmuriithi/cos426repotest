@@ -2,7 +2,7 @@ import { ColorRepresentation, Group } from 'three';
 
 import { WALL_THICKNESS, UP_AXIS_THREE } from '../globals';
 import { COLORS } from '../globals';
-import { DynamicOpacityConfig } from '../opacity';
+import { DynamicOpacityConfig } from '../helpers';
 import Wall, { WallOptions } from './Wall';
 
 type RoomOptions = {

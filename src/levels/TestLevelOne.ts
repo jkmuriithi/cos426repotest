@@ -8,11 +8,17 @@ import {
     Vector3,
 } from 'three';
 
+import {
+    loadModelFromGLTF,
+    loadTexturesFromImages,
+    meshesOf,
+    setMaterial,
+} from '../helpers';
+import { COLORS, UP_AXIS_THREE, WALL_THICKNESS } from '../globals';
+
+// Game Objects
 import Level from './Level';
 import PhysicsObject from '../PhysicsObject';
-import { loadModelFromGLTF, loadTexturesFromImages } from '../loaders';
-import { COLORS, UP_AXIS_THREE, WALL_THICKNESS } from '../globals';
-import { meshesOf, setMaterial } from '../utils';
 import Room from '../rooms/Room';
 import Wall from '../rooms/Wall';
 import Player from '../characters/Player';
@@ -20,13 +26,13 @@ import MeleeEnemy from '../characters/MeleeEnemy';
 import RangedEnemy from '../characters/RangedEnemy';
 import TestLevelOneLights from '../lights/TestLevelOneLights';
 
-// models
+// Models
 import NUNCHUCKS from '@models/nunchucks.glb?url';
 import SAUCER from '@models/flyingsaucer.glb?url';
 import DOOR from '@models/door.glb?url';
 import PLANE from '@models/paperplane.glb?url';
 
-// textures
+// Textures
 import PLAYER_PX from '@textures/player_px.jpg';
 import PLAYER_NX from '@textures/player_nx.jpg';
 import PLAYER_PY from '@textures/player_py.jpg';
@@ -42,11 +48,11 @@ class TestLevelOne extends Level {
         // Load models from files
         const chucks = await loadModelFromGLTF(NUNCHUCKS);
         const saucer = await loadModelFromGLTF(SAUCER);
-
         const door = await loadModelFromGLTF(DOOR, true);
+        const plane = await loadModelFromGLTF(PLANE, true);
+
         door.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
 
-        const plane = await loadModelFromGLTF(PLANE, true);
         meshesOf(plane).forEach(
             (mesh) => ((mesh.material as Material).side = DoubleSide)
         );

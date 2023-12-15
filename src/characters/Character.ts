@@ -18,8 +18,9 @@ import {
     FLOAT_EPS,
     UP_AXIS_THREE,
 } from '../globals';
+import { boundingSphereOf, createObject2D } from '../helpers';
+
 import PhysicsObject, { PhysicsObjectOptions } from '../PhysicsObject';
-import { boundingSphereOf, createObject2D } from '../utils';
 
 type CharacterOptions = PhysicsObjectOptions & {
     color: ColorRepresentation;

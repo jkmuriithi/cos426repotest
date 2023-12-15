@@ -12,14 +12,19 @@ import {
     RENDER_ORDER_LAST,
     RENDER_ORDER_FIRST,
 } from '../globals';
-import { dfsFind, dfsTraverse, materialsOf } from '../utils';
-import { DynamicOpacityConfig } from '../opacity';
-import PhysicsObject from '../PhysicsObject';
-import Character from '../characters/Character';
+import {
+    dfsFind,
+    dfsTraverse,
+    materialsOf,
+    DynamicOpacityConfig,
+} from '../helpers';
 
-import type Player from '../characters/Player';
-import Enemy from '../characters/Enemy';
+import PhysicsObject from '../PhysicsObject';
 import Wall from '../rooms/Wall';
+
+import type Character from '../characters/Character';
+import type Enemy from '../characters/Enemy';
+import type Player from '../characters/Player';
 
 type LevelChild = Object3D<Object3DEventMap> & {
     update?: (dt: number) => void;
