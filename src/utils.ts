@@ -4,7 +4,10 @@
  */
 import { BufferGeometry, Material, Mesh, Object3D, Sphere } from 'three';
 import { CSS2DObject } from 'three/examples/jsm/Addons.js';
-import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+
+import { makeDynamic } from './opacity';
+
+import PhysicsObject from './PhysicsObject';
 
 /**
  * Traverse the graph of object children, calling the callback on each child.
@@ -56,7 +59,6 @@ export function dfsFind(
     return result;
 }
 
-/** Extracts all of the meshes from an object and puts them in an array. */
 export function meshesOf(object: Object3D | Mesh): Mesh[] {
     if (object instanceof Mesh) {
         return [object];
@@ -65,30 +67,15 @@ export function meshesOf(object: Object3D | Mesh): Mesh[] {
     }
 }
 
-/** Extracts all of the geometries from an object and puts them in an array. */
 export function geometriesOf(object: Object3D | Mesh): BufferGeometry[] {
-    const meshes = meshesOf(object);
-    return meshes.map((mesh) => mesh.geometry);
+    return meshesOf(object).map((mesh) => mesh.geometry);
 }
 
-/** Sets all of the meshes in the given object to use the given material */
-export function setMaterial(
-    object: Object3D | Mesh,
-    material: Material | Material[]
-): void {
-    meshesOf(object).forEach((mesh) => (mesh.material = material));
+export function materialsOf(object: Object3D | Mesh): Material[] {
+    return meshesOf(object).flatMap((mesh) => mesh.material);
 }
 
-export function mergedGeometry(object: Object3D | Mesh, useGroups?: boolean) {
-    if (object instanceof Mesh) {
-        return object.geometry;
-    } else {
-        const geometries = geometriesOf(object);
-        return mergeGeometries(geometries, useGroups);
-    }
-}
-
-export function boundingSphereOf(object: Object3D) {
+export function boundingSphereOf(object: Object3D): Sphere {
     const geometries = geometriesOf(object);
     geometries[0].computeBoundingSphere();
 
@@ -99,6 +86,36 @@ export function boundingSphereOf(object: Object3D) {
     }
 
     return sphere;
+}
+
+/**
+ * Sets all of the meshes in the given object to use the given material(s).
+ * Automatically calls makeDynamic on the input materials unless `dynamic` is
+ * set to `false`.
+ */
+export function setMaterial(
+    object: Object3D | PhysicsObject | Mesh,
+    material: Material | Material[],
+    dynamic = true
+) {
+    let mat = material;
+    // If the given object has dynamic opacity, clone the material and set it
+    // to match by default
+    if (
+        dynamic &&
+        object instanceof PhysicsObject &&
+        object.options.opacityConfig
+    ) {
+        const config = object.options.opacityConfig;
+        if (Array.isArray(material)) {
+            mat = material.map((m) => m.clone());
+            mat.forEach((m) => makeDynamic(m, config));
+        } else {
+            mat = makeDynamic(material.clone(), config);
+        }
+    }
+
+    meshesOf(object).forEach((mesh) => (mesh.material = mat));
 }
 
 export type Object2DConfig = {
@@ -122,7 +139,7 @@ export function createObject2D(config?: Partial<Object2DConfig>): CSS2DObject {
     const elem = document.createElement('div');
     elem.textContent = conf.textContent;
     elem.className = conf.className;
-    conf.id && (elem.id = conf.id);
+    if (conf.id) elem.id = conf.id;
 
     for (const [k, v] of Object.entries({
         ...defaultObject2DConfig.style,

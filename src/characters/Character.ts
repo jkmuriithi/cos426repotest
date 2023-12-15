@@ -9,18 +9,17 @@ import {
     Object3D,
     Vector3,
 } from 'three';
+import { CSS2DObject } from 'three/examples/jsm/Addons.js';
 
 import {
     CHARACTER_PHYSICS_MATERIAL,
     COLORS,
     DRAW_CHARACTER_DIRECTION_LINE,
     FLOAT_EPS,
-    PROJECTILE_QUEUE,
     UP_AXIS_THREE,
 } from '../globals';
 import PhysicsObject, { PhysicsObjectOptions } from '../PhysicsObject';
 import { boundingSphereOf, createObject2D } from '../utils';
-import { CSS2DObject } from 'three/examples/jsm/Addons.js';
 
 type CharacterOptions = PhysicsObjectOptions & {
     color: ColorRepresentation;
@@ -71,8 +70,6 @@ class Character extends PhysicsObject {
         },
     };
 
-    /** Limits projectile fire rate to once per frame */
-    private firedProjectile: boolean = false;
     private healthBar?: CSS2DObject;
 
     /** Unit vector pointing out of the front of the character. */
@@ -80,6 +77,7 @@ class Character extends PhysicsObject {
     readonly options: CharacterOptions;
 
     health: number;
+    firedProjectile: boolean = false;
 
     constructor(options: Partial<CharacterOptions>) {
         const opts = { ...Character.defaultOptions, ...options };
@@ -119,9 +117,8 @@ class Character extends PhysicsObject {
             this.add(this.healthBar);
         }
 
-        // (For debugging) draw line facing forwards
-        const sphere = boundingSphereOf(this);
         if (DRAW_CHARACTER_DIRECTION_LINE) {
+            const sphere = boundingSphereOf(this);
             this.add(
                 new Line(
                     new BufferGeometry().setFromPoints([
@@ -133,29 +130,29 @@ class Character extends PhysicsObject {
         }
     }
 
+    dispose() {
+        if (this.healthBar) this.healthBar.removeFromParent();
+        super.dispose();
+    }
+
+    reset() {
+        if (this.healthBar) this.add(this.healthBar);
+        this.health = this.options.health;
+        super.reset();
+    }
+
     update(dt: number) {
-        this.firedProjectile = false;
         if (this.healthBar) {
             if (this.health > 0) {
                 this.healthBar.element.textContent = '█'.repeat(
                     Math.ceil(this.health / 10)
                 );
             } else {
-                this.healthBar.removeFromParent();
+                this.remove(this.healthBar);
             }
         }
+
         super.update(dt);
-    }
-
-    reset() {
-        super.reset();
-        this.health = this.options.health;
-        this.healthBar && this.add(this.healthBar);
-    }
-
-    dispose() {
-        this.healthBar && this.healthBar.removeFromParent();
-        super.dispose();
     }
 
     /**
@@ -175,9 +172,7 @@ class Character extends PhysicsObject {
     }
 
     fireProjectile() {
-        if (!this.firedProjectile) {
-            PROJECTILE_QUEUE.push(this);
-        }
+        this.firedProjectile = true;
     }
 
     // TODO: Do some animation

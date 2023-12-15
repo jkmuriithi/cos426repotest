@@ -7,13 +7,6 @@
  * @see {@link https://gafferongames.com/post/fix_your_timestep/}
  * @see {@link https://stackoverflow.com/questions/16424500/what-would-be-realistic-values-for-gravity-mass-and-contact-material-in-canno}
  *
- * TODO: Implement proper dispose methods on all classes with geometry,
- * materials, textures, and lights (make sure to remove Cannon bodies and event
- * listeners)
- * TODO: Create Level class and implement game levels as subclasses
- * TODO: Implement level loading/disposal in GameScene
- * TODO: Enemies (ranged and melee)
- * TODO: Projectiles
  * TODO: Wall and Character texturing
  * @see {@link https://threejs.org/docs/#manual/en/introduction/How-to-dispose-of-objects}
  */
@@ -146,7 +139,7 @@ function setup() {
             levelManager.update(dt);
         }
         lastCallTime = time;
-        controls && controls.update();
+        if (controls) controls.update();
         RENDERER.render(levelManager.current, CAMERA);
         RENDERER_2D.render(levelManager.current, CAMERA);
 

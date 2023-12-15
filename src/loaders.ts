@@ -7,6 +7,8 @@
 import {
     Box3,
     Group,
+    MagnificationTextureFilter,
+    MinificationTextureFilter,
     Texture,
     TextureLoader,
     Vector3,
@@ -31,9 +33,7 @@ async function loadModelFromGLTF(
 ): Promise<Group> {
     const loader = new GLTFLoader();
     const gltf = await loader.loadAsync(gltfUrl);
-    if (PRINT_ASSETS_ON_LOAD) {
-        console.log(gltf);
-    }
+    if (PRINT_ASSETS_ON_LOAD) console.log(gltf);
 
     gltf.scene.traverse((object) => (object.frustumCulled = false));
 
@@ -64,9 +64,7 @@ async function loadModelFromOBJ(
     }
 
     const obj = await loader.loadAsync(objUrl);
-    if (PRINT_ASSETS_ON_LOAD) {
-        console.log(obj);
-    }
+    if (PRINT_ASSETS_ON_LOAD) console.log(obj);
 
     obj.traverse((object) => (object.frustumCulled = false));
 
@@ -85,15 +83,21 @@ async function loadModelFromOBJ(
     return obj;
 }
 
-async function loadTexturesFromImages(imgUrls: string[]): Promise<Texture[]> {
+async function loadTexturesFromImages(
+    imgUrls: string[],
+    magFilter?: MagnificationTextureFilter,
+    minFilter?: MinificationTextureFilter
+): Promise<Texture[]> {
     const loader = new TextureLoader();
 
     const textures = [];
     for (const url of imgUrls) {
         const texture = await loader.loadAsync(url);
-        if (PRINT_ASSETS_ON_LOAD) {
-            console.log(texture);
-        }
+
+        if (magFilter) texture.magFilter = magFilter;
+        if (minFilter) texture.minFilter = minFilter;
+        if (PRINT_ASSETS_ON_LOAD) console.log(texture);
+
         textures.push(texture);
     }
 

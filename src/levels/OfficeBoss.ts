@@ -7,10 +7,11 @@ import {
     Vector2,
 } from 'three';
 
-import Level from './Level';
 import { loadModelFromGLTF, loadTexturesFromImages } from '../loaders';
 import { COLORS } from '../globals';
 import { setMaterial } from '../utils';
+
+import Level from './Level';
 import Room from '../rooms/Room';
 import Player from '../characters/Player';
 import MeleeEnemy from '../characters/MeleeEnemy';
@@ -37,8 +38,6 @@ import CEILING from '@textures/ceiling_panels.jpg';
 import CARPET from '@textures/carpet.jpg';
 import FINKELSTEIN from '@textures/finkelstein.jpeg';
 
-import { makeDynamic } from '../opacity';
-
 class OfficeBoss extends Level {
     initCameraPosition = new Vector3(-100, 10, 0);
 
@@ -47,24 +46,14 @@ class OfficeBoss extends Level {
         const plane = await loadModelFromGLTF(PLANE, true);
 
         // Load textures from files
-        const player_textures = await loadTexturesFromImages([
-            PLAYER_PX,
-            PLAYER_NX,
-            PLAYER_PY,
-            PLAYER_NY,
-            PLAYER_PZ,
-            PLAYER_NZ,
-        ]);
-        const boss_textures = await loadTexturesFromImages([
-            BOSS_PX,
-            BOSS_NX,
-            BOSS_PY,
-            BOSS_NY,
-            BOSS_PZ,
-            BOSS_NZ,
-        ]);
-        player_textures.map((te) => (te.magFilter = NearestFilter));
-        boss_textures.map((te) => (te.magFilter = NearestFilter));
+        const player_textures = await loadTexturesFromImages(
+            [PLAYER_PX, PLAYER_NX, PLAYER_PY, PLAYER_NY, PLAYER_PZ, PLAYER_NZ],
+            NearestFilter
+        );
+        const boss_textures = await loadTexturesFromImages(
+            [BOSS_PX, BOSS_NX, BOSS_PY, BOSS_NY, BOSS_PZ, BOSS_NZ],
+            NearestFilter
+        );
         const ceil = await loadTexturesFromImages([CEILING]);
         const carp = await loadTexturesFromImages([CARPET]);
         const fink = await loadTexturesFromImages([FINKELSTEIN]);
@@ -133,7 +122,7 @@ class OfficeBoss extends Level {
                 options: {
                     scale: 3e-5,
                 },
-            }
+            },
         });
         materials = boss_textures.map((texture) => {
             texture.generateMipmaps = false;
@@ -155,94 +144,30 @@ class OfficeBoss extends Level {
             color: COLORS.WHITE,
         });
 
-        const opacityConfig = room.options.opacityConfig;
-
         fink[0].center = new Vector2(0.5, 0.5);
         fink[0].rotation = -Math.PI / 2;
+        const finkMaterial = new MeshPhongMaterial({
+            color: COLORS.WHITE,
+            map: fink[0],
+        });
 
-        setMaterial(
-            room.rightFrontWall,
-            makeDynamic(
-                new MeshPhongMaterial({
-                    color: COLORS.WHITE,
-                    map: fink[0],
-                }),
-                {
-                    ...opacityConfig,
-                    lowOpacity: 0.1,
-                    normal: new Vector3(0, -1, 0),
-                }
-            )
-        );
-        setMaterial(
-            room.rightBackWall,
-            makeDynamic(
-                new MeshPhongMaterial({
-                    color: COLORS.WHITE,
-                    map: fink[0],
-                }),
-                {
-                    ...opacityConfig,
-                    lowOpacity: 0.1,
-                    normal: new Vector3(0, -1, 0),
-                }
-            )
-        );
-        setMaterial(
-            room.leftFrontWall,
-            makeDynamic(
-                new MeshPhongMaterial({
-                    color: COLORS.WHITE,
-                    map: fink[0],
-                }),
-                {
-                    ...opacityConfig,
-                    lowOpacity: 0.1,
-                    normal: new Vector3(0, -1, 0),
-                }
-            )
-        );
-        setMaterial(
-            room.leftBackWall,
-            makeDynamic(
-                new MeshPhongMaterial({
-                    color: COLORS.WHITE,
-                    map: fink[0],
-                }),
-                {
-                    ...opacityConfig,
-                    lowOpacity: 0.1,
-                    normal: new Vector3(0, -1, 0),
-                }
-            )
-        );
+        setMaterial(room.rightFrontWall, finkMaterial);
+        setMaterial(room.rightBackWall, finkMaterial);
+        setMaterial(room.leftFrontWall, finkMaterial);
+        setMaterial(room.leftBackWall, finkMaterial);
         setMaterial(
             room.ceiling,
-            makeDynamic(
-                new MeshPhongMaterial({
-                    color: COLORS.WHITE,
-                    map: ceil[0],
-                }),
-                {
-                    ...opacityConfig,
-                    lowOpacity: 0.1,
-                    normal: new Vector3(0, -1, 0),
-                }
-            )
+            new MeshPhongMaterial({
+                color: COLORS.WHITE,
+                map: ceil[0],
+            })
         );
         setMaterial(
             room.floor,
-            makeDynamic(
-                new MeshPhongMaterial({
-                    color: COLORS.WHITE,
-                    map: carp[0],
-                }),
-                {
-                    ...opacityConfig,
-                    lowOpacity: 0.1,
-                    normal: new Vector3(1, 0, 0),
-                }
-            )
+            new MeshPhongMaterial({
+                color: COLORS.WHITE,
+                map: carp[0],
+            })
         );
         this.add(room);
         this.add(new OfficeBossLights());

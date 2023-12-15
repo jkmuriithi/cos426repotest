@@ -6,14 +6,12 @@ import {
     MeshLambertMaterial,
 } from 'three';
 
-import { UP_AXIS_THREE, WALL_THICKNESS } from '../globals';
+import { RENDER_ORDER_FIRST, UP_AXIS_THREE, WALL_THICKNESS } from '../globals';
 import PhysicsObject, { PhysicsObjectOptions } from '../PhysicsObject';
-import { DynamicOpacityConfig } from '../opacity';
 
 type WallOptions = PhysicsObjectOptions & {
     size: [number, number, number];
     color: ColorRepresentation;
-    opacityConfig: DynamicOpacityConfig;
 };
 
 export type { WallOptions };
@@ -39,7 +37,7 @@ class Wall extends PhysicsObject {
 
     constructor(options?: Partial<WallOptions>) {
         const opts = { ...Wall.defaultOptions, ...options };
-        const { name, size, direction, color } = opts;
+        const { name, size, direction, color, opacityConfig } = opts;
 
         // Create object
         const geometry = new BoxGeometry(...size);
@@ -47,23 +45,27 @@ class Wall extends PhysicsObject {
         const mesh = new Mesh(geometry, material);
         mesh.name = name;
 
-        const normal = new Vector3(...direction);
-        super(mesh, {
-            ...opts,
-            opacityConfig: {
-                ...opts.opacityConfig,
-                normal,
-            },
-        });
-        this.options = {
-            ...opts,
-            opacityConfig: {
-                ...opts.opacityConfig,
-                normal,
-            },
-        };
-        // Render walls before everything else
-        this.renderOrder = -100;
+        if (opacityConfig) {
+            super(mesh, {
+                ...opts,
+                opacityConfig: {
+                    ...opacityConfig,
+                    normal: new Vector3(...direction),
+                },
+            });
+            this.options = {
+                ...opts,
+                opacityConfig: {
+                    ...opacityConfig,
+                    normal: new Vector3(...direction),
+                },
+            };
+        } else {
+            super(mesh, opts);
+            this.options = opts;
+        }
+
+        this.renderOrder = RENDER_ORDER_FIRST;
     }
 }
 

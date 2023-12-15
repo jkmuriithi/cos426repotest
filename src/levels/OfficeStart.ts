@@ -6,21 +6,23 @@ import {
     Vector3,
 } from 'three';
 
-import Level from './Level';
-import PhysicsObject from '../PhysicsObject';
+// Helpers and constants
 import { loadModelFromGLTF, loadTexturesFromImages } from '../loaders';
 import { COLORS, UP_AXIS_THREE, WALL_THICKNESS } from '../globals';
 import { meshesOf, setMaterial } from '../utils';
+
+// Game objects
+import Level from './Level';
+import PhysicsObject from '../PhysicsObject';
 import Room from '../rooms/Room';
 import Wall from '../rooms/Wall';
 import Player from '../characters/Player';
 import OfficeStartLights from '../lights/Office2Lights';
 
-// models
+// Models
 import WINDOW_LARGE from '@models/windowlarge.glb?url';
 import WATER_COOLER from '@models/watercooler.glb?url';
 import CUBICLE from '@models/cubicle.glb?url';
-import COPIER from '@models/copier.glb?url';
 import BOARD from '@models/dryeraseboard.glb?url';
 import DOOR from '@models/door.glb?url';
 import DESK from '@models/Desk.glb?url';
@@ -34,7 +36,7 @@ import PHONE from '@models/Office Phone.glb?url';
 import MUG from '@models/Mug With Office Tool.glb?url';
 import MONITOR from '@models/Monitor.glb?url';
 
-// textures
+// Textures
 import PLAYER_PX from '@textures/player_px.jpg';
 import PLAYER_NX from '@textures/player_nx.jpg';
 import PLAYER_PY from '@textures/player_py.jpg';
@@ -44,8 +46,6 @@ import PLAYER_NZ from '@textures/player_nz.jpg';
 import QUOTE from '@textures/motivation.jpg';
 import CEILING from '@textures/ceiling_panels.jpg';
 import CARPET from '@textures/carpet.jpg';
-
-import { makeDynamic } from '../opacity';
 
 class OfficeStart extends Level {
     initCameraPosition = new Vector3(-30, 14, 0);
@@ -521,45 +521,27 @@ class OfficeStart extends Level {
         });
 
         /**** WALL DESIGNS ****/
-        const opacityConfig = room.options.opacityConfig;
         // Back wall quote
         setMaterial(
             room.leftBackWall,
-            makeDynamic(
-                new MeshPhongMaterial({
-                    color: COLORS.WHITE,
-                    map: motivation[0],
-                }),
-                { ...opacityConfig, normal: new Vector3(0, 0, 1) }
-            )
+            new MeshPhongMaterial({
+                color: COLORS.WHITE,
+                map: motivation[0],
+            })
         );
         setMaterial(
             room.ceiling,
-            makeDynamic(
-                new MeshPhongMaterial({
-                    color: COLORS.WHITE,
-                    map: ceil[0],
-                }),
-                {
-                    ...opacityConfig,
-                    lowOpacity: 0.1,
-                    normal: new Vector3(0, -1, 0),
-                }
-            )
+            new MeshPhongMaterial({
+                color: COLORS.WHITE,
+                map: ceil[0],
+            })
         );
         setMaterial(
             room.floor,
-            makeDynamic(
-                new MeshPhongMaterial({
-                    color: COLORS.WHITE,
-                    map: carp[0],
-                }),
-                {
-                    ...opacityConfig,
-                    lowOpacity: 0.1,
-                    normal: new Vector3(0, 1, 0),
-                }
-            )
+            new MeshPhongMaterial({
+                color: COLORS.WHITE,
+                map: carp[0],
+            })
         );
 
         // Add platform in the middle of the room
@@ -570,10 +552,7 @@ class OfficeStart extends Level {
             position: [position[0], position[1] + size[1] / 4, position[2]],
             direction: [-1, 0, 0],
             color: COLORS.GOLD,
-            opacityConfig: {
-                ...opacityConfig,
-                lowOpacity: 1,
-            },
+            opacityConfig: undefined,
         });
         meshesOf(platform).forEach((mesh) => (mesh.castShadow = true));
         room.add(platform);

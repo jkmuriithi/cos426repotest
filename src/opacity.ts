@@ -5,6 +5,7 @@
  * instead.
  */
 import { Vector3, Material, Object3D } from 'three';
+
 import { meshesOf } from './utils';
 
 export type DynamicOpacityParams = {
@@ -24,7 +25,10 @@ export type DynamicOpacityConfig = Omit<
     'transparent' | 'hasDynamicOpacity'
 >;
 
-/** Sets all of the opacity parameters of the given material. */
+/**
+ * Sets all of the opacity parameters of the given material to work with the
+ * dynamic opacity system.
+ */
 export function makeDynamic<M extends Material>(
     material: M,
     config: DynamicOpacityConfig
@@ -35,13 +39,6 @@ export function makeDynamic<M extends Material>(
     mat.alphaHash = false;
     mat.hasDynamicOpacity = true;
     mat.opacity = config.highOpacity;
-    for (const [key, value] of Object.entries(config)) {
-        // @ts-ignore
-        mat[key] = value;
-    }
-    if (mat.normal) {
-        mat.normal = mat.normal.clone();
-    }
 
     return mat;
 }

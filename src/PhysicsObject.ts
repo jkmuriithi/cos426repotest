@@ -87,13 +87,13 @@ class PhysicsObject extends Group {
                 new Vector3(...direction).normalize()
             )
         );
+
         meshesOf(this).forEach((mesh) => {
             mesh.castShadow = castShadow;
             mesh.receiveShadow = receiveShadow;
         });
-        opacityConfig && makeObjectDynamic(this, opacityConfig);
 
-        object.updateMatrix();
+        if (opacityConfig) makeObjectDynamic(this, opacityConfig);
 
         this.initPosition = this.position.clone();
         this.initQuaternion = this.quaternion.clone();
@@ -118,6 +118,10 @@ class PhysicsObject extends Group {
         this.body.quaternion.copy(quaternion as unknown as CannonQuat);
     }
 
+    dispose(): void {
+        WORLD.removeBody(this.body);
+    }
+
     reset(): void {
         this.position.copy(this.initPosition);
         this.quaternion.copy(this.initQuaternion);
@@ -132,10 +136,6 @@ class PhysicsObject extends Group {
     update(_: number): void {
         this.position.copy(this.body.position as unknown as Vector3);
         this.quaternion.copy(this.body.quaternion as unknown as Quaternion);
-    }
-
-    dispose(): void {
-        WORLD.removeBody(this.body);
     }
 }
 

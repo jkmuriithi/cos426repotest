@@ -27,7 +27,7 @@ import CHAIR from '@models/chair.glb?url';
 import CHAIR_2 from '@models/Chair-2.glb?url';
 import FIDDLELEAF from '@models/Fiddle-leaf Plant.glb?url';
 import CLOCK from '@models/analog.glb?url';
-import PLANE from '@models/paperplane.glb?url';
+// import PLANE from '@models/paperplane.glb?url';
 
 // textures
 import PLAYER_PX from '@textures/player_px.jpg';
@@ -39,8 +39,6 @@ import PLAYER_NZ from '@textures/player_nz.jpg';
 import QUOTE from '@textures/motivation.jpg';
 import CEILING from '@textures/ceiling_panels.jpg';
 import CARPET from '@textures/carpet.jpg';
-
-import { makeDynamic } from '../opacity';
 
 class Office2 extends Level {
     initCameraPosition = new Vector3(-10, 10, 10);
@@ -59,7 +57,7 @@ class Office2 extends Level {
         const door = await loadModelFromGLTF(DOOR, true);
         const fiddlePlant = await loadModelFromGLTF(FIDDLELEAF);
         const clock = await loadModelFromGLTF(CLOCK);
-        const plane = await loadModelFromGLTF(PLANE, true);
+        // const plane = await loadModelFromGLTF(PLANE, true);
 
         windowNS.castShadow = false;
         windowEW.castShadow = false;
@@ -86,14 +84,14 @@ class Office2 extends Level {
         this.background = new Color(COLORS.BLACK);
 
         // Projectile config
-        this.projectileConfig = {
-            object: plane.rotateOnAxis(new Vector3(0, 0, 1), -Math.PI / 2),
-            speed: 50,
-            damage: 35,
-            options: {
-                scale: 2e-6,
-            },
-        };
+        // const projectileConfig = {
+        //     object: plane.rotateOnAxis(new Vector3(0, 0, 1), -Math.PI / 2),
+        //     speed: 50,
+        //     damage: 35,
+        //     options: {
+        //         scale: 2e-6,
+        //     },
+        // };
 
         /************************************
          * Creating characters
@@ -409,45 +407,27 @@ class Office2 extends Level {
         });
 
         /**** WALL DESIGNS ****/
-        const opacityConfig = room.options.opacityConfig;
         // Back wall quote
         setMaterial(
             room.leftBackWall,
-            makeDynamic(
-                new MeshPhongMaterial({
-                    color: COLORS.WHITE,
-                    map: motivation[0],
-                }),
-                { ...opacityConfig, normal: new Vector3(0, 0, 1) }
-            )
+            new MeshPhongMaterial({
+                color: COLORS.WHITE,
+                map: motivation[0],
+            })
         );
         setMaterial(
             room.ceiling,
-            makeDynamic(
-                new MeshPhongMaterial({
-                    color: COLORS.WHITE,
-                    map: ceil[0],
-                }),
-                {
-                    ...opacityConfig,
-                    lowOpacity: 0.1,
-                    normal: new Vector3(0, -1, 0),
-                }
-            )
+            new MeshPhongMaterial({
+                color: COLORS.WHITE,
+                map: ceil[0],
+            })
         );
         setMaterial(
             room.floor,
-            makeDynamic(
-                new MeshPhongMaterial({
-                    color: COLORS.WHITE,
-                    map: carp[0],
-                }),
-                {
-                    ...opacityConfig,
-                    lowOpacity: 0.1,
-                    normal: new Vector3(0, 1, 0),
-                }
-            )
+            new MeshPhongMaterial({
+                color: COLORS.WHITE,
+                map: carp[0],
+            })
         );
         this.add(room);
 

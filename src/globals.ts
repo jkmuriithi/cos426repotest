@@ -6,7 +6,6 @@
  * try to avoid importing from any game source file into this file. Use "import
  * type" if you need to reference a type.
  */
-import { PerspectiveCamera, Vector3, WebGLRenderer } from 'three';
 import {
     Body,
     Vec3,
@@ -14,12 +13,10 @@ import {
     Material as CannonMaterial,
     ContactEquation,
 } from 'cannon-es';
-
-import type Character from './characters/Character';
+import { PerspectiveCamera, Vector3, WebGLRenderer } from 'three';
 import { CSS2DRenderer } from 'three/examples/jsm/Addons.js';
 
 // Game
-export const PROJECTILE_QUEUE: Character[] = [];
 export const PROJECTILE_LIMIT = 100;
 export const UP_AXIS = [0, 1, 0] as const;
 export const STARTING_LEVEL = 0;
@@ -46,16 +43,19 @@ export const DRAW_CHARACTER_DIRECTION_LINE = false;
 
 // ThreeJS
 export const UP_AXIS_THREE = new Vector3(...UP_AXIS);
+export const SHADOW_MAP_SIZE = 512;
+export const RENDER_ORDER_FIRST = -100;
+export const RENDER_ORDER_LAST = 100;
+
 export const CAMERA = new PerspectiveCamera();
 export const INIT_CAMERA_POSITION = new Vector3(-10, 10, 10);
 export const RENDERER = new WebGLRenderer({ antialias: true });
 export const RENDERER_2D = new CSS2DRenderer();
-export const SHADOW_MAP_SIZE = 512;
 
 // Cannon-ES
 export const UP_AXIS_CANNON = new Vec3(...UP_AXIS);
-export const WORLD = new World({ gravity: new Vec3(0, -9.81, 0) });
 
+export const WORLD = new World({ gravity: new Vec3(0, -9.81, 0) });
 export const WALL_PHYSICS_MATERIAL = new CannonMaterial();
 export const CHARACTER_PHYSICS_MATERIAL = new CannonMaterial();
 

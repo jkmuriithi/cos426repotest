@@ -6,13 +6,14 @@ import {
     CAMERA,
     INIT_CAMERA_POSITION,
     WORLD,
-    PROJECTILE_QUEUE,
     PROJECTILE_LIMIT,
     CollideEvent,
     UP_AXIS_CANNON,
+    RENDER_ORDER_LAST,
+    RENDER_ORDER_FIRST,
 } from '../globals';
-import { dfsFind, dfsTraverse, meshesOf } from '../utils';
-import { DynamicOpacityConfig, DynamicOpacityMaterial } from '../opacity';
+import { dfsFind, dfsTraverse, materialsOf } from '../utils';
+import { DynamicOpacityConfig } from '../opacity';
 import PhysicsObject from '../PhysicsObject';
 import Character from '../characters/Character';
 
@@ -59,7 +60,7 @@ class Level extends Scene {
     async load() {
         // Adjust camera
         CAMERA.position.copy(this.initCameraPosition);
-        this.player && CAMERA.lookAt(this.player.position);
+        if (this.player) CAMERA.lookAt(this.player.position);
 
         // Add physics objects to sim
         dfsTraverse(this, (child: Object3D | PhysicsObject | Enemy) => {
@@ -73,7 +74,7 @@ class Level extends Scene {
             this.bodyToEnemy.set(enemy.body.id, enemy);
         }
 
-        // Handle collisions with portals and enemies
+        // Setup event handlers for enemy and portal collisions
         if (this.player) {
             this.portal?.body.addEventListener('collide', (e: CollideEvent) => {
                 if (
@@ -116,47 +117,11 @@ class Level extends Scene {
         }
     }
 
-    update(dt: number): void {
-        for (const child of this.children) {
-            child.update && child.update(dt);
-        }
-
-        if (this.player) {
-            if (this.player.health <= 0) {
-                this.reset();
-            } else {
-                const killed = [];
-                for (let i = 0; i < this.enemies.length; ++i) {
-                    const enemy = this.enemies[i];
-                    if (enemy.health < 0) {
-                        this.remove(enemy);
-                        WORLD.removeBody(enemy.body);
-                        killed.push(enemy);
-                    } else {
-                        enemy.setPlayerPosition(this.player.position);
-                    }
-                }
-
-                for (const enemy of killed) {
-                    const i = this.enemies.indexOf(enemy);
-                    this.enemies.splice(i, 1);
-                }
-
-                this.killedEnemies.push(...killed);
-            }
-
-            if (this.enemies.length === 0) {
-                // make portal to next level visible
-            } else {
-            }
-        }
-
-        if (!ORBIT_CONTROLS_ENABLED) {
-            this.moveCameraWithPlayer();
-        }
-
-        this.handleMaterialTransparency();
-        this.handleProjectiles();
+    dispose() {
+        dfsTraverse(this, (child) => {
+            const c = child as LevelChild;
+            if (c.dispose) c.dispose();
+        });
     }
 
     reset() {
@@ -184,11 +149,44 @@ class Level extends Scene {
         });
     }
 
-    dispose() {
-        dfsTraverse(this, (child) => {
-            const c = child as LevelChild;
-            c.dispose && c.dispose();
-        });
+    update(dt: number): void {
+        if (this.state === 'playerDead') return;
+
+        for (const child of this.children) {
+            if (child.update) child.update(dt);
+        }
+
+        if (this.player) {
+            if (this.player.health <= 0) {
+                this.state = 'playerDead';
+                return;
+            } else {
+                const killedEnemies = [];
+
+                for (const enemy of this.enemies) {
+                    if (enemy.health <= 0) {
+                        this.remove(enemy);
+                        WORLD.removeBody(enemy.body);
+                        killedEnemies.push(enemy);
+                    } else {
+                        enemy.setPlayerPosition(this.player.position);
+                    }
+                }
+                for (const enemy of killedEnemies) {
+                    const i = this.enemies.indexOf(enemy);
+                    this.enemies.splice(i, 1);
+                }
+
+                this.killedEnemies.push(...killedEnemies);
+            }
+        }
+
+        if (!ORBIT_CONTROLS_ENABLED) {
+            this.moveCameraWithPlayer();
+        }
+
+        this.handleMaterialTransparency();
+        this.handleProjectiles();
     }
 
     private moveCameraWithPlayer() {
@@ -205,15 +203,13 @@ class Level extends Scene {
     }
 
     /** Make objects between the camera and the player transparent */
-    // FIXME: Doesn't handle dynamic materials if a mesh uses an array of
-    // different materials
     private handleMaterialTransparency() {
         if (!this.player && this.enemies.length == 0) return;
 
         const currTransparent = new Set<PhysicsObject>();
 
         // Method 1: Checking normal direction
-        const thresh = Math.cos(80 * (Math.PI / 180));
+        const thresh = Math.cos(70 * (Math.PI / 180));
         const cameraDir = this.player!.position.clone()
             .setComponent(1, 0)
             .sub(CAMERA.position);
@@ -229,14 +225,13 @@ class Level extends Scene {
                 .opacityConfig as DynamicOpacityConfig;
             if (cameraDir.dot(normal) > thresh) {
                 currTransparent.add(obj);
-                meshesOf(obj).forEach((mesh) => {
-                    const material = mesh.material as DynamicOpacityMaterial;
+                materialsOf(obj).forEach((material) => {
                     material.opacity = lowOpacity;
                 });
             }
         }
 
-        const characters = [this.player, ...this.enemies] as Character[];
+        // Method 2: Checking intersection with characters
         const dynamicObjects = new Map<Box3, PhysicsObject>();
         dfsFind(this, (c) =>
             Boolean(
@@ -251,52 +246,44 @@ class Level extends Scene {
             )
         );
 
-        // Method 2: Checking intersection with characters
+        const characters = [this.player, ...this.enemies] as Character[];
         for (const char of characters) {
             const cameraDir = char.position.clone().sub(CAMERA.position);
-            const distToChar = cameraDir.lengthSq();
+            const charDist = cameraDir.lengthSq();
             cameraDir.normalize();
 
             const ray = new Ray(CAMERA.position, cameraDir);
             for (const [box, obj] of dynamicObjects) {
                 if (currTransparent.has(obj)) continue;
 
-                const intersection = ray.intersectBox(box, new Vector3());
-                if (
-                    intersection &&
-                    intersection.sub(CAMERA.position).lengthSq() < distToChar
-                ) {
+                const inter = ray.intersectBox(box, new Vector3());
+                if (inter && inter.sub(CAMERA.position).lengthSq() < charDist) {
                     currTransparent.add(obj);
 
-                    const { lowOpacity } = obj.options
-                        .opacityConfig as DynamicOpacityConfig;
-                    meshesOf(obj).forEach((mesh) => {
-                        const material =
-                            mesh.material as DynamicOpacityMaterial;
+                    const lowOpacity = obj.options.opacityConfig!.lowOpacity;
+                    materialsOf(obj).forEach((material) => {
                         material.opacity = lowOpacity;
                     });
                 }
             }
         }
 
-        // If we made a wall transparent, we need to render it after everything
-        // else
         for (const obj of currTransparent) {
-            if (obj instanceof Wall) obj.renderOrder = 100;
+            if (obj instanceof Wall) {
+                obj.renderOrder = RENDER_ORDER_LAST;
+            }
         }
 
         for (const obj of this.prevTransparent) {
             if (!currTransparent.has(obj)) {
-                if (obj instanceof Wall) {
-                    obj.renderOrder = -100;
-                }
-
-                const { highOpacity } = obj.options
-                    .opacityConfig as DynamicOpacityConfig;
-                meshesOf(obj).forEach((mesh) => {
-                    const material = mesh.material as DynamicOpacityMaterial;
+                const highOpacity = obj.options.opacityConfig!.highOpacity;
+                materialsOf(obj).forEach((material) => {
                     material.opacity = highOpacity;
                 });
+
+                if (obj instanceof Wall) {
+                    obj.renderOrder = RENDER_ORDER_FIRST;
+                }
             }
         }
 
@@ -304,19 +291,22 @@ class Level extends Scene {
     }
 
     private handleProjectiles() {
-        // Create projectiles in the order they were fired
-        PROJECTILE_QUEUE.reverse();
-        while (PROJECTILE_QUEUE.length > 0) {
-            const sender = PROJECTILE_QUEUE.pop() as Character;
-            const { projectileConfig } = sender.options;
+        const characters: Character[] = [...this.enemies];
+        if (this.player) characters.push(this.player);
+
+        for (const sender of characters) {
+            if (!sender.firedProjectile) continue;
+            sender.firedProjectile = false; // reset flag
+
+            const { projectileConfig: config } = sender.options;
             const dir = sender.front
                 .clone()
                 .applyQuaternion(sender.quaternion)
                 .normalize();
 
-            const offset = projectileConfig.offset || 1;
-            const proj = new PhysicsObject(projectileConfig.object, {
-                ...projectileConfig.options,
+            const offset = config.offset || 1;
+            const proj = new PhysicsObject(config.object, {
+                ...config.options,
                 position: sender.position
                     .clone()
                     .add(dir.clone().setLength(offset))
@@ -337,13 +327,13 @@ class Level extends Scene {
 
                 if (e.body.id === this.player.body.id) {
                     if (this.bodyToEnemy.has(sender.body.id)) {
-                        this.player.takeDamage(projectileConfig.damage);
+                        this.player.takeDamage(config.damage);
                         this.activeProjectiles.delete(proj);
                     }
                 } else if (sender.body.id === this.player.body.id) {
                     const enemy = this.bodyToEnemy.get(e.body.id);
                     if (enemy) {
-                        enemy.takeDamage(projectileConfig.damage);
+                        enemy.takeDamage(config.damage);
                         this.activeProjectiles.delete(proj);
                     }
                 } else if (e.body.type === BODY_TYPES.STATIC) {
@@ -351,13 +341,10 @@ class Level extends Scene {
                 }
             });
 
-            proj.body.applyImpulse(
-                new Vec3().copy(
-                    dir.multiplyScalar(
-                        projectileConfig.speed
-                    ) as unknown as Vec3
-                )
+            const impulse = new Vec3().copy(
+                dir.multiplyScalar(config.speed) as unknown as Vec3
             );
+            proj.body.applyImpulse(impulse);
         }
 
         // Remove projectiles over limit

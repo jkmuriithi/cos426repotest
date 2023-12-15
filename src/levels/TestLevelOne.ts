@@ -42,29 +42,25 @@ class TestLevelOne extends Level {
         // Load models from files
         const chucks = await loadModelFromGLTF(NUNCHUCKS);
         const saucer = await loadModelFromGLTF(SAUCER);
-        const door = await loadModelFromGLTF(DOOR, true);
-        const plane = await loadModelFromGLTF(PLANE, true);
 
+        const door = await loadModelFromGLTF(DOOR, true);
         door.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
+
+        const plane = await loadModelFromGLTF(PLANE, true);
+        meshesOf(plane).forEach(
+            (mesh) => ((mesh.material as Material).side = DoubleSide)
+        );
 
         // Load textures from files
         const kool = await loadTexturesFromImages([KOOL]);
-        const player_textures = await loadTexturesFromImages([
-            PLAYER_PX,
-            PLAYER_NX,
-            PLAYER_PY,
-            PLAYER_NY,
-            PLAYER_PZ,
-            PLAYER_NZ,
-        ]);
-        player_textures.map((te) => (te.magFilter = NearestFilter));
+        const player_textures = await loadTexturesFromImages(
+            [PLAYER_PX, PLAYER_NX, PLAYER_PY, PLAYER_NY, PLAYER_PZ, PLAYER_NZ],
+            NearestFilter
+        );
 
         this.background = new Color(COLORS.BLACK);
 
         // Projectile config
-        meshesOf(plane).forEach(
-            (mesh) => ((mesh.material as Material).side = DoubleSide)
-        );
         const projectileConfig = {
             object: plane.rotateOnAxis(new Vector3(0, 0, 1), -Math.PI / 2),
             speed: 50,
