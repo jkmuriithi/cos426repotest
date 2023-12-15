@@ -120,7 +120,7 @@ class TestLevelOne extends Level {
             color,
             opacityConfig: {
                 ...opacityConfig,
-                detection: 'characterIntersection',
+                characterIntersection: true,
                 lowOpacity: 0.4,
             },
         });
