@@ -2,6 +2,7 @@ import Level from './Level';
 import TestLevelOne from './TestLevelOne';
 import TestLevelTwo from './TestLevelTwo';
 import OfficeStart from './OfficeStart';
+import Office2 from './Office2';
 import BankRobbery from './BankRobbery';
 import Parkour from './Parkour';
 
@@ -12,6 +13,7 @@ class LevelManager {
         () => new TestLevelOne(),
         () => new TestLevelTwo(),
         () => new OfficeStart(),
+        () => new Office2(),
         () => new BankRobbery(),
         () => new Parkour(),
     ];

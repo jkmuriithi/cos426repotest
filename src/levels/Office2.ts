@@ -9,10 +9,9 @@ import {
 import Level from './Level';
 import PhysicsObject from '../PhysicsObject';
 import { loadModelFromGLTF, loadTexturesFromImages } from '../loaders';
-import { COLORS, UP_AXIS_THREE, WALL_THICKNESS } from '../globals';
-import { meshesOf, setMaterial } from '../utils';
+import { COLORS, UP_AXIS_THREE } from '../globals';
+import { setMaterial } from '../utils';
 import Room from '../rooms/Room';
-import Wall from '../rooms/Wall';
 import Player from '../characters/Player';
 import OfficeStartLights from '../lights/Office2Lights';
 
@@ -43,8 +42,8 @@ import CARPET from '@textures/carpet.jpg';
 
 import { makeDynamic } from '../opacity';
 
-class OfficeStart extends Level {
-    initCameraPosition = new Vector3(-30, 14, 0);
+class Office2 extends Level {
+    initCameraPosition = new Vector3(-10, 10, 10);
 
     async load() {
         // Load models from files
@@ -103,7 +102,7 @@ class OfficeStart extends Level {
         /**** CREATING PLAYER ****/
         this.player = new Player({
             size: [1.5, 3, 1.5],
-            position: [-10, 6, 0],
+            position: [10, 6, -5],
             color: COLORS.PLAYER,
         });
         this.player.jumpVelocity = 7;
@@ -404,8 +403,8 @@ class OfficeStart extends Level {
 
         /**** ROOM SETUP ****/
         const room = new Room({
-            size: [40, 20, 60],
-            position: [0, 0, 0],
+            size: [35, 14, 25],
+            position: [13, -2, -9],
             color: COLORS.WHITE,
         });
 
@@ -450,23 +449,6 @@ class OfficeStart extends Level {
                 }
             )
         );
-        
-        // Add platform in the middle of the room
-        const { size, position, color } = room.options;
-        const platform = new Wall({
-            name: 'platform',
-            size: [size[0] / 4, WALL_THICKNESS, size[2] / 4],
-            position: [position[0], position[1] + size[1] / 4, position[2]],
-            direction: [0, 0, 0],
-            color,
-            opacityConfig: {
-                ...opacityConfig,
-                lowOpacity: 1,
-            },
-        });
-        meshesOf(platform).forEach((mesh) => (mesh.castShadow = true));
-        room.add(platform);
-
         this.add(room);
 
         this.add(new OfficeStartLights());
@@ -475,4 +457,4 @@ class OfficeStart extends Level {
     }
 }
 
-export default OfficeStart;
+export default Office2;
