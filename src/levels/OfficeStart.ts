@@ -14,7 +14,7 @@ import { meshesOf, setMaterial } from '../utils';
 import Room from '../rooms/Room';
 import Wall from '../rooms/Wall';
 import Player from '../characters/Player';
-import OfficeStartLights from '../lights/Office2Lights';
+import Office2Lights from '../lights/Office2Lights';
 
 // models
 import WINDOW_LARGE from '@models/windowlarge.glb?url';
@@ -469,7 +469,7 @@ class OfficeStart extends Level {
 
         this.add(room);
 
-        this.add(new OfficeStartLights());
+        this.add(new Office2Lights());
 
         await super.load();
     }
