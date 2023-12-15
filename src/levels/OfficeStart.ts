@@ -14,7 +14,7 @@ import { meshesOf, setMaterial } from '../utils';
 import Room from '../rooms/Room';
 import Wall from '../rooms/Wall';
 import Player from '../characters/Player';
-import Office2Lights from '../lights/Office2Lights';
+import OfficeStartLights from '../lights/Office2Lights';
 
 // models
 import WINDOW_LARGE from '@models/windowlarge.glb?url';
@@ -29,6 +29,10 @@ import CHAIR_2 from '@models/Chair-2.glb?url';
 import FIDDLELEAF from '@models/Fiddle-leaf Plant.glb?url';
 import CLOCK from '@models/analog.glb?url';
 import PLANE from '@models/paperplane.glb?url';
+import LADY from '@models/Suit & Tie Guy.glb?url';
+import PHONE from '@models/Office Phone.glb?url';
+import MUG from '@models/Mug With Office Tool.glb?url';
+import MONITOR from '@models/Monitor.glb?url';
 
 // textures
 import PLAYER_PX from '@textures/player_px.jpg';
@@ -47,20 +51,25 @@ class OfficeStart extends Level {
     initCameraPosition = new Vector3(-30, 14, 0);
 
     async load() {
+        this.background = new Color(COLORS.WHITE);
+
         // Load models from files
         const windowNS = await loadModelFromGLTF(WINDOW_LARGE);
         const windowEW = windowNS.clone();
         const cooler = await loadModelFromGLTF(WATER_COOLER, true);
         const cubicle = await loadModelFromGLTF(CUBICLE);
         const whiteboard = await loadModelFromGLTF(BOARD);
-        const printer = await loadModelFromGLTF(COPIER);
         const desk = await loadModelFromGLTF(DESK);
-        const chair = await loadModelFromGLTF(CHAIR);
+        const chair = await loadModelFromGLTF(CHAIR, true);
         const chairTwo = await loadModelFromGLTF(CHAIR_2, true);
         const door = await loadModelFromGLTF(DOOR, true);
         const fiddlePlant = await loadModelFromGLTF(FIDDLELEAF);
         const clock = await loadModelFromGLTF(CLOCK);
         const plane = await loadModelFromGLTF(PLANE, true);
+        const lady = await loadModelFromGLTF(LADY);
+        const phone = await loadModelFromGLTF(PHONE);
+        const mug = await loadModelFromGLTF(MUG);
+        const monitor = await loadModelFromGLTF(MONITOR);
 
         windowNS.castShadow = false;
         windowEW.castShadow = false;
@@ -69,6 +78,8 @@ class OfficeStart extends Level {
         cooler.rotateOnAxis(UP_AXIS_THREE, Math.PI);
         chairTwo.rotateOnAxis(UP_AXIS_THREE, Math.PI / 4);
         desk.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
+        cubicle.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
+        chair.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
 
         // Load textures from files
         const motivation = await loadTexturesFromImages([QUOTE]);
@@ -84,17 +95,7 @@ class OfficeStart extends Level {
         const ceil = await loadTexturesFromImages([CEILING]);
         const carp = await loadTexturesFromImages([CARPET]);
 
-        this.background = new Color(COLORS.BLACK);
-
         // Projectile config
-        this.projectileConfig = {
-            object: plane.rotateOnAxis(new Vector3(0, 0, 1), -Math.PI / 2),
-            speed: 50,
-            damage: 35,
-            options: {
-                scale: 2e-6,
-            },
-        };
 
         /************************************
          * Creating characters
@@ -105,6 +106,14 @@ class OfficeStart extends Level {
             size: [1.5, 3, 1.5],
             position: [-10, 6, 0],
             color: COLORS.PLAYER,
+            projectileConfig: {
+                object: plane.rotateOnAxis(new Vector3(0, 0, 1), -Math.PI / 2),
+                speed: 50,
+                damage: 35,
+                options: {
+                    scale: 2e-6,
+                },
+            },
         });
         this.player.jumpVelocity = 7;
 
@@ -143,11 +152,10 @@ class OfficeStart extends Level {
         );
 
         // clock
-        const clock1 = new PhysicsObject(
-            clock.rotateOnAxis(UP_AXIS_THREE, Math.PI),
-            {
-                position: [30, 10, -9],
-                scale: 0.1,
+        this.add(
+            new PhysicsObject(clock.rotateOnAxis(UP_AXIS_THREE, Math.PI), {
+                position: [-0.5, 8, 0],
+                scale: 0.08,
                 castShadow: false,
                 mass: 0,
                 opacityConfig: {
@@ -156,7 +164,7 @@ class OfficeStart extends Level {
                     highOpacity: 1,
                     normal: new Vector3(-1, 0, 0),
                 },
-            }
+            })
         );
 
         // cubicles
@@ -176,84 +184,103 @@ class OfficeStart extends Level {
                 opacityConfig: backWallOpacity,
             }
         );
-        const cubicle1 = new PhysicsObject(cubicle, {
-            position: [9, 1, 0],
-            scale: 3,
-            castShadow: false,
-            mass: 0,
-            opacityConfig: backWallOpacity,
-        });
-        const cubicle2 = new PhysicsObject(cubicle, {
-            position: [15, 1, 0],
-            scale: 3,
-            castShadow: false,
-            mass: 0,
-            opacityConfig: backWallOpacity,
-        });
-        const cubicle3 = new PhysicsObject(cubicle, {
-            position: [21, 1, 0],
-            scale: 3,
-            castShadow: false,
-            mass: 0,
-            opacityConfig: backWallOpacity,
-        });
-        const cubicle4 = new PhysicsObject(cubicle, {
-            position: [27, 1, 0],
-            scale: 3,
-            castShadow: false,
-            mass: 0,
-            opacityConfig: backWallOpacity,
-        });
+
+        for (let i = 0; i < 7; i++) {
+            this.add(
+                new PhysicsObject(cubicle, {
+                    position: [16, 1, -19 + i * 6],
+                    scale: 3,
+                    castShadow: false,
+                    mass: 0,
+                    opacityConfig: backWallOpacity,
+                }),
+                new PhysicsObject(chair, {
+                    position: [14, 1, -19 + i * 6],
+                    scale: 0.1,
+                    castShadow: false,
+                    mass: 0,
+                    opacityConfig: {
+                        directional: true,
+                        lowOpacity: 0.2,
+                        highOpacity: 1,
+                        normal: new Vector3(0, 0, -1),
+                    },
+                })
+            );
+        }
+        // }
+        // const cubicle1 = new PhysicsObject(cubicle, {
+        //     position: [9, 1, 0],
+        //     scale: 3,
+        //     castShadow: false,
+        //     mass: 0,
+        //     opacityConfig: backWallOpacity,
+        // });
+        // const cubicle2 = new PhysicsObject(cubicle, {
+        //     position: [15, 1, 0],
+        //     scale: 3,
+        //     castShadow: false,
+        //     mass: 0,
+        //     opacityConfig: backWallOpacity,
+        // });
+        // const cubicle3 = new PhysicsObject(cubicle, {
+        //     position: [21, 1, 0],
+        //     scale: 3,
+        //     castShadow: false,
+        //     mass: 0,
+        //     opacityConfig: backWallOpacity,
+        // });
+        // const cubicle4 = new PhysicsObject(cubicle, {
+        //     position: [27, 1, 0],
+        //     scale: 3,
+        //     castShadow: false,
+        //     mass: 0,
+        //     opacityConfig: backWallOpacity,
+        // });
 
         // Printer/copier
-        const printer1 = new PhysicsObject(
-            printer.rotateOnAxis(UP_AXIS_THREE, -Math.PI / 2),
-            {
-                position: [-1, 1.5, 2],
-                scale: 3,
-                castShadow: false,
-                mass: 0,
-                opacityConfig: backWallOpacity,
-            }
-        );
+        // const printer1 = new PhysicsObject(
+        //     printer.rotateOnAxis(UP_AXIS_THREE, -Math.PI / 2),
+        //     {
+        //         position: [-1, 1.5, 2],
+        //         scale: 3,
+        //         castShadow: false,
+        //         mass: 0,
+        //         opacityConfig: backWallOpacity,
+        //     }
+        // );
 
         // Desks
-        const desk1 = new PhysicsObject(desk, {
-            position: [2, 1.5, -18],
-            scale: 4,
-            castShadow: false,
-            mass: 0,
-            opacityConfig: {
-                directional: true,
-                lowOpacity: 0.2,
-                highOpacity: 1,
-                normal: new Vector3(0, 0, 1),
-            },
-        });
-        const desk2 = new PhysicsObject(desk, {
-            position: [10, 1.5, -18],
-            scale: 4,
-            castShadow: false,
-            mass: 0,
-            opacityConfig: {
-                directional: true,
-                lowOpacity: 0.2,
-                highOpacity: 1,
-                normal: new Vector3(0, 0, 1),
-            },
-        });
-        const desk3 = new PhysicsObject(desk, {
-            position: [18, 1.5, -18],
-            scale: 4,
-            castShadow: false,
-            mass: 0,
-            opacityConfig: {
-                characterIntersection: true,
-                lowOpacity: 0.2,
-                highOpacity: 1,
-                normal: new Vector3(0, 0, 1),
-            },
-        });
+        for (let i = 0; i < 3; i++) {
+            this.add(
+                new PhysicsObject(desk, {
+                    position: [i * 6 + 6, 3, -27],
+                    scale: 3,
+                    castShadow: false,
+                    mass: 0,
+                    opacityConfig: {
+                        directional: true,
+                        lowOpacity: 0.2,
+                        highOpacity: 1,
+                        normal: new Vector3(0, 0, 1),
+                    },
+                })
+            );
+            this.add(
+                new PhysicsObject(desk, {
+                    position: [i * 6 + 6, 3, 27],
+                    scale: 3,
+                    castShadow: false,
+                    mass: 0,
+                    opacityConfig: {
+                        directional: true,
+                        lowOpacity: 0.2,
+                        highOpacity: 1,
+                        normal: new Vector3(0, 0, 1),
+                    },
+                })
+            );
+        }
 
         // Chairs
         const chair1 = new PhysicsObject(chair, {
@@ -333,34 +360,123 @@ class OfficeStart extends Level {
             },
         });
 
-        /****  WINDOWS ****/
-        // window 1
-        const window1 = new PhysicsObject(windowEW, {
-            position: [17, 5, -21],
-            scale: 3,
-            castShadow: false,
-            mass: 0,
+        // Front Desk
+        const receptionBottom = new Wall({
+            name: 'receptionBottom',
+            size: [3, 4, 7],
+            position: [-5, 1.5, 0],
+            direction: [-1, 0, 0],
+            color: COLORS.WHITE,
             opacityConfig: {
                 directional: true,
                 lowOpacity: 0.2,
                 highOpacity: 1,
-                normal: new Vector3(0, 0, 1),
+                normal: new Vector3(-1, 0, 0),
             },
         });
 
-        // window 4
-        const window4 = new PhysicsObject(windowNS, {
-            position: [-4, 5, -7],
-            scale: 3,
-            castShadow: false,
-            mass: 0,
+        const receptionTop = new Wall({
+            name: 'receptionTop',
+            size: [0.5, 4, 8],
+            position: [-5, 3.2, 0],
+            direction: [-1, 0, 0],
+            color: COLORS.GRAY,
             opacityConfig: {
                 directional: true,
                 lowOpacity: 0.2,
                 highOpacity: 1,
-                normal: new Vector3(1, 0, 0),
+                normal: new Vector3(-1, 0, 0),
             },
         });
+
+        const phone1 = new PhysicsObject(
+            phone.rotateOnAxis(UP_AXIS_THREE, (Math.PI * 3) / 4),
+            {
+                position: [-5, 4, 2],
+                scale: 0.4,
+                castShadow: false,
+                mass: 0,
+                opacityConfig: {
+                    directional: true,
+                    lowOpacity: 0.2,
+                    highOpacity: 1,
+                    normal: new Vector3(-1, 0, 0),
+                },
+            }
+        );
+
+        const monitor1 = new PhysicsObject(
+            monitor.rotateOnAxis(UP_AXIS_THREE, (Math.PI * 3) / 4),
+            {
+                position: [-6, 5, -3],
+                scale: 0.04,
+                castShadow: false,
+                mass: 0,
+                opacityConfig: {
+                    directional: true,
+                    lowOpacity: 0.2,
+                    highOpacity: 1,
+                    normal: new Vector3(-1, 0, 0),
+                },
+            }
+        );
+
+        const mug1 = new PhysicsObject(
+            mug.rotateOnAxis(UP_AXIS_THREE, (Math.PI * 3) / 4),
+            {
+                position: [-4, 4, 2],
+                scale: 8,
+                castShadow: false,
+                mass: 0,
+                opacityConfig: {
+                    directional: true,
+                    lowOpacity: 0.2,
+                    highOpacity: 1,
+                    normal: new Vector3(-1, 0, 0),
+                },
+            }
+        );
+
+        // Front Desk Lady
+        const receptionist = new PhysicsObject(
+            lady.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2),
+            {
+                position: [-2, 3, 0],
+                scale: 6,
+                castShadow: false,
+                mass: 0,
+            }
+        );
+
+        /****  WINDOWS ****/
+        // this.add(
+        //     new PhysicsObject(windowEW, {
+        //         position: [17, 5, -21],
+        //         scale: 3,
+        //         castShadow: false,
+        //         mass: 0,
+        //         opacityConfig: {
+        //             directional: true,
+        //             lowOpacity: 0.2,
+        //             highOpacity: 1,
+        //             normal: new Vector3(0, 0, 1),
+        //         },
+        //     })
+        // );
+        // this.add(
+        //     new PhysicsObject(windowNS, {
+        //         position: [-4, 5, -7],
+        //         scale: 3,
+        //         castShadow: false,
+        //         mass: 0,
+        //         opacityConfig: {
+        //             directional: true,
+        //             lowOpacity: 0.2,
+        //             highOpacity: 1,
+        //             normal: new Vector3(1, 0, 0),
+        //         },
+        //     })
+        // );
 
         /************************************
          * Setting up the room
@@ -368,25 +484,20 @@ class OfficeStart extends Level {
 
         /**** ADDING OBJECTS ****/
         this.add(
-            clock1,
-            window1,
-            window4,
             cooler1,
             board1,
-            cubicle1,
-            cubicle2,
-            cubicle3,
-            cubicle4,
-            printer1,
             chair1,
             chair2,
             chair3,
             chair4,
             chair5,
             plant1,
-            desk1,
-            desk2,
-            desk3
+            receptionBottom,
+            receptionTop,
+            phone1,
+            monitor1,
+            mug1,
+            receptionist
         );
 
         this.portal = new PhysicsObject(door, {
@@ -450,15 +561,15 @@ class OfficeStart extends Level {
                 }
             )
         );
-        
+
         // Add platform in the middle of the room
-        const { size, position, color } = room.options;
+        const { size, position } = room.options;
         const platform = new Wall({
             name: 'platform',
-            size: [size[0] / 4, WALL_THICKNESS, size[2] / 4],
+            size: [15, WALL_THICKNESS, 30],
             position: [position[0], position[1] + size[1] / 4, position[2]],
-            direction: [0, 0, 0],
-            color,
+            direction: [-1, 0, 0],
+            color: COLORS.GOLD,
             opacityConfig: {
                 ...opacityConfig,
                 lowOpacity: 1,
@@ -469,7 +580,7 @@ class OfficeStart extends Level {
 
         this.add(room);
 
-        this.add(new Office2Lights());
+        this.add(new OfficeStartLights());
 
         await super.load();
     }

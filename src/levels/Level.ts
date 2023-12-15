@@ -1,15 +1,5 @@
 import { BODY_TYPES, Body, Vec3 } from 'cannon-es';
-import {
-    Scene,
-    Object3D,
-    Object3DEventMap,
-    Vector3,
-    Mesh,
-    BoxGeometry,
-    MeshPhongMaterial,
-    Box3,
-    Ray,
-} from 'three';
+import { Scene, Object3D, Object3DEventMap, Vector3, Box3, Ray } from 'three';
 
 import {
     ORBIT_CONTROLS_ENABLED,
@@ -23,7 +13,7 @@ import {
 } from '../globals';
 import { dfsFind, dfsTraverse, meshesOf } from '../utils';
 import { DynamicOpacityConfig, DynamicOpacityMaterial } from '../opacity';
-import PhysicsObject, { PhysicsObjectOptions } from '../PhysicsObject';
+import PhysicsObject from '../PhysicsObject';
 import Character from '../characters/Character';
 
 import type Player from '../characters/Player';
@@ -35,16 +25,6 @@ type LevelChild = Object3D<Object3DEventMap> & {
     dispose?: () => void;
     reset?: () => void;
     body?: Body;
-};
-
-type ProjectileConfig = {
-    /** The object launched as a projectile. */
-    object: Object3D;
-    /** The magnitude of the impluse applied to the projectile. */
-    speed: number;
-    damage: number;
-    /** Configuration params for the projectile PhysicsObject. */
-    options?: Partial<Omit<PhysicsObjectOptions, 'position' | 'direction'>>;
 };
 
 class Level extends Scene {
@@ -62,18 +42,15 @@ class Level extends Scene {
     private playerKnockback = 5;
 
     initCameraPosition = INIT_CAMERA_POSITION;
-    complete = false;
-    projectileConfig: ProjectileConfig = {
-        object: new Mesh(
-            new BoxGeometry(0.5, 0.5, 0.5),
-            new MeshPhongMaterial({ color: 0x00ff00 })
-        ),
-        damage: 35,
-        speed: 50,
-    };
+    state: 'incomplete' | 'complete' | 'playerDead' = 'incomplete';
     player?: Player;
     enemies: Enemy[] = [];
     portal?: PhysicsObject;
+
+    constructor() {
+        super();
+        this.layers.enableAll();
+    }
 
     /**
      * Subclasses should override this method to add objects to the level,
@@ -104,7 +81,7 @@ class Level extends Scene {
                     this.player &&
                     e.body.id === this.player.body.id
                 ) {
-                    this.complete = true;
+                    this.state = 'complete';
                 }
             });
 
@@ -145,7 +122,7 @@ class Level extends Scene {
         }
 
         if (this.player) {
-            if (this.player.health < 0) {
+            if (this.player.health <= 0) {
                 this.reset();
             } else {
                 const killed = [];
@@ -221,14 +198,10 @@ class Level extends Scene {
             this.player.position,
             this.player.initPosition
         );
-        cameraDisplacement.y = 0;
+        // cameraDisplacement.y = 0;
 
         CAMERA.position.addVectors(this.initCameraPosition, cameraDisplacement);
-        CAMERA.lookAt(
-            this.player.position
-                .clone()
-                .add(new Vector3(0, -this.player.position.y, 0))
-        );
+        CAMERA.lookAt(this.player.position);
     }
 
     /** Make objects between the camera and the player transparent */
@@ -335,14 +308,19 @@ class Level extends Scene {
         PROJECTILE_QUEUE.reverse();
         while (PROJECTILE_QUEUE.length > 0) {
             const sender = PROJECTILE_QUEUE.pop() as Character;
+            const { projectileConfig } = sender.options;
             const dir = sender.front
                 .clone()
                 .applyQuaternion(sender.quaternion)
                 .normalize();
 
-            const proj = new PhysicsObject(this.projectileConfig.object, {
-                ...this.projectileConfig.options,
-                position: sender.position.clone().add(dir).toArray(),
+            const offset = projectileConfig.offset || 1;
+            const proj = new PhysicsObject(projectileConfig.object, {
+                ...projectileConfig.options,
+                position: sender.position
+                    .clone()
+                    .add(dir.clone().setLength(offset))
+                    .toArray(),
                 direction: dir.clone().toArray(),
             });
 
@@ -359,13 +337,13 @@ class Level extends Scene {
 
                 if (e.body.id === this.player.body.id) {
                     if (this.bodyToEnemy.has(sender.body.id)) {
-                        this.player.takeDamage(this.projectileConfig.damage);
+                        this.player.takeDamage(projectileConfig.damage);
                         this.activeProjectiles.delete(proj);
                     }
                 } else if (sender.body.id === this.player.body.id) {
                     const enemy = this.bodyToEnemy.get(e.body.id);
                     if (enemy) {
-                        enemy.takeDamage(this.projectileConfig.damage);
+                        enemy.takeDamage(projectileConfig.damage);
                         this.activeProjectiles.delete(proj);
                     }
                 } else if (e.body.type === BODY_TYPES.STATIC) {
@@ -376,7 +354,7 @@ class Level extends Scene {
             proj.body.applyImpulse(
                 new Vec3().copy(
                     dir.multiplyScalar(
-                        this.projectileConfig.speed
+                        projectileConfig.speed
                     ) as unknown as Vec3
                 )
             );

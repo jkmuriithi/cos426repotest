@@ -16,12 +16,13 @@ import {
 } from 'cannon-es';
 
 import type Character from './characters/Character';
+import { CSS2DRenderer } from 'three/examples/jsm/Addons.js';
 
 // Game
 export const PROJECTILE_QUEUE: Character[] = [];
 export const PROJECTILE_LIMIT = 100;
 export const UP_AXIS = [0, 1, 0] as const;
-export const STARTING_LEVEL = 2;
+export const STARTING_LEVEL = 0;
 export const WALL_THICKNESS = 0.4;
 export const FLOAT_EPS = 1e-6;
 
@@ -33,20 +34,22 @@ export const COLORS = {
     RED: 0xff0000,
     PLAYER: 0xe8beac,
     BARBIE: 0xffc0cb,
+    GOLD: 0xffd700,
 };
 
 // Debug feature flags
 export const HOTKEYS_ENABLED = true;
-export const ORBIT_CONTROLS_ENABLED = false;
+export const ORBIT_CONTROLS_ENABLED = true;
 export const ICE_SKATER_MODE = false;
 export const PRINT_ASSETS_ON_LOAD = true;
-export const DRAW_CHARACTER_DIRECTION_LINE = true;
+export const DRAW_CHARACTER_DIRECTION_LINE = false;
 
 // ThreeJS
 export const UP_AXIS_THREE = new Vector3(...UP_AXIS);
 export const CAMERA = new PerspectiveCamera();
 export const INIT_CAMERA_POSITION = new Vector3(-10, 10, 10);
 export const RENDERER = new WebGLRenderer({ antialias: true });
+export const RENDERER_2D = new CSS2DRenderer();
 export const SHADOW_MAP_SIZE = 512;
 
 // Cannon-ES

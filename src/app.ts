@@ -30,6 +30,7 @@ import {
     STARTING_LEVEL,
     WALL_PHYSICS_MATERIAL,
     CHARACTER_PHYSICS_MATERIAL,
+    RENDERER_2D,
 } from './globals';
 import { ContactMaterial, GSSolver } from 'cannon-es';
 import LevelManager from './levels/LevelManager';
@@ -41,6 +42,7 @@ function setup() {
 
     CAMERA.zoom = 0.3;
     CAMERA.fov = 20;
+    CAMERA.layers.enableAll();
     CAMERA.updateProjectionMatrix();
 
     // Set up renderer, canvas, and minor CSS adjustments
@@ -48,11 +50,19 @@ function setup() {
     RENDERER.shadowMap.enabled = true;
     RENDERER.shadowMap.type = PCFSoftShadowMap;
 
+    RENDERER_2D.setSize(window.innerWidth, window.innerHeight);
+
     const canvas = RENDERER.domElement;
     canvas.style.display = 'block'; // Removes padding below canvas
     document.body.style.margin = '0'; // Removes margin around page
     document.body.style.overflow = 'hidden'; // Fix scrolling
+
+    const div = RENDERER_2D.domElement;
+    div.style.position = 'absolute';
+    div.style.top = '0px';
+
     document.body.appendChild(canvas);
+    document.body.appendChild(div);
 
     // Set up physics sim
     (WORLD.solver as GSSolver).iterations += 5;
@@ -80,7 +90,7 @@ function setup() {
     // Set up manual controls
     let controls: OrbitControls | undefined;
     if (ORBIT_CONTROLS_ENABLED) {
-        controls = new OrbitControls(CAMERA, canvas);
+        controls = new OrbitControls(CAMERA, div);
         controls.enableDamping = true;
         controls.enablePan = true;
         controls.enableZoom = true;
@@ -94,6 +104,7 @@ function setup() {
     const onWindowResize = () => {
         const { innerHeight, innerWidth } = window;
         RENDERER.setSize(innerWidth, innerHeight);
+        RENDERER_2D.setSize(innerWidth, innerHeight);
         CAMERA.aspect = innerWidth / innerHeight;
         CAMERA.updateProjectionMatrix();
     };
@@ -137,6 +148,7 @@ function setup() {
         lastCallTime = time;
         controls && controls.update();
         RENDERER.render(levelManager.current, CAMERA);
+        RENDERER_2D.render(levelManager.current, CAMERA);
 
         stats.end();
         window.requestAnimationFrame(loop);

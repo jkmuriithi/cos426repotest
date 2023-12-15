@@ -1,4 +1,12 @@
-import { Color, MeshPhongMaterial, Vector3 } from 'three';
+import {
+    Color,
+    DoubleSide,
+    LinearFilter,
+    Material,
+    MeshPhongMaterial,
+    NearestFilter,
+    Vector3,
+} from 'three';
 
 import Level from './Level';
 import PhysicsObject from '../PhysicsObject';
@@ -12,11 +20,20 @@ import MeleeEnemy from '../characters/MeleeEnemy';
 import RangedEnemy from '../characters/RangedEnemy';
 import TestLevelOneLights from '../lights/TestLevelOneLights';
 
+// models
 import NUNCHUCKS from '@models/nunchucks.glb?url';
 import SAUCER from '@models/flyingsaucer.glb?url';
 import DOOR from '@models/door.glb?url';
+import PLANE from '@models/paperplane.glb?url';
 
-import KOOL_AID_MAN from '@textures/BEAM.jpg';
+// textures
+import PLAYER_PX from '@textures/player_px.jpg';
+import PLAYER_NX from '@textures/player_nx.jpg';
+import PLAYER_PY from '@textures/player_py.jpg';
+import PLAYER_NY from '@textures/player_ny.jpg';
+import PLAYER_PZ from '@textures/player_pz.jpg';
+import PLAYER_NZ from '@textures/player_nz.jpg';
+import KOOL from '@textures/BEAM.jpg';
 
 class TestLevelOne extends Level {
     initCameraPosition = new Vector3(-10, 10, 10);
@@ -26,28 +43,59 @@ class TestLevelOne extends Level {
         const chucks = await loadModelFromGLTF(NUNCHUCKS);
         const saucer = await loadModelFromGLTF(SAUCER);
         const door = await loadModelFromGLTF(DOOR, true);
+        const plane = await loadModelFromGLTF(PLANE, true);
+
         door.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
 
         // Load textures from files
-        const kool = await loadTexturesFromImages([KOOL_AID_MAN]);
+        const kool = await loadTexturesFromImages([KOOL]);
+        const player_textures = await loadTexturesFromImages([
+            PLAYER_PX,
+            PLAYER_NX,
+            PLAYER_PY,
+            PLAYER_NY,
+            PLAYER_PZ,
+            PLAYER_NZ,
+        ]);
+        player_textures.map((te) => (te.magFilter = NearestFilter));
 
         this.background = new Color(COLORS.BLACK);
 
-        // Characters
+        // Projectile config
+        meshesOf(plane).forEach(
+            (mesh) => ((mesh.material as Material).side = DoubleSide)
+        );
+        const projectileConfig = {
+            object: plane.rotateOnAxis(new Vector3(0, 0, 1), -Math.PI / 2),
+            speed: 50,
+            damage: 35,
+            options: {
+                scale: 2e-6,
+            },
+        };
+
+        // Player
         this.player = new Player({
             size: [1, 2, 1],
             position: [15, 6, -5],
             color: COLORS.PLAYER,
+            projectileConfig,
         });
-        setMaterial(
-            this.player,
-            new MeshPhongMaterial({
+        this.player.jumpVelocity = 7;
+        const materials = player_textures.map((texture) => {
+            texture.generateMipmaps = false;
+            texture.minFilter = LinearFilter;
+            const mat = new MeshPhongMaterial({
                 color: COLORS.PLAYER,
-                map: kool[0],
-            })
-        );
+                shininess: 100,
+                map: texture,
+            });
+            return mat;
+        });
+        setMaterial(this.player, materials);
         this.add(this.player);
 
+        // Enemies
         this.enemies = [
             new MeleeEnemy({
                 size: [1.5, 1, 1.5],
@@ -59,20 +107,12 @@ class TestLevelOne extends Level {
                 position: [12, 8, -5],
                 color: COLORS.BLACK,
                 health: 200,
+                projectileConfig,
             }),
         ];
         this.add(...this.enemies);
 
         // Physics objects
-        // Projectiles
-        this.projectileConfig = {
-            object: saucer,
-            damage: 35,
-            speed: 50,
-            options: {
-                scale: 0.001,
-            },
-        };
         this.add(
             new PhysicsObject(chucks, {
                 position: [10, 8, -5],
@@ -103,26 +143,26 @@ class TestLevelOne extends Level {
             })
         );
         this.portal = new PhysicsObject(door, {
-            position: [25, 4, -10],
+            position: [24, 4, -10],
             scale: 7,
             mass: 0,
         });
         this.add(this.portal);
 
-
-        // Add platform in the middle of the room
+        // Platform
         const { size, position, opacityConfig, color } = room.options;
         const platform = new Wall({
             name: 'platform',
             size: [size[0] / 4, WALL_THICKNESS, size[2] / 4],
             position: [position[0], position[1] + size[1] / 4, position[2]],
-            direction: [0, -1, 0],
+            direction: [0, 1, 0],
             color,
             opacityConfig: {
                 ...opacityConfig,
                 characterIntersection: true,
                 lowOpacity: 0.4,
             },
+            castShadow: true,
         });
         meshesOf(platform).forEach((mesh) => (mesh.castShadow = true));
         room.add(platform);

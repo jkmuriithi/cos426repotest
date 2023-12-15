@@ -2,7 +2,7 @@ import { Group, DirectionalLight, HemisphereLight } from 'three';
 
 import { COLORS, SHADOW_MAP_SIZE } from '../globals';
 
-class BankRobberyLights extends Group {
+class OfficeBossLights extends Group {
     shadowMapSize = SHADOW_MAP_SIZE;
 
     constructor() {
@@ -28,4 +28,4 @@ class BankRobberyLights extends Group {
     }
 }
 
-export default BankRobberyLights;
+export default OfficeBossLights;
