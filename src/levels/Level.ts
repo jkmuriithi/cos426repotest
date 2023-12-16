@@ -24,7 +24,7 @@ import Wall from '../rooms/Wall';
 
 import type Character from '../characters/Character';
 import type Enemy from '../characters/Enemy';
-import type Player from '../characters/Player';
+import Player from '../characters/Player';
 
 type LevelChild = Object3D<Object3DEventMap> & {
     update?: (dt: number) => void;
@@ -115,34 +115,33 @@ class Level extends Scene {
                 }
             });
 
-            for (const enemy of this.enemies) {
-                enemy.body.addEventListener('collide', (e: CollideEvent) => {
-                    if (!this.player) return;
+            this.player.body.addEventListener('collide', (e: CollideEvent) => {
+                if (!this.player) return;
 
-                    if (e.body.id === this.player.body.id) {
-                        if (
-                            WORLD.time - this.lastContactTime >
-                            this.contactImmunitySecs
-                        ) {
-                            this.lastContactTime = WORLD.time;
-                            this.player.takeDamage(enemy.contactDamage);
-                        }
-
-                        const dir = this.player.body.position
-                            .clone()
-                            .vadd(UP_AXIS_CANNON)
-                            .vsub(enemy.body.position);
-                        dir.normalize();
-
-                        enemy.body.applyImpulse(
-                            dir.clone().scale(-this.enemyKnockback)
-                        );
-                        this.player.body.applyImpulse(
-                            dir.clone().scale(this.playerKnockback)
-                        );
+                const enemy = this.bodyToEnemy.get(e.body.id);
+                if (enemy) {
+                    if (
+                        WORLD.time - this.lastContactTime >
+                        this.contactImmunitySecs
+                    ) {
+                        this.lastContactTime = WORLD.time;
+                        this.player.takeDamage(enemy.contactDamage);
                     }
-                });
-            }
+
+                    const dir = this.player.body.position
+                        .clone()
+                        .vadd(UP_AXIS_CANNON)
+                        .vsub(enemy.body.position);
+                    dir.normalize();
+
+                    enemy.body.applyImpulse(
+                        dir.clone().scale(-this.enemyKnockback)
+                    );
+                    this.player.body.applyImpulse(
+                        dir.clone().scale(this.playerKnockback)
+                    );
+                }
+            });
         }
     }
 
@@ -189,24 +188,22 @@ class Level extends Scene {
             if (this.player.health <= 0) {
                 this.state = 'playerDead';
                 return;
-            } else {
-                const killedEnemies = [];
+            }
+            const killedEnemies = [];
 
-                for (const enemy of this.enemies) {
-                    if (enemy.health <= 0) {
-                        this.remove(enemy);
-                        WORLD.removeBody(enemy.body);
-                        killedEnemies.push(enemy);
-                    } else {
-                        enemy.setPlayerPosition(this.player.position);
-                    }
+            for (const enemy of this.enemies) {
+                if (enemy.health <= 0) {
+                    this.remove(enemy);
+                    WORLD.removeBody(enemy.body);
+                    killedEnemies.push(enemy);
+                } else {
+                    enemy.setPlayerPosition(this.player.position);
                 }
-                for (const enemy of killedEnemies) {
-                    const i = this.enemies.indexOf(enemy);
-                    this.enemies.splice(i, 1);
-                }
-
-                this.killedEnemies.push(...killedEnemies);
+            }
+            for (const enemy of killedEnemies) {
+                const i = this.enemies.indexOf(enemy);
+                this.enemies.splice(i, 1);
+                this.killedEnemies.push(enemy);
             }
         }
 
@@ -237,7 +234,7 @@ class Level extends Scene {
 
         const currTransparent = new Set<PhysicsObject>();
 
-        // Method 1: Checking normal direction
+        // Method 1: Checking normal direction (if the camera position can move)
         const thresh = Math.cos(70 * (Math.PI / 180));
         const cameraDir = this.player!.position.clone()
             .setComponent(1, 0)
@@ -254,7 +251,6 @@ class Level extends Scene {
         }
 
         // Method 2: Checking intersection with characters
-        // TODO: Make calculation more efficient
         const dynamicObjects = new Map<Box3, PhysicsObject>();
         this.intersectionDynamicObjects.forEach((obj) =>
             dynamicObjects.set(
@@ -342,22 +338,22 @@ class Level extends Scene {
             proj.body.addEventListener('collide', (e: CollideEvent) => {
                 if (!this.player) return;
                 if (!this.activeProjectiles.has(proj)) return;
-
                 if (e.body.id === sender.body.id) return;
 
-                if (e.body.id === this.player.body.id) {
-                    if (this.bodyToEnemy.has(sender.body.id)) {
-                        this.player.takeDamage(config.damage);
-                        this.activeProjectiles.delete(proj);
-                    }
+                if (e.body.type === BODY_TYPES.STATIC) {
+                    this.activeProjectiles.delete(proj);
+                } else if (
+                    e.body.id === this.player.body.id &&
+                    this.bodyToEnemy.has(sender.body.id)
+                ) {
+                    this.player.takeDamage(config.damage);
+                    this.activeProjectiles.delete(proj);
                 } else if (sender.body.id === this.player.body.id) {
                     const enemy = this.bodyToEnemy.get(e.body.id);
                     if (enemy) {
                         enemy.takeDamage(config.damage);
                         this.activeProjectiles.delete(proj);
                     }
-                } else if (e.body.type === BODY_TYPES.STATIC) {
-                    this.activeProjectiles.delete(proj);
                 }
             });
 

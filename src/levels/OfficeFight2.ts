@@ -56,18 +56,48 @@ class OfficeFight2 extends Level {
         if (DEBUG_FLAGS.SHOW_GRIDS) {
             this.add(new GridHelper(100, 100, 0x0000ff, 0x808080));
         }
-
-        // Load models from files
-        const cooler = await loadModelFromGLTF(WATER_COOLER, true);
-        const cubicle = await loadModelFromGLTF(CUBICLE);
-        const whiteboard = await loadModelFromGLTF(BOARD);
-        const printer = await loadModelFromGLTF(COPIER);
-        const desk = await loadModelFromGLTF(DESK);
-        const chairTwo = await loadModelFromGLTF(CHAIR_2, true);
-        const door = await loadModelFromGLTF(DOOR, true);
-        const fiddlePlant = await loadModelFromGLTF(FIDDLELEAF);
-        const clock = await loadModelFromGLTF(CLOCK);
-        const plane = await loadModelFromGLTF(PLANE, true);
+        // Load assets
+        const [
+            cooler,
+            cubicle,
+            whiteboard,
+            printer,
+            desk,
+            chairTwo,
+            door,
+            fiddlePlant,
+            clock,
+            plane,
+            google_colors,
+            player_textures,
+            ceil,
+            carp,
+        ] = await Promise.all([
+            loadModelFromGLTF(WATER_COOLER, true),
+            loadModelFromGLTF(CUBICLE),
+            loadModelFromGLTF(BOARD),
+            loadModelFromGLTF(COPIER),
+            loadModelFromGLTF(DESK),
+            loadModelFromGLTF(CHAIR_2, true),
+            loadModelFromGLTF(DOOR, true),
+            loadModelFromGLTF(FIDDLELEAF),
+            loadModelFromGLTF(CLOCK),
+            loadModelFromGLTF(PLANE, true),
+            loadTexturesFromImages([GOOG_COLORS]),
+            loadTexturesFromImages(
+                [
+                    PLAYER_PX,
+                    PLAYER_NX,
+                    PLAYER_PY,
+                    PLAYER_NY,
+                    PLAYER_PZ,
+                    PLAYER_NZ,
+                ],
+                NearestFilter
+            ),
+            loadTexturesFromImages([CEILING]),
+            loadTexturesFromImages([CARPET]),
+        ]);
 
         door.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
         const doorBack = door.clone();
@@ -76,15 +106,6 @@ class OfficeFight2 extends Level {
         cooler.rotateOnAxis(UP_AXIS_THREE, Math.PI);
         chairTwo.rotateOnAxis(UP_AXIS_THREE, Math.PI / 4);
         desk.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
-
-        // Load textures from files
-        const google_colors = await loadTexturesFromImages([GOOG_COLORS]);
-        const player_textures = await loadTexturesFromImages(
-            [PLAYER_PX, PLAYER_NX, PLAYER_PY, PLAYER_NY, PLAYER_PZ, PLAYER_NZ],
-            NearestFilter
-        );
-        const ceil = await loadTexturesFromImages([CEILING]);
-        const carp = await loadTexturesFromImages([CARPET]);
 
         this.background = new Color(COLORS.BLACK);
 

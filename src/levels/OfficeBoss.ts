@@ -60,29 +60,46 @@ class OfficeBoss extends Level {
 
     async load() {
         // Load models from files
-        const door = await loadModelFromGLTF(DOOR, true);
-        const plane = await loadModelFromGLTF(PLANE, true);
+        const [
+            door,
+            plane,
+            ceil,
+            carp,
+            prof,
+            google_colors,
+            gold,
+            player_textures,
+            boss_textures,
+        ] = await Promise.all([
+            loadModelFromGLTF(DOOR, true),
+            loadModelFromGLTF(PLANE, true),
+            loadTexturesFromImages([CEILING]),
+            loadTexturesFromImages([CARPET]),
+            loadTexturesFromImages([PROF]),
+            loadTexturesFromImages([GOOG_COLORS]),
+            loadTexturesFromImages([GOLD]),
+            loadTexturesFromImages(
+                [
+                    PLAYER_PX,
+                    PLAYER_NX,
+                    PLAYER_PY,
+                    PLAYER_NY,
+                    PLAYER_PZ,
+                    PLAYER_NZ,
+                ],
+                NearestFilter,
+                LinearFilter
+            ),
+            loadTexturesFromImages(
+                [BOSS_PX, BOSS_NX, BOSS_PY, BOSS_NY, BOSS_PZ, BOSS_NZ],
+                NearestFilter,
+                LinearFilter
+            ),
+        ]);
 
         door.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
         const doorBack = door.clone();
         doorBack.rotateOnAxis(UP_AXIS_THREE, Math.PI);
-
-        // Load textures from files
-        const player_textures = await loadTexturesFromImages(
-            [PLAYER_PX, PLAYER_NX, PLAYER_PY, PLAYER_NY, PLAYER_PZ, PLAYER_NZ],
-            NearestFilter,
-            LinearFilter
-        );
-        const boss_textures = await loadTexturesFromImages(
-            [BOSS_PX, BOSS_NX, BOSS_PY, BOSS_NY, BOSS_PZ, BOSS_NZ],
-            NearestFilter,
-            LinearFilter
-        );
-        const ceil = await loadTexturesFromImages([CEILING]);
-        const carp = await loadTexturesFromImages([CARPET]);
-        const prof = await loadTexturesFromImages([PROF]);
-        const google_colors = await loadTexturesFromImages([GOOG_COLORS]);
-        const gold = await loadTexturesFromImages([GOLD]);
 
         prof[0].center = new Vector2(0.5, 0.5);
         prof[0].rotation = -Math.PI / 2;

@@ -50,33 +50,66 @@ import CARPET from '@textures/carpet.jpg';
 import GOOG_COLORS from '@textures/google_colors.jpeg';
 
 class OfficeCorridor extends Level {
-    initCameraPosition = new Vector3(-10, 10, 10);
+    possiblePositions = [
+        new Vector3(-9, 9, 28),
+        new Vector3(-10, 20, 10),
+        new Vector3(10, 20, 10),
+        new Vector3(-25, 10, -7.5),
+        new Vector3(3.5, 18, -39),
+    ];
 
     async load() {
-        const possiblePositions = [
-            new Vector3(-9, 9, 28),
-            new Vector3(-10, 20, 10),
-            new Vector3(10, 20, 10),
-            new Vector3(-25, 10, -7.5),
-            new Vector3(3.5, 18, -39),
-        ];
         this.initCameraPosition =
-            possiblePositions[
-                Math.floor(Math.random() * possiblePositions.length)
+            this.possiblePositions[
+                Math.floor(Math.random() * this.possiblePositions.length)
             ];
 
-        // Load models from files
-        const window = await loadModelFromGLTF(WINDOW_LARGE);
-        const cooler = await loadModelFromGLTF(WATER_COOLER, true);
-        const cubicle = await loadModelFromGLTF(CUBICLE);
-        const whiteboard = await loadModelFromGLTF(BOARD);
-        const printer = await loadModelFromGLTF(COPIER);
-        const desk = await loadModelFromGLTF(DESK);
-        const chair = await loadModelFromGLTF(CHAIR, true);
-        const door = await loadModelFromGLTF(DOOR, true);
-        const fiddlePlant = await loadModelFromGLTF(FIDDLELEAF);
-        const clock = await loadModelFromGLTF(CLOCK);
-        const plane = await loadModelFromGLTF(PLANE, true);
+        // Load all assets simultaneously
+        const [
+            window,
+            cooler,
+            cubicle,
+            whiteboard,
+            printer,
+            desk,
+            chair,
+            door,
+            fiddlePlant,
+            clock,
+            plane,
+            google_colors,
+            player_textures,
+            ceil,
+            carp,
+        ] = await Promise.all([
+            loadModelFromGLTF(WINDOW_LARGE),
+            loadModelFromGLTF(WATER_COOLER, true),
+            loadModelFromGLTF(CUBICLE),
+            loadModelFromGLTF(BOARD),
+            loadModelFromGLTF(COPIER),
+            loadModelFromGLTF(DESK),
+            loadModelFromGLTF(CHAIR, true),
+            loadModelFromGLTF(DOOR, true),
+            loadModelFromGLTF(FIDDLELEAF),
+            loadModelFromGLTF(CLOCK),
+            loadModelFromGLTF(PLANE, true),
+            loadTexturesFromImages([GOOG_COLORS]),
+            loadTexturesFromImages(
+                [
+                    PLAYER_PX,
+                    PLAYER_NX,
+                    PLAYER_PY,
+                    PLAYER_NY,
+                    PLAYER_PZ,
+                    PLAYER_NZ,
+                ],
+                NearestFilter,
+                LinearFilter
+            ),
+            loadTexturesFromImages([CEILING]),
+            loadTexturesFromImages([CARPET]),
+        ]);
+
         meshesOf(plane).forEach(
             (mesh) => ((mesh.material as Material).side = DoubleSide)
         );
@@ -95,14 +128,6 @@ class OfficeCorridor extends Level {
         chairLeft.rotateOnAxis(UP_AXIS_THREE, -Math.PI / 4);
 
         // Load textures from files
-        const google_colors = await loadTexturesFromImages([GOOG_COLORS]);
-        const player_textures = await loadTexturesFromImages(
-            [PLAYER_PX, PLAYER_NX, PLAYER_PY, PLAYER_NY, PLAYER_PZ, PLAYER_NZ],
-            NearestFilter,
-            LinearFilter
-        );
-        const ceil = await loadTexturesFromImages([CEILING]);
-        const carp = await loadTexturesFromImages([CARPET]);
 
         this.background = new Color(COLORS.BLACK);
 

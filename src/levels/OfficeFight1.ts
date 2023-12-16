@@ -51,35 +51,56 @@ import GOOG_COLORS from '@textures/google_colors.jpeg';
 class OfficeFight1 extends Level {
     initCameraPosition = new Vector3(-35, 28, 10);
     async load() {
-        // Load models from files
-        const windowNS = await loadModelFromGLTF(WINDOW_LARGE);
-        const windowEW = windowNS.clone();
-        const cooler = await loadModelFromGLTF(WATER_COOLER, true);
-        const whiteboard = await loadModelFromGLTF(BOARD);
-        const printer = await loadModelFromGLTF(COPIER);
-        const desk = await loadModelFromGLTF(DESK);
-        const chairTwo = await loadModelFromGLTF(CHAIR_2, true);
-        const door = await loadModelFromGLTF(DOOR, true);
-        const fiddlePlant = await loadModelFromGLTF(FIDDLELEAF);
-        const clock = await loadModelFromGLTF(CLOCK);
-        const plane = await loadModelFromGLTF(PLANE, true);
-        const cubicle = await loadModelFromGLTF(CUBICLE);
+        // Load all assets simultaneously
+        const [
+            windowEW,
+            cooler,
+            whiteboard,
+            printer,
+            desk,
+            chairTwo,
+            door,
+            fiddlePlant,
+            clock,
+            plane,
+            cubicle,
+            google_colors,
+            player_textures,
+            ceil,
+            carp,
+        ] = await Promise.all([
+            loadModelFromGLTF(WINDOW_LARGE),
+            loadModelFromGLTF(WATER_COOLER, true),
+            loadModelFromGLTF(BOARD),
+            loadModelFromGLTF(COPIER),
+            loadModelFromGLTF(DESK),
+            loadModelFromGLTF(CHAIR_2, true),
+            loadModelFromGLTF(DOOR, true),
+            loadModelFromGLTF(FIDDLELEAF),
+            loadModelFromGLTF(CLOCK),
+            loadModelFromGLTF(PLANE, true),
+            loadModelFromGLTF(CUBICLE),
+            loadTexturesFromImages([GOOG_COLORS]),
+            loadTexturesFromImages(
+                [
+                    PLAYER_PX,
+                    PLAYER_NX,
+                    PLAYER_PY,
+                    PLAYER_NY,
+                    PLAYER_PZ,
+                    PLAYER_NZ,
+                ],
+                NearestFilter
+            ),
+            loadTexturesFromImages([CEILING]),
+            loadTexturesFromImages([CARPET]),
+        ]);
 
         cubicle.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
         door.rotateOnAxis(UP_AXIS_THREE, -Math.PI / 2);
-        windowNS.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
         cooler.rotateOnAxis(UP_AXIS_THREE, Math.PI);
         chairTwo.rotateOnAxis(UP_AXIS_THREE, Math.PI / 4);
         desk.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
-
-        // Load textures from files
-        const google_colors = await loadTexturesFromImages([GOOG_COLORS]);
-        const player_textures = await loadTexturesFromImages(
-            [PLAYER_PX, PLAYER_NX, PLAYER_PY, PLAYER_NY, PLAYER_PZ, PLAYER_NZ],
-            NearestFilter
-        );
-        const ceil = await loadTexturesFromImages([CEILING]);
-        const carp = await loadTexturesFromImages([CARPET]);
 
         this.background = new Color(COLORS.BLACK);
 

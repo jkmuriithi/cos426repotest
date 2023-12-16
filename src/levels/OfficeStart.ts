@@ -66,39 +66,68 @@ class OfficeStart extends Level {
     initCameraPosition = new Vector3(-40, 15, 0);
 
     async load() {
-        this.background = new Color(COLORS.BLACK);
+        // Load all assets simulataneously
+        const [
+            cooler,
+            desk,
+            chairTwo,
+            door,
+            fiddlePlant,
+            clock,
+            plane,
+            lady,
+            phone,
+            mug,
+            monitor,
+            bin,
+            keyboard,
+            google_colors,
+            logoTexture,
+            player_textures,
+            ceil,
+            carp,
+            wood,
+            sign,
+        ] = await Promise.all([
+            loadModelFromGLTF(WATER_COOLER, true),
+            loadModelFromGLTF(DESK),
+            loadModelFromGLTF(CHAIR_2, true),
+            loadModelFromGLTF(DOOR, true),
+            loadModelFromGLTF(FIDDLELEAF),
+            loadModelFromGLTF(CLOCK),
+            loadModelFromGLTF(PLANE, true),
+            loadModelFromGLTF(LADY),
+            loadModelFromGLTF(PHONE),
+            loadModelFromGLTF(MUG),
+            loadModelFromGLTF(MONITOR),
+            loadModelFromGLTF(BIN),
+            loadModelFromGLTF(KEYBOARD, true),
+            loadTexturesFromImages([GOOG_COLORS]),
+            loadTexturesFromImages([LOGO]),
+            loadTexturesFromImages(
+                [
+                    PLAYER_PX,
+                    PLAYER_NX,
+                    PLAYER_PY,
+                    PLAYER_NY,
+                    PLAYER_PZ,
+                    PLAYER_NZ,
+                ],
+                NearestFilter,
+                LinearFilter
+            ),
 
-        // Load models from files
-        const cooler = await loadModelFromGLTF(WATER_COOLER, true);
-        const desk = await loadModelFromGLTF(DESK);
-        const chairTwo = await loadModelFromGLTF(CHAIR_2, true);
-        const door = await loadModelFromGLTF(DOOR, true);
-        const fiddlePlant = await loadModelFromGLTF(FIDDLELEAF);
-        const clock = await loadModelFromGLTF(CLOCK);
-        const plane = await loadModelFromGLTF(PLANE, true);
-        const lady = await loadModelFromGLTF(LADY);
-        const phone = await loadModelFromGLTF(PHONE);
-        const mug = await loadModelFromGLTF(MUG);
-        const monitor = await loadModelFromGLTF(MONITOR);
-        const bin = await loadModelFromGLTF(BIN);
-        const keyboard = await loadModelFromGLTF(KEYBOARD, true);
+            loadTexturesFromImages([CEILING]),
+            loadTexturesFromImages([CARPET]),
+            loadTexturesFromImages([WOOD]),
+            loadTexturesFromImages([SIGN]),
+        ]);
 
         meshesOf(plane).forEach(
             (mesh) => ((mesh.material as Material).side = DoubleSide)
         );
 
-        // Load textures from files
-        const google_colors = await loadTexturesFromImages([GOOG_COLORS]);
-        const logoTexture = await loadTexturesFromImages([LOGO]);
-        const player_textures = await loadTexturesFromImages(
-            [PLAYER_PX, PLAYER_NX, PLAYER_PY, PLAYER_NY, PLAYER_PZ, PLAYER_NZ],
-            NearestFilter,
-            LinearFilter
-        );
-        const ceil = await loadTexturesFromImages([CEILING]);
-        const carp = await loadTexturesFromImages([CARPET]);
-        const wood = await loadTexturesFromImages([WOOD]);
-        const sign = await loadTexturesFromImages([SIGN]);
+        this.background = new Color(COLORS.BLACK);
 
         /************************************
          * Creating characters
