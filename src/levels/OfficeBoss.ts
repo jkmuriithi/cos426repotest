@@ -11,11 +11,13 @@ import {
     loadModelFromGLTF,
     loadTexturesFromImages,
     setMaterial,
+    meshesOf,
 } from '../helpers';
-import { COLORS } from '../globals';
+import { COLORS, WALL_THICKNESS } from '../globals';
 
 import Level from './Level';
 import Room from '../rooms/Room';
+import Wall from '../rooms/Wall';
 import Player from '../characters/Player';
 import MeleeEnemy from '../characters/MeleeEnemy';
 import RangedEnemy from '../characters/RangedEnemy';
@@ -42,7 +44,7 @@ import CARPET from '@textures/carpet.jpg';
 import FINKELSTEIN from '@textures/finkelstein.jpeg';
 
 class OfficeBoss extends Level {
-    initCameraPosition = new Vector3(-100, 10, 0);
+    initCameraPosition = new Vector3(-150, 50, 0);
 
     async load() {
         // Load models from files
@@ -76,11 +78,11 @@ class OfficeBoss extends Level {
         // Characters
         this.player = new Player({
             size: [1.5, 3, 1.5],
-            position: [-10, 5, 0],
+            position: [-50, 5, 0],
             color: COLORS.PLAYER,
             projectileConfig,
         });
-        this.player.jumpVelocity = 7;
+        this.player.jumpVelocity = 10;
 
         let materials = player_textures.map((texture) => {
             texture.generateMipmaps = false;
@@ -95,24 +97,38 @@ class OfficeBoss extends Level {
         setMaterial(this.player, materials);
         this.add(this.player);
 
-        for (let i = 0; i < 200; i += 25) {
-            this.enemies.push(
-                new MeleeEnemy({
-                    size: [4, 8, 4],
-                    position: [30, 8, -75 + i],
-                    color: COLORS.RED,
-                })
-            );
-            this.enemies.push(
-                new RangedEnemy({
-                    size: [8, 16, 8],
-                    position: [40, 8, -70 + i],
-                    color: COLORS.BLACK,
-                    projectileConfig,
-                })
-            );
-        }
-        // add boss
+        // Enemies
+        this.enemies = [
+            new RangedEnemy({
+                size: [4, 8, 4],
+                position: [20, 25, -30],
+                color: COLORS.RED,
+                health: 200,
+                projectileConfig,
+            }),
+            new RangedEnemy({
+                size: [4, 8, 4],
+                position: [20, 25, 30],
+                color: COLORS.RED,
+                health: 200,
+                projectileConfig,
+            }),
+            new MeleeEnemy({
+                size: [4, 8, 4],
+                position: [0, 5, -10],
+                color: COLORS.BLACK,
+                health: 300,
+            }),
+            new MeleeEnemy({
+                size: [4, 8, 4],
+                position: [0, 5, 10],
+                color: COLORS.BLACK,
+                health: 300,
+            }),
+        ];
+        this.add(...this.enemies);
+
+        // Boss
         const boss = new RangedEnemy({
             size: [24, 48, 24],
             position: [60, 5, 0],
@@ -142,7 +158,7 @@ class OfficeBoss extends Level {
         this.add(...this.enemies);
 
         const room = new Room({
-            size: [500, 120, 500],
+            size: [300, 120, 200],
             position: [0, 0, 0],
             color: COLORS.WHITE,
         });
@@ -174,6 +190,104 @@ class OfficeBoss extends Level {
         );
         this.add(room);
         this.add(new OfficeBossLights());
+
+        // Platform
+        const { size, position, opacityConfig, color } = room.options;
+        const platformLeft1 = new Wall({
+            name: 'platform',
+            size: [10, WALL_THICKNESS, 10],
+            position: [-40, 10, -15],
+            direction: [0, 1, 0],
+            color: COLORS.WHITE,
+            opacityConfig: {
+                ...opacityConfig,
+                characterIntersection: true,
+                lowOpacity: 0.4,
+            },
+            castShadow: true,
+        });
+        meshesOf(platformLeft1).forEach((mesh) => (mesh.castShadow = true));
+        room.add(platformLeft1);
+        
+        const platformLeft2 = new Wall({
+            name: 'platform',
+            size: [10, WALL_THICKNESS, 10],
+            position: [-20, 20, -30],
+            direction: [0, 1, 0],
+            color: COLORS.WHITE,
+            opacityConfig: {
+                ...opacityConfig,
+                characterIntersection: true,
+                lowOpacity: 0.4,
+            },
+            castShadow: true,
+        });
+        meshesOf(platformLeft2).forEach((mesh) => (mesh.castShadow = true));
+        room.add(platformLeft2);
+
+        const platformLeft3 = new Wall({
+            name: 'platform',
+            size: [10, WALL_THICKNESS, 10],
+            position: [20, 20, -30],
+            direction: [0, 1, 0],
+            color: COLORS.WHITE,
+            opacityConfig: {
+                ...opacityConfig,
+                characterIntersection: true,
+                lowOpacity: 0.4,
+            },
+            castShadow: true,
+        });
+        meshesOf(platformLeft3).forEach((mesh) => (mesh.castShadow = true));
+        room.add(platformLeft3);
+
+        const platformRight1 = new Wall({
+            name: 'platform',
+            size: [10, WALL_THICKNESS, 10],
+            position: [-40, 10, 15],
+            direction: [0, 1, 0],
+            color: COLORS.WHITE,
+            opacityConfig: {
+                ...opacityConfig,
+                characterIntersection: true,
+                lowOpacity: 0.4,
+            },
+            castShadow: true,
+        });
+        meshesOf(platformRight1).forEach((mesh) => (mesh.castShadow = true));
+        room.add(platformRight1);
+
+        const platformRight2 = new Wall({
+            name: 'platform',
+            size: [10, WALL_THICKNESS, 10],
+            position: [-20, 20, 30],
+            direction: [0, 1, 0],
+            color: COLORS.WHITE,
+            opacityConfig: {
+                ...opacityConfig,
+                characterIntersection: true,
+                lowOpacity: 0.4,
+            },
+            castShadow: true,
+        });
+        meshesOf(platformRight2).forEach((mesh) => (mesh.castShadow = true));
+        room.add(platformRight2);
+
+        const platformRight3 = new Wall({
+            name: 'platform',
+            size: [10, WALL_THICKNESS, 10],
+            position: [20, 20, 30],
+            direction: [0, 1, 0],
+            color: COLORS.WHITE,
+            opacityConfig: {
+                ...opacityConfig,
+                characterIntersection: true,
+                lowOpacity: 0.4,
+            },
+            castShadow: true,
+        });
+        meshesOf(platformRight3).forEach((mesh) => (mesh.castShadow = true));
+        room.add(platformRight3);
 
         await super.load();
     }

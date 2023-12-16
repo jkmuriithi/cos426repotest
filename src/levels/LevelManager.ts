@@ -9,11 +9,13 @@ import Office2 from './Office2';
 import OfficeBoss from './OfficeBoss';
 import Parkour from './Parkour';
 import TestLevelOne from './TestLevelOne';
+import OfficeCorridorOne from './OfficeCorridorOne';
 
 type LevelCreationFunction = () => Level;
 
 class LevelManager {
     readonly levels: LevelCreationFunction[] = [
+        () => new OfficeCorridorOne(),
         () => new OfficeStart(),
         () => new Office2(),
         () => new Parkour(),
