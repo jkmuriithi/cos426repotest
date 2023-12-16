@@ -54,7 +54,7 @@ import SIGN from '@textures/paper.jpeg';
 import GOOG_COLORS from '@textures/google_colors.jpeg';
 
 class OfficeStart extends Level {
-    initCameraPosition = new Vector3(-30, 14, 0);
+    initCameraPosition = new Vector3(-40, 15, 0);
 
     async load() {
         this.background = new Color(COLORS.WHITE);
@@ -442,7 +442,7 @@ class OfficeStart extends Level {
         const leftClearWall = new Wall({
             name: 'leftClearWall',
             size: [20, WALL_THICKNESS, 15],
-            position: [position[0], 10, position[2] - 22.5],
+            position: [position[0], 10, position[2] - 7.5],
             direction: [-1, 0, 0],
             color: COLORS.WHITE,
             opacityConfig: {
@@ -459,7 +459,7 @@ class OfficeStart extends Level {
         const rightClearWall = new Wall({
             name: 'rightClearWall',
             size: [20, WALL_THICKNESS, 15],
-            position: [position[0], 10, position[2] + 22.5],
+            position: [position[0], 10, position[2] + 7.5],
             direction: [-1, 0, 0],
             color: COLORS.WHITE,
             opacityConfig: {
