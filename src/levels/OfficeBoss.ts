@@ -196,10 +196,10 @@ class OfficeBoss extends Level {
         );
         const boss = new RangedEnemy({
             size: [24, 48, 24],
-            position: [20, 50, 0],
+            position: [20, 100, 0],
             color: COLORS.BLACK,
             health: 1000,
-            healthBarPosition: [0, 25, 0],
+            healthBarPosition: [0, 10, 0],
             projectileConfig: {
                 object: bossPlane,
                 speed: 50,
