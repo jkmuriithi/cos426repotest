@@ -37,6 +37,8 @@ class Level extends Scene {
     // Change the type of the superclass Object3D.children property
     declare children: LevelChild[];
 
+    private directionalDynamicObjects: PhysicsObject[] = [];
+    private intersectionDynamicObjects: PhysicsObject[] = [];
     private prevTransparent: Set<PhysicsObject> = new Set();
     private bodyToEnemy: Map<number, Enemy> = new Map();
     private createdProjectiles: PhysicsObject[] = [];
@@ -82,6 +84,21 @@ class Level extends Scene {
                 WORLD.addBody(child.body);
             }
         });
+
+        this.directionalDynamicObjects = dfsFind(this, (c) =>
+            Boolean(
+                c instanceof PhysicsObject &&
+                    c.options.opacityConfig &&
+                    c.options.opacityConfig.directional
+            )
+        ) as PhysicsObject[];
+        this.intersectionDynamicObjects = dfsFind(this, (c) =>
+            Boolean(
+                c instanceof PhysicsObject &&
+                    c.options.opacityConfig &&
+                    c.options.opacityConfig.characterIntersection
+            )
+        ) as PhysicsObject[];
 
         // Process characters and portals
         for (const enemy of this.enemies) {
@@ -225,14 +242,7 @@ class Level extends Scene {
         const cameraDir = this.player!.position.clone()
             .setComponent(1, 0)
             .sub(CAMERA.position);
-        const dirDynamicObjects = dfsFind(this, (c) =>
-            Boolean(
-                c instanceof PhysicsObject &&
-                    c.options.opacityConfig &&
-                    c.options.opacityConfig.directional
-            )
-        ) as PhysicsObject[];
-        for (const obj of dirDynamicObjects) {
+        for (const obj of this.directionalDynamicObjects) {
             const { normal, lowOpacity } = obj.options
                 .opacityConfig as DynamicOpacityConfig;
             if (cameraDir.dot(normal) > thresh) {
@@ -244,16 +254,11 @@ class Level extends Scene {
         }
 
         // Method 2: Checking intersection with characters
+        // TODO: Make calculation more efficient
         const dynamicObjects = new Map<Box3, PhysicsObject>();
-        dfsFind(this, (c) =>
-            Boolean(
-                c instanceof PhysicsObject &&
-                    c.options.opacityConfig &&
-                    c.options.opacityConfig.characterIntersection
-            )
-        ).forEach((obj) =>
+        this.intersectionDynamicObjects.forEach((obj) =>
             dynamicObjects.set(
-                new Box3().setFromObject(obj, true),
+                new Box3().setFromObject(obj),
                 obj as PhysicsObject
             )
         );

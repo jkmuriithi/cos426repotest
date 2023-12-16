@@ -134,17 +134,24 @@ class LevelManager {
     }
 
     resetCurrent() {
-        if (!(this.current instanceof Level)) return;
+        if (this.loading || !(this.current instanceof Level)) return;
 
         this.current.reset();
     }
 
     updateCurrent(dt: number) {
-        if (!(this.current instanceof Level)) return;
+        if (this.loading || !(this.current instanceof Level)) return;
 
         switch (this.current.state) {
             case 'incomplete':
                 this.current.update(dt);
+                break;
+            case 'touchedPortal':
+                this.current.state = 'incomplete';
+                if (!this.portalMessageShown) {
+                    this.showSlides([[chooseRandom(this.portalMessages), 550]]);
+                }
+                this.portalMessageShown = true;
                 break;
             case 'complete':
                 this.loadNext();
@@ -157,12 +164,6 @@ class LevelManager {
                     1000
                 );
                 break;
-            case 'touchedPortal':
-                this.current.state = 'incomplete';
-                if (!this.portalMessageShown) {
-                    this.showSlides([[chooseRandom(this.portalMessages), 550]]);
-                }
-                this.portalMessageShown = true;
         }
     }
 }
