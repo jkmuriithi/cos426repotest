@@ -340,20 +340,13 @@ class OfficeCorridorOne extends Level {
                 opacityConfig: rightWallOpacity,
             })
         );
-        // TODO: Wanna make it interactive (?) by making mass not equal to 0
-        // but it keeps falling out the floor lmao
         room.add(
             new PhysicsObject(chairTwo, {
                 position: [25, 0, -10],
                 scale: 0.1,
                 castShadow: false,
                 mass: 1,
-                opacityConfig: {
-                    directional: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(-1, 0, 0),
-                },
+                opacityConfig: frontWallOpacity,
             })
         );
 
