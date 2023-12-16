@@ -23,19 +23,25 @@ class LevelManager {
         () => new OfficeBoss(),
     ];
 
+    private readonly portalMessages = [
+        "can't leave yet ;)",
+        'clear enemies pls',
+    ];
+    private readonly deathMessages = [
+        'you died :/',
+        'rip',
+        'maybe try microsoft?',
+        'tough market ig',
+        'ngl that was bad',
+        'aw man',
+    ];
+    private readonly loadingMessage = 'loading...';
+    private readonly winMessage = 'you got hired! gg';
+
+    private startingLevel;
     private currentIndex: number;
     private loading: boolean = true;
     private portalMessageShown: boolean = false;
-
-    readonly startingLevel;
-    readonly portalMessages = [
-        // "can't leave yet ;)",
-        'handle those guys first',
-        'clear the level pls',
-    ];
-    readonly loadingMessage = 'loading...';
-    readonly deathMessage = 'you died lol';
-    readonly winMessage = 'you got hired! gg';
 
     current: Scene | Level;
 
@@ -53,11 +59,11 @@ class LevelManager {
             start.load().then(() => (this.loading = false));
         } else {
             this.showSlides([
-                ['welcome to roguelife', 1500],
+                ['welcome to roguelife', 2000],
                 ['wasd or arrows to move', 1500],
                 ['space to jump', 1500],
                 ['enter to shoot', 1500],
-                ['good luck interviewing', 2000],
+                ['good luck interviewing', 1500],
                 ['hehe', 350],
             ])
                 .then(() => start.load())
@@ -113,10 +119,6 @@ class LevelManager {
 
     async loadPrevious() {
         if (this.currentIndex === 0) return;
-        if (this.currentIndex === this.levels.length - 1) {
-            location.reload();
-            return;
-        }
         await this.load(
             this.currentIndex - 1,
             getTextScreen(this.loadingMessage)
@@ -142,20 +144,14 @@ class LevelManager {
             case 'playerDead':
                 this.load(
                     this.startingLevel,
-                    getTextScreen(this.deathMessage),
-                    700
+                    getTextScreen(chooseRandom(this.deathMessages)),
+                    1000
                 );
                 break;
             case 'touchedPortal':
                 this.current.state = 'incomplete';
                 if (!this.portalMessageShown) {
-                    const message =
-                        this.portalMessages[
-                            Math.floor(
-                                Math.random() * this.portalMessages.length
-                            )
-                        ];
-                    this.showSlides([[message, 550]]);
+                    this.showSlides([[chooseRandom(this.portalMessages), 550]]);
                 }
                 this.portalMessageShown = true;
         }
@@ -164,6 +160,9 @@ class LevelManager {
 
 export default LevelManager;
 
+function chooseRandom<T>(arr: T[]) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
 /** From: https://alvarotrigo.com/blog/wait-1-second-javascript/ */
 const delay = (ms: number) => {
     return new Promise((resolve) => {

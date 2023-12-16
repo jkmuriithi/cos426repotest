@@ -70,16 +70,13 @@ function setup() {
     );
 
     // Set up FPS meter
-    let stats: Stats | undefined;
-    if (DEBUG_FLAGS.SHOW_FPS_METER) {
-        stats = new Stats();
-        stats.showPanel(0);
-        stats.dom.style.top = '';
-        stats.dom.style.left = '';
-        stats.dom.style.bottom = '0px';
-        stats.dom.style.right = '0px';
-        document.body.appendChild(stats.dom);
-    }
+    const stats = new Stats();
+    stats.showPanel(0);
+    stats.dom.style.top = '';
+    stats.dom.style.left = '';
+    stats.dom.style.bottom = '0px';
+    stats.dom.style.right = '0px';
+    document.body.appendChild(stats.dom);
 
     // Set up manual controls
     let controls: OrbitControls | undefined;
@@ -129,7 +126,7 @@ function setup() {
     const timeStep = 1 / 60;
     let lastCallTime: number | undefined = undefined;
     const loop = () => {
-        if (stats) stats.begin();
+        stats.begin();
 
         const time = performance.now() / 1000;
         if (!lastCallTime) {
@@ -144,7 +141,7 @@ function setup() {
         RENDERER.render(levelManager.current, CAMERA);
         RENDERER_2D.render(levelManager.current, CAMERA);
 
-        if (stats) stats.end();
+        stats.end();
         window.requestAnimationFrame(loop);
     };
     window.requestAnimationFrame(loop);

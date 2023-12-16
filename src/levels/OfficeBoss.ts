@@ -14,10 +14,17 @@ import {
     loadTexturesFromImages,
     setMaterial,
     meshesOf,
+    createBox,
 } from '../helpers';
-import { COLORS, WALL_THICKNESS } from '../globals';
+import {
+    COLORS,
+    RENDER_ORDER_LAST,
+    UP_AXIS_THREE,
+    WALL_THICKNESS,
+} from '../globals';
 
 import Level from './Level';
+import PhysicsObject from '../PhysicsObject';
 import Room from '../rooms/Room';
 import Wall from '../rooms/Wall';
 import Player from '../characters/Player';
@@ -26,6 +33,7 @@ import RangedEnemy from '../characters/RangedEnemy';
 import OfficeBossLights from '../lights/OfficeBossLights';
 
 // models
+import DOOR from '@models/door.glb?url';
 import PLANE from '@models/paperplane.glb?url';
 
 // textures
@@ -43,29 +51,49 @@ import BOSS_PZ from '@textures/boss_pz.jpg';
 import BOSS_NZ from '@textures/boss_nz.jpg';
 import CEILING from '@textures/ceiling_panels.jpg';
 import CARPET from '@textures/carpet.jpg';
-import FINK from '@textures/fink.jpg';
+import PROF from '@textures/prof.jpg';
 import GOOG_COLORS from '@textures/google_colors.jpeg';
+import GOLD from '@textures/gold.jpg';
 
 class OfficeBoss extends Level {
-    initCameraPosition = new Vector3(-150, 50, 0);
+    initCameraPosition = new Vector3(-125, 15, 0);
 
     async load() {
         // Load models from files
+        const door = await loadModelFromGLTF(DOOR, true);
         const plane = await loadModelFromGLTF(PLANE, true);
+
+        door.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
+        const doorBack = door.clone();
+        doorBack.rotateOnAxis(UP_AXIS_THREE, Math.PI);
 
         // Load textures from files
         const player_textures = await loadTexturesFromImages(
             [PLAYER_PX, PLAYER_NX, PLAYER_PY, PLAYER_NY, PLAYER_PZ, PLAYER_NZ],
-            NearestFilter
+            NearestFilter,
+            LinearFilter
         );
         const boss_textures = await loadTexturesFromImages(
             [BOSS_PX, BOSS_NX, BOSS_PY, BOSS_NY, BOSS_PZ, BOSS_NZ],
-            NearestFilter
+            NearestFilter,
+            LinearFilter
         );
         const ceil = await loadTexturesFromImages([CEILING]);
         const carp = await loadTexturesFromImages([CARPET]);
-        const fink = await loadTexturesFromImages([FINK]);
+        const prof = await loadTexturesFromImages([PROF]);
         const google_colors = await loadTexturesFromImages([GOOG_COLORS]);
+        const gold = await loadTexturesFromImages([GOLD]);
+
+        prof[0].center = new Vector2(0.5, 0.5);
+        prof[0].rotation = -Math.PI / 2;
+        const profMaterial = new MeshPhongMaterial({
+            color: COLORS.WHITE,
+            map: prof[0],
+        });
+        const googMaterial = new MeshPhongMaterial({
+            color: COLORS.WHITE,
+            map: google_colors[0],
+        });
 
         this.background = new Color(COLORS.BLACK);
 
@@ -77,30 +105,32 @@ class OfficeBoss extends Level {
             object: plane.rotateOnAxis(new Vector3(0, 0, 1), -Math.PI / 2),
             speed: 50,
             damage: 35,
+            distanceFromSender: 1.2,
             options: {
                 scale: 2e-6,
+                colllisionShape: createBox(plane, 2.1e-6),
             },
         };
 
         // Characters
         this.player = new Player({
-            size: [3, 6, 3],
-            position: [-50, 5, 0],
+            size: [1, 2, 1].map((i) => i * 3.5) as [number, number, number],
+            position: [-70, 5, 0],
+            healthBarPosition: [0, 4, 0],
             color: COLORS.PLAYER,
             projectileConfig,
         });
+        this.player.moveVelocity = 14;
         this.player.jumpVelocity = 10;
 
-        let materials = player_textures.map((texture) => {
-            texture.generateMipmaps = false;
-            texture.minFilter = LinearFilter;
-            const mat = new MeshPhongMaterial({
-                color: COLORS.PLAYER,
-                shininess: 100,
-                map: texture,
-            });
-            return mat;
-        });
+        let materials = player_textures.map(
+            (texture) =>
+                new MeshPhongMaterial({
+                    color: COLORS.PLAYER,
+                    shininess: 100,
+                    map: texture,
+                })
+        );
         setMaterial(this.player, materials);
         this.add(this.player);
 
@@ -136,53 +166,81 @@ class OfficeBoss extends Level {
         this.add(...this.enemies);
 
         // Boss
+        const bossPlane = plane.clone();
+        setMaterial(
+            bossPlane,
+            new MeshPhongMaterial({
+                color: 'wheat',
+                side: DoubleSide,
+                map: gold[0],
+                shininess: 100,
+                specular: COLORS.WHITE,
+            })
+        );
         const boss = new RangedEnemy({
             size: [24, 48, 24],
-            position: [60, 5, 0],
+            position: [20, 50, 0],
             color: COLORS.BLACK,
-            health: 2000,
+            health: 1000,
+            healthBarPosition: [0, 25, 0],
             projectileConfig: {
-                object: plane, //.rotateOnAxis(new Vector3(0, 0, 1), Math.PI / 2),
+                object: bossPlane,
                 speed: 50,
-                damage: 100,
+                damage: 99,
+                distanceFromSender: 25,
                 options: {
-                    scale: 3e-5,
+                    scale: 1.5e-5,
+                    colllisionShape: createBox(plane, 1.55e-5),
                 },
             },
         });
-        materials = boss_textures.map((texture) => {
-            texture.generateMipmaps = false;
-            texture.minFilter = LinearFilter;
-            const mat = new MeshPhongMaterial({
-                color: COLORS.PLAYER,
-                shininess: 100,
-                map: texture,
-            });
-            return mat;
-        });
+        boss.moveVelocity = 4;
+        materials = boss_textures.map(
+            (texture) =>
+                new MeshPhongMaterial({
+                    color: COLORS.PLAYER,
+                    shininess: 100,
+                    map: texture,
+                })
+        );
         setMaterial(boss, materials);
         this.enemies.push(boss);
         this.add(...this.enemies);
 
+        // Room setup
         const room = new Room({
-            size: [300, 120, 200],
+            size: [170, 120, 200],
             position: [0, 0, 0],
             color: COLORS.WHITE,
         });
-
-        fink[0].center = new Vector2(0.5, 0.5);
-        fink[0].rotation = -Math.PI / 2;
-        const finkMaterial = new MeshPhongMaterial({
-            color: COLORS.WHITE,
-            map: fink[0],
+        this.portal = new PhysicsObject(door, {
+            position: [84, 10, 0],
+            scale: 20,
+            mass: 0,
+            opacityConfig: {
+                directional: true,
+                lowOpacity: 0.6,
+                highOpacity: 1,
+                normal: new Vector3(-1, 0, 0),
+            },
         });
-        const googMaterial = new MeshPhongMaterial({
-            color: COLORS.WHITE,
-            map: google_colors[0],
-        })
+        this.add(this.portal);
+        this.add(
+            new PhysicsObject(doorBack, {
+                position: [-84, 10, 0],
+                scale: 18,
+                mass: 0,
+                opacityConfig: {
+                    directional: true,
+                    lowOpacity: 0.2,
+                    highOpacity: 1,
+                    normal: new Vector3(1, 0, 0),
+                },
+            })
+        );
 
         setMaterial(room.rightFrontWall, googMaterial);
-        setMaterial(room.rightBackWall, finkMaterial);
+        setMaterial(room.rightBackWall, profMaterial);
         setMaterial(room.leftFrontWall, googMaterial);
         setMaterial(room.leftBackWall, googMaterial);
         setMaterial(
@@ -212,12 +270,13 @@ class OfficeBoss extends Level {
             color: COLORS.WHITE,
             opacityConfig: {
                 ...opacityConfig,
+                directional: false,
                 characterIntersection: true,
                 lowOpacity: 0.4,
             },
-            castShadow: true,
         });
-        meshesOf(platformLeft1).forEach((mesh) => (mesh.castShadow = true));
+        // Avoid with render order being reset after intersection
+        platformLeft1.renderOrder = RENDER_ORDER_LAST - 1;
         room.add(platformLeft1);
 
         const platformLeft2 = new Wall({
@@ -231,9 +290,8 @@ class OfficeBoss extends Level {
                 characterIntersection: true,
                 lowOpacity: 0.4,
             },
-            castShadow: true,
         });
-        meshesOf(platformLeft2).forEach((mesh) => (mesh.castShadow = true));
+        platformLeft2.renderOrder = RENDER_ORDER_LAST - 1;
         room.add(platformLeft2);
 
         const platformLeft3 = new Wall({
@@ -249,7 +307,7 @@ class OfficeBoss extends Level {
             },
             castShadow: true,
         });
-        meshesOf(platformLeft3).forEach((mesh) => (mesh.castShadow = true));
+        platformLeft3.renderOrder = RENDER_ORDER_LAST - 1;
         room.add(platformLeft3);
 
         const platformRight1 = new Wall({
@@ -265,7 +323,7 @@ class OfficeBoss extends Level {
             },
             castShadow: true,
         });
-        meshesOf(platformRight1).forEach((mesh) => (mesh.castShadow = true));
+        platformRight1.renderOrder = RENDER_ORDER_LAST - 1;
         room.add(platformRight1);
 
         const platformRight2 = new Wall({
@@ -281,7 +339,7 @@ class OfficeBoss extends Level {
             },
             castShadow: true,
         });
-        meshesOf(platformRight2).forEach((mesh) => (mesh.castShadow = true));
+        platformRight2.renderOrder = RENDER_ORDER_LAST - 1;
         room.add(platformRight2);
 
         const platformRight3 = new Wall({
@@ -297,7 +355,7 @@ class OfficeBoss extends Level {
             },
             castShadow: true,
         });
-        meshesOf(platformRight3).forEach((mesh) => (mesh.castShadow = true));
+        platformRight3.renderOrder = RENDER_ORDER_LAST - 1;
         room.add(platformRight3);
 
         await super.load();

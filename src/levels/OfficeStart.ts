@@ -15,6 +15,7 @@ import {
     setMaterial,
     loadModelFromGLTF,
     loadTexturesFromImages,
+    createBox,
 } from '../helpers';
 import {
     COLORS,
@@ -59,6 +60,7 @@ import LOGO from '@textures/google.png';
 import WOOD from '@textures/wood.jpeg';
 import SIGN from '@textures/paper.jpeg';
 import GOOG_COLORS from '@textures/google_colors.jpeg';
+import MeleeEnemy from '../characters/MeleeEnemy';
 
 class OfficeStart extends Level {
     initCameraPosition = new Vector3(-40, 15, 0);
@@ -79,7 +81,7 @@ class OfficeStart extends Level {
         const mug = await loadModelFromGLTF(MUG);
         const monitor = await loadModelFromGLTF(MONITOR);
         const bin = await loadModelFromGLTF(BIN);
-        const keyboard = await loadModelFromGLTF(KEYBOARD);
+        const keyboard = await loadModelFromGLTF(KEYBOARD, true);
 
         meshesOf(plane).forEach(
             (mesh) => ((mesh.material as Material).side = DoubleSide)
@@ -107,7 +109,6 @@ class OfficeStart extends Level {
             size: [1.5, 3, 1.5],
             position: [-18, 6, 0],
             color: COLORS.PLAYER,
-            hasHealthBar: false,
             projectileConfig: {
                 object: plane.rotateOnAxis(new Vector3(0, 0, 1), -Math.PI / 2),
                 speed: 50,
@@ -115,10 +116,22 @@ class OfficeStart extends Level {
                 distanceFromSender: 1.1,
                 options: {
                     scale: 2e-6,
+                    colllisionShape: createBox(plane, 2.1e-6),
                 },
             },
         });
         this.player.jumpVelocity = 7;
+
+        // Add basic enemy for tutorial purposes
+        const basicEnemy = new MeleeEnemy({
+            size: [1.5, 3, 1.5],
+            position: [-4, 6, 18],
+            color: COLORS.BLACK,
+            health: 30,
+        });
+        basicEnemy.moveVelocity = 2;
+        this.enemies = [basicEnemy];
+        this.add(...this.enemies);
 
         const materials = player_textures.map(
             (texture) =>
@@ -164,7 +177,7 @@ class OfficeStart extends Level {
             {
                 position: [-1, 3, 12],
                 scale: 1.5,
-                mass: 0,
+                mass: 1,
                 opacityConfig: backWallOpacity,
             }
         );
@@ -174,16 +187,16 @@ class OfficeStart extends Level {
             {
                 position: [-1, 1, 13.5],
                 scale: 2,
-                mass: 0,
+                mass: 1,
                 opacityConfig: backWallOpacity,
             }
         );
 
         // Plants
         const plant1 = new PhysicsObject(fiddlePlant, {
-            position: [-1, 5, 6],
+            position: [-4, 5, 8],
             scale: 1,
-            mass: 0,
+            mass: 1,
             opacityConfig: {
                 directional: true,
                 lowOpacity: 0.2,
@@ -193,9 +206,9 @@ class OfficeStart extends Level {
         });
 
         const plant2 = new PhysicsObject(fiddlePlant, {
-            position: [-1, 5, -6],
+            position: [-4, 5, -8],
             scale: 1,
-            mass: 0,
+            mass: 1,
             opacityConfig: {
                 directional: true,
                 lowOpacity: 0.2,
@@ -209,7 +222,7 @@ class OfficeStart extends Level {
                 new PhysicsObject(chairTwo, {
                     position: [-14 + i * 2, 1.5, 20],
                     scale: 6,
-                    mass: 0,
+                    mass: 1,
                     opacityConfig: backWallOpacity,
                 })
             );
@@ -281,7 +294,7 @@ class OfficeStart extends Level {
             {
                 position: [-6, 4, 4],
                 scale: 0.4,
-                mass: 0,
+                mass: 1,
                 opacityConfig: {
                     directional: true,
                     lowOpacity: 0.2,
@@ -296,7 +309,7 @@ class OfficeStart extends Level {
             {
                 position: [-6, 5, -3],
                 scale: 0.04,
-                mass: 0,
+                mass: 1,
                 opacityConfig: {
                     directional: true,
                     lowOpacity: 0.2,
@@ -309,9 +322,9 @@ class OfficeStart extends Level {
         const mug1 = new PhysicsObject(
             mug.clone().rotateOnAxis(UP_AXIS_THREE, (Math.PI * 3) / 4),
             {
-                position: [-6, 4.2, 3.5],
+                position: [-6, 4.2, 2],
                 scale: 8,
-                mass: 0,
+                mass: 1,
                 opacityConfig: {
                     directional: true,
                     lowOpacity: 0.2,
@@ -326,7 +339,7 @@ class OfficeStart extends Level {
             {
                 position: [-4.7, 3.5, -1],
                 scale: 0.007,
-                mass: 0,
+                mass: 1,
                 opacityConfig: {
                     directional: true,
                     lowOpacity: 0.2,

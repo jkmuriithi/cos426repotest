@@ -545,6 +545,7 @@ class OfficeFight1 extends Level {
             new RangedEnemy({
                 ...rangedOpts,
                 position: [37, 1, -7],
+                health: 30,
                 fireRate: 0.5,
             }),
             new RangedEnemy({

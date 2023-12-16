@@ -19,7 +19,7 @@ import { CSS2DRenderer } from 'three/examples/jsm/Addons.js';
 // Game
 export const PROJECTILE_LIMIT = 20;
 export const UP_AXIS = [0, 1, 0] as const;
-export const STARTING_LEVEL = 2;
+export const STARTING_LEVEL = 0;
 export const WALL_THICKNESS = 0.4;
 export const FLOAT_EPS = 1e-6;
 
@@ -38,13 +38,12 @@ export const COLORS = {
 
 export const DEBUG_FLAGS = {
     HOTKEYS_ENABLED: true,
-    ORBIT_CONTROLS_ENABLED: true,
+    ORBIT_CONTROLS_ENABLED: false,
     ICE_SKATER_MODE: false,
-    PRINT_ASSETS_ON_LOAD: true,
+    PRINT_ASSETS_ON_LOAD: false,
     DRAW_CHARACTER_DIRECTION_LINE: false,
     SHOW_GRIDS: false,
-    SHOW_FPS_METER: true,
-    HIDE_INTRO: true,
+    HIDE_INTRO: false,
 };
 
 // ThreeJS
@@ -55,7 +54,10 @@ export const RENDER_ORDER_LAST = 100;
 
 export const CAMERA = new PerspectiveCamera();
 export const INIT_CAMERA_POSITION = new Vector3(-10, 10, 10);
-export const RENDERER = new WebGLRenderer({ antialias: true });
+export const RENDERER = new WebGLRenderer({
+    antialias: true,
+    powerPreference: 'high-performance',
+});
 export const RENDERER_2D = new CSS2DRenderer();
 
 // Cannon-ES

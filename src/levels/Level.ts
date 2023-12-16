@@ -281,7 +281,7 @@ class Level extends Scene {
         }
 
         for (const obj of currTransparent) {
-            if (obj instanceof Wall) {
+            if (obj instanceof Wall && obj.renderOrder === RENDER_ORDER_FIRST) {
                 obj.renderOrder = RENDER_ORDER_LAST;
             }
         }
@@ -293,7 +293,10 @@ class Level extends Scene {
                     material.opacity = highOpacity;
                 });
 
-                if (obj instanceof Wall) {
+                if (
+                    obj instanceof Wall &&
+                    obj.renderOrder === RENDER_ORDER_LAST
+                ) {
                     obj.renderOrder = RENDER_ORDER_FIRST;
                 }
             }
