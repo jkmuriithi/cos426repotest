@@ -4,6 +4,7 @@ import {
     MeshPhongMaterial,
     NearestFilter,
     Vector3,
+    Vector2
 } from 'three';
 
 // Helpers and constants
@@ -468,6 +469,8 @@ class OfficeStart extends Level {
                 normal: new Vector3(-1, 0, 0),
             },
         });
+        logoTexture[0].center = new Vector2(0.5, 0.5);
+        logoTexture[0].rotation = -Math.PI / 2;
         setMaterial(
             logo,
             new MeshPhongMaterial({
@@ -476,7 +479,7 @@ class OfficeStart extends Level {
             })
         );
         meshesOf(logo).forEach((mesh) => (mesh.castShadow = true));
-        room.add(logo.clone().rotateOnAxis(UP_AXIS_THREE, -Math.PI / 2));
+        room.add(logo);
 
         const paper = new Wall({
             name: 'paper',
@@ -490,6 +493,8 @@ class OfficeStart extends Level {
                 normal: new Vector3(-1, 0, 0),
             },
         });
+        sign[0].center = new Vector2(0.5, 0.5);
+        sign[0].rotation = -Math.PI / 2;
         setMaterial(
             paper,
             new MeshPhongMaterial({
@@ -498,7 +503,7 @@ class OfficeStart extends Level {
             })
         );
         meshesOf(paper).forEach((mesh) => (mesh.castShadow = true));
-        room.add(paper.clone().rotateOnAxis(UP_AXIS_THREE, -Math.PI / 2));
+        room.add(paper);
 
         this.add(room);
         this.add(new OfficeStartLights());
