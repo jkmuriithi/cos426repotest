@@ -2,7 +2,7 @@ import { Group, HemisphereLight, SpotLight } from 'three';
 
 import { COLORS, SHADOW_MAP_SIZE } from '../globals';
 
-class OfficeStartLights extends Group {
+class OfficeFight2Lights extends Group {
     shadowMapSize = SHADOW_MAP_SIZE;
 
     constructor() {
@@ -10,21 +10,15 @@ class OfficeStartLights extends Group {
         super();
 
         const spotPositions = [
-            [10, 11.25],
-            [-10, 11.25],
-            [10, -11.25],
-            [-10, -11.25],
+            [-10, 0],
+            [35, 0],
+            [32, 25],
+            [30, -30],
         ];
+
         for (const pos of spotPositions) {
-            const spot = new SpotLight(
-                COLORS.WHITE,
-                350,
-                0,
-                Math.PI / 3,
-                0.9,
-                2
-            );
-            spot.position.set(pos[0], 20, pos[1]);
+            const spot = new SpotLight(COLORS.WHITE, 150, 0, 1.3, 0.9, 2);
+            spot.position.set(pos[0], 10, pos[1]);
             spot.target.position.set(pos[0], 0, pos[1]);
             spot.castShadow = true;
             spot.shadow.mapSize.width = this.shadowMapSize;
@@ -32,10 +26,13 @@ class OfficeStartLights extends Group {
             this.add(spot, spot.target);
         }
 
-        const hemi = new HemisphereLight(COLORS.WHITE, COLORS.WHITE, 0.8);
-        hemi.position.set(-10, 10, 0);
+        const hemi =
+            Math.random() > 0.8
+                ? new HemisphereLight(COLORS.WHITE, COLORS.BLUEISH_WHITE, 0.5)
+                : new HemisphereLight(COLORS.WHITE, COLORS.WHITE, 0.8);
+        hemi.position.set(0, 10, 0);
         this.add(hemi);
     }
 }
 
-export default OfficeStartLights;
+export default OfficeFight2Lights;

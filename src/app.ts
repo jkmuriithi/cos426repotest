@@ -70,13 +70,16 @@ function setup() {
     );
 
     // Set up FPS meter
-    const stats = new Stats();
-    stats.showPanel(0);
-    stats.dom.style.top = '';
-    stats.dom.style.left = '';
-    stats.dom.style.bottom = '0px';
-    stats.dom.style.right = '0px';
-    document.body.appendChild(stats.dom);
+    let stats: Stats | undefined;
+    if (DEBUG_FLAGS.SHOW_FPS_METER) {
+        stats = new Stats();
+        stats.showPanel(0);
+        stats.dom.style.top = '';
+        stats.dom.style.left = '';
+        stats.dom.style.bottom = '0px';
+        stats.dom.style.right = '0px';
+        document.body.appendChild(stats.dom);
+    }
 
     // Set up manual controls
     let controls: OrbitControls | undefined;
@@ -110,7 +113,7 @@ function setup() {
                     console.log(CAMERA);
                     break;
                 case 'KeyR':
-                    levelManager.current.reset();
+                    levelManager.resetCurrent();
                     break;
                 case 'KeyN':
                     levelManager.loadNext();
@@ -126,7 +129,7 @@ function setup() {
     const timeStep = 1 / 60;
     let lastCallTime: number | undefined = undefined;
     const loop = () => {
-        stats.begin();
+        if (stats) stats.begin();
 
         const time = performance.now() / 1000;
         if (!lastCallTime) {
@@ -134,14 +137,14 @@ function setup() {
         } else {
             const dt = time - lastCallTime;
             WORLD.step(timeStep, dt);
-            levelManager.update(dt);
+            levelManager.updateCurrent(dt);
         }
         lastCallTime = time;
         if (controls) controls.update();
         RENDERER.render(levelManager.current, CAMERA);
         RENDERER_2D.render(levelManager.current, CAMERA);
 
-        stats.end();
+        if (stats) stats.end();
         window.requestAnimationFrame(loop);
     };
     window.requestAnimationFrame(loop);

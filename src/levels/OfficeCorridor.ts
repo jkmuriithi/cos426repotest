@@ -364,7 +364,7 @@ class OfficeCorridor extends Level {
         );
         this.add(
             new PhysicsObject(chairLeft, {
-                position: [32, -1, -17.5],
+                position: [32, 0.25, -17.5],
                 scale: 0.1,
                 mass: 1,
                 opacityConfig: leftWallOpacity,

@@ -10,12 +10,13 @@ import {
 } from 'three';
 
 import {
+    createBox,
     loadModelFromGLTF,
     loadTexturesFromImages,
     meshesOf,
     setMaterial,
 } from '../helpers';
-import { COLORS, UP_AXIS_THREE } from '../globals';
+import { COLORS, DEBUG_FLAGS, UP_AXIS_THREE } from '../globals';
 
 // Game Objects
 import Level from './Level';
@@ -23,10 +24,9 @@ import PhysicsObject from '../PhysicsObject';
 import Room from '../rooms/Room';
 import Player from '../characters/Player';
 import MeleeEnemy from '../characters/MeleeEnemy';
-import OfficeStartLights from '../lights/Office2Lights';
+import OfficeFight2Lights from '../lights/OfficeFight2Lights';
 
 // Models
-import WINDOW_LARGE from '@models/windowlarge.glb?url';
 import WATER_COOLER from '@models/watercooler.glb?url';
 import CUBICLE from '@models/cubicle.glb?url';
 import COPIER from '@models/copier.glb?url';
@@ -50,13 +50,14 @@ import CARPET from '@textures/carpet.jpg';
 import GOOG_COLORS from '@textures/google_colors.jpeg';
 
 class OfficeFight2 extends Level {
-    initCameraPosition = new Vector3(-50, 20, 0);
+    initCameraPosition = new Vector3(-55, 18, 0);
 
     async load() {
+        if (DEBUG_FLAGS.SHOW_GRIDS) {
+            this.add(new GridHelper(100, 100, 0x0000ff, 0x808080));
+        }
+
         // Load models from files
-        this.add (new GridHelper(100, 100, 0x0000ff, 0x808080));
-        const windowNS = await loadModelFromGLTF(WINDOW_LARGE);
-        const windowEW = windowNS.clone();
         const cooler = await loadModelFromGLTF(WATER_COOLER, true);
         const cubicle = await loadModelFromGLTF(CUBICLE);
         const whiteboard = await loadModelFromGLTF(BOARD);
@@ -68,25 +69,20 @@ class OfficeFight2 extends Level {
         const clock = await loadModelFromGLTF(CLOCK);
         const plane = await loadModelFromGLTF(PLANE, true);
 
-        windowNS.castShadow = false;
-        windowEW.castShadow = false;
+        door.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
+        const doorBack = door.clone();
+        doorBack.rotateOnAxis(UP_AXIS_THREE, Math.PI);
 
-        windowNS.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
         cooler.rotateOnAxis(UP_AXIS_THREE, Math.PI);
         chairTwo.rotateOnAxis(UP_AXIS_THREE, Math.PI / 4);
         desk.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
 
         // Load textures from files
         const google_colors = await loadTexturesFromImages([GOOG_COLORS]);
-        const player_textures = await loadTexturesFromImages([
-            PLAYER_PX,
-            PLAYER_NX,
-            PLAYER_PY,
-            PLAYER_NY,
-            PLAYER_PZ,
-            PLAYER_NZ,
-        ]);
-        player_textures.map((te) => (te.magFilter = NearestFilter));
+        const player_textures = await loadTexturesFromImages(
+            [PLAYER_PX, PLAYER_NX, PLAYER_PY, PLAYER_NY, PLAYER_PZ, PLAYER_NZ],
+            NearestFilter
+        );
         const ceil = await loadTexturesFromImages([CEILING]);
         const carp = await loadTexturesFromImages([CARPET]);
 
@@ -100,8 +96,10 @@ class OfficeFight2 extends Level {
             object: plane.rotateOnAxis(new Vector3(0, 0, 1), -Math.PI / 2),
             speed: 50,
             damage: 35,
+            distanceFromSender: 1.1,
             options: {
                 scale: 2e-6,
+                colllisionShape: createBox(plane, 2.1e-6),
             },
         };
 
@@ -161,15 +159,44 @@ class OfficeFight2 extends Level {
         /************************************
          * Creating objects for the office
          ************************************/
+        // Opacity configs
+        const frontWallOpacity = {
+            directional: true,
+            characterIntersection: true,
+            lowOpacity: 0.6,
+            highOpacity: 1,
+            normal: new Vector3(-1, 0, 0),
+        };
+        const backWallOpacity = {
+            directional: true,
+            characterIntersection: true,
+            lowOpacity: 0.2,
+            highOpacity: 1,
+            normal: new Vector3(1, 0, 0),
+        };
+        const rightWallOpacity = {
+            directional: true,
+            characterIntersection: true,
+            lowOpacity: 0.35,
+            highOpacity: 1,
+            normal: new Vector3(0, 0, -1).normalize(),
+        };
+        const leftWallOpacity = {
+            directional: true,
+            characterIntersection: true,
+            lowOpacity: 0.35,
+            highOpacity: 1,
+            normal: new Vector3(0, 0, 1).normalize(),
+        };
 
         // Whiteboard
         const board1 = new PhysicsObject(
             whiteboard.rotateOnAxis(UP_AXIS_THREE, Math.PI),
             {
-                position: [37, 5, 30],
+                position: [37, 5, 32],
                 scale: 8,
-                castShadow: false,
                 mass: 0,
+                opacityConfig: frontWallOpacity,
             }
         );
 
@@ -179,8 +206,8 @@ class OfficeFight2 extends Level {
             {
                 position: [37, 7.5, 0],
                 scale: 0.15,
-                castShadow: false,
                 mass: 0,
+                opacityConfig: frontWallOpacity,
             }
         );
 
@@ -193,20 +220,23 @@ class OfficeFight2 extends Level {
             const cubicleRight = new PhysicsObject(cubicle, {
                 position: [positionX, 3, 34.5],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
+                opacityConfig: rightWallOpacity,
             });
             cubicleRightObjects.push(cubicleRight);
         }
 
         for (let i = 0; i < 7; i++) {
             const positionX = -16.6 + i * 6; // Adjust the starting X position and interval as needed
-            const cubicleLeft = new PhysicsObject(cubicle.rotateOnAxis(new Vector3(0, 1, 0), Math.PI), {
-                position: [positionX, 3, -34.5],
-                scale: 3,
-                castShadow: false,
-                mass: 0,
-            });
+            const cubicleLeft = new PhysicsObject(
+                cubicle.rotateOnAxis(new Vector3(0, 1, 0), Math.PI),
+                {
+                    position: [positionX, 3, -34.5],
+                    scale: 3,
+                    mass: 0,
+                    opacityConfig: leftWallOpacity,
+                }
+            );
             cubicleLeftObjects.push(cubicleLeft);
             cubicle.rotateOnAxis(new Vector3(0, 1, 0), Math.PI);
         }
@@ -215,10 +245,10 @@ class OfficeFight2 extends Level {
         const printer1 = new PhysicsObject(
             printer.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2),
             {
-                position: [30, 3, -30],
-                scale: 5,
-                castShadow: false,
-                mass: 0,
+                position: [30, 2, -30],
+                scale: 3.4,
+                mass: 1,
+                opacityConfig: frontWallOpacity,
             }
         );
 
@@ -229,8 +259,13 @@ class OfficeFight2 extends Level {
             const deskRight = new PhysicsObject(desk, {
                 position: [positionX, 4, 12],
                 scale: 4,
-                castShadow: false,
                 mass: 0,
+                opacityConfig: {
+                    highOpacity: 1,
+                    lowOpacity: 0.5,
+                    normal: new Vector3(0, 0, -1),
+                    characterIntersection: true,
+                },
             });
             deskRightObjects.push(deskRight);
         }
@@ -241,8 +276,13 @@ class OfficeFight2 extends Level {
             const deskLeft = new PhysicsObject(desk, {
                 position: [positionX, 4, -12],
                 scale: 4,
-                castShadow: false,
                 mass: 0,
+                opacityConfig: {
+                    highOpacity: 1,
+                    lowOpacity: 0.5,
+                    normal: new Vector3(0, 0, 1),
+                    characterIntersection: true,
+                },
             });
             deskLeftObjects.push(deskLeft);
         }
@@ -251,14 +291,12 @@ class OfficeFight2 extends Level {
         const plant1 = new PhysicsObject(fiddlePlant, {
             position: [31, 4, -10],
             scale: 1,
-            castShadow: false,
-            mass: 0,
+            mass: 1,
         });
         const plant2 = new PhysicsObject(fiddlePlant, {
             position: [35, 4, -10],
             scale: 1,
-            castShadow: false,
-            mass: 0,
+            mass: 1,
         });
 
         /************************************
@@ -269,43 +307,29 @@ class OfficeFight2 extends Level {
         this.add(
             clock1,
             board1,
-            cubicleRightObjects[0],
-            cubicleRightObjects[1],
-            cubicleRightObjects[2],
-            cubicleRightObjects[3],
-            cubicleRightObjects[4],
-            cubicleRightObjects[5],
-            cubicleRightObjects[6],
-            cubicleRightObjects[7],
-            cubicleLeftObjects[0],
-            cubicleLeftObjects[1],
-            cubicleLeftObjects[2],
-            cubicleLeftObjects[3],
-            cubicleLeftObjects[4],
-            cubicleLeftObjects[5],
-            cubicleLeftObjects[6],
-            cubicleLeftObjects[7],
-            deskRightObjects[0],
-            deskRightObjects[1],
-            deskRightObjects[2],
-            deskRightObjects[3],
-            deskRightObjects[4],
-            deskRightObjects[5],
-            deskLeftObjects[0],
-            deskLeftObjects[1],
-            deskLeftObjects[2],
-            deskLeftObjects[3],
-            deskLeftObjects[4],
-            deskLeftObjects[5],
+            ...cubicleRightObjects,
+            ...cubicleLeftObjects,
+            ...deskRightObjects,
+            ...deskLeftObjects,
             printer1,
             plant1,
             plant2
         );
 
+        this.add(
+            new PhysicsObject(doorBack, {
+                position: [-37, 4, 0],
+                scale: 8,
+                mass: 0,
+                opacityConfig: backWallOpacity,
+            })
+        );
+
         this.portal = new PhysicsObject(door, {
-            position: [30, 4, 37],
+            position: [37.2, 4, 23],
             scale: 8,
             mass: 0,
+            opacityConfig: frontWallOpacity,
         });
         this.add(this.portal);
 
@@ -355,7 +379,7 @@ class OfficeFight2 extends Level {
         );
         this.add(room);
 
-        this.add(new OfficeStartLights());
+        this.add(new OfficeFight2Lights());
 
         await super.load();
     }

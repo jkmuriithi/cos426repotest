@@ -38,16 +38,18 @@ export const COLORS = {
 
 export const DEBUG_FLAGS = {
     HOTKEYS_ENABLED: true,
-    ORBIT_CONTROLS_ENABLED: false,
+    ORBIT_CONTROLS_ENABLED: true,
     ICE_SKATER_MODE: false,
     PRINT_ASSETS_ON_LOAD: true,
     DRAW_CHARACTER_DIRECTION_LINE: false,
     SHOW_GRIDS: false,
+    SHOW_FPS_METER: true,
+    HIDE_INTRO: true,
 };
 
 // ThreeJS
 export const UP_AXIS_THREE = new Vector3(...UP_AXIS);
-export const SHADOW_MAP_SIZE = 256;
+export const SHADOW_MAP_SIZE = 512;
 export const RENDER_ORDER_FIRST = -100;
 export const RENDER_ORDER_LAST = 100;
 

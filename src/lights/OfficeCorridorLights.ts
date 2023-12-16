@@ -18,7 +18,7 @@ class OfficeCorridorLights extends Group {
         for (const pos of spotPositions) {
             const spot = new SpotLight(
                 COLORS.WHITE,
-                160,
+                250,
                 0,
                 Math.PI / 3,
                 0.9,

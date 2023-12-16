@@ -39,7 +39,6 @@ class Level extends Scene {
 
     private prevTransparent: Set<PhysicsObject> = new Set();
     private bodyToEnemy: Map<number, Enemy> = new Map();
-    private killedEnemies: Enemy[] = [];
     private createdProjectiles: PhysicsObject[] = [];
     private activeProjectiles: Set<PhysicsObject> = new Set();
     private lastContactTime: number = 0;
@@ -48,9 +47,11 @@ class Level extends Scene {
     private playerKnockback = 5;
 
     initCameraPosition = INIT_CAMERA_POSITION;
-    state: 'incomplete' | 'complete' | 'playerDead' = 'incomplete';
+    state: 'incomplete' | 'complete' | 'playerDead' | 'touchedPortal' =
+        'incomplete';
     player?: Player;
     enemies: Enemy[] = [];
+    killedEnemies: Enemy[] = [];
     portal?: PhysicsObject;
 
     constructor() {
@@ -90,12 +91,10 @@ class Level extends Scene {
         // Setup event handlers for enemy and portal collisions
         if (this.player) {
             this.portal?.body.addEventListener('collide', (e: CollideEvent) => {
-                if (
-                    this.enemies.length === 0 &&
-                    this.player &&
-                    e.body.id === this.player.body.id
-                ) {
-                    this.state = 'complete';
+                if (!this.player) return;
+                if (e.body.id === this.player.body.id) {
+                    if (this.enemies.length === 0) this.state = 'complete';
+                    else this.state = 'touchedPortal';
                 }
             });
 
