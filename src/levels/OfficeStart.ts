@@ -441,8 +441,8 @@ class OfficeStart extends Level {
 
         const leftClearWall = new Wall({
             name: 'leftClearWall',
-            size: [20, WALL_THICKNESS, 15],
-            position: [position[0], 10, position[2] - 7.5],
+            size: [20, WALL_THICKNESS, 8],
+            position: [position[0], 10, position[2] - 19],
             direction: [-1, 0, 0],
             color: COLORS.WHITE,
             opacityConfig: {
@@ -458,8 +458,8 @@ class OfficeStart extends Level {
 
         const rightClearWall = new Wall({
             name: 'rightClearWall',
-            size: [20, WALL_THICKNESS, 15],
-            position: [position[0], 10, position[2] + 7.5],
+            size: [20, WALL_THICKNESS, 8],
+            position: [position[0], 10, position[2] + 19],
             direction: [-1, 0, 0],
             color: COLORS.WHITE,
             opacityConfig: {
