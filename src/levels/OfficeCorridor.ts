@@ -48,6 +48,7 @@ import PLAYER_NZ from '@textures/player_nz.jpg';
 import QUOTE from '@textures/motivation.jpg';
 import CEILING from '@textures/ceiling_panels.jpg';
 import CARPET from '@textures/carpet.jpg';
+import GOOG_COLORS from '@textures/google_colors.jpeg';
 
 class OfficeCorridor extends Level {
     initCameraPosition = new Vector3(-10, 10, 10);
@@ -95,7 +96,7 @@ class OfficeCorridor extends Level {
         chairLeft.rotateOnAxis(UP_AXIS_THREE, -Math.PI / 4);
 
         // Load textures from files
-        const motivation = await loadTexturesFromImages([QUOTE]);
+        const google_colors = await loadTexturesFromImages([GOOG_COLORS]);
         const player_textures = await loadTexturesFromImages(
             [PLAYER_PX, PLAYER_NX, PLAYER_PY, PLAYER_NY, PLAYER_PZ, PLAYER_NZ],
             NearestFilter,
@@ -183,7 +184,7 @@ class OfficeCorridor extends Level {
             room.leftBackWall,
             new MeshPhongMaterial({
                 color: COLORS.WHITE,
-                map: motivation[0],
+                map: google_colors[0],
             })
         );
         setMaterial(
@@ -196,7 +197,7 @@ class OfficeCorridor extends Level {
         setMaterial(
             room.floor,
             new MeshPhongMaterial({
-                color: COLORS.WHITE,
+                color: COLORS.GRAY,
                 map: carp[0],
             })
         );
