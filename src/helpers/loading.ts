@@ -29,7 +29,8 @@ import { DEBUG_FLAGS } from '../globals';
  */
 export async function loadModelFromGLTF(
     gltfUrl: string,
-    centerGeometry: boolean = false
+    centerGeometry: boolean = false,
+    centerScene: boolean = true
 ): Promise<Group> {
     const loader = new GLTFLoader();
     const gltf = await loader.loadAsync(gltfUrl);
@@ -44,10 +45,12 @@ export async function loadModelFromGLTF(
         geometriesOf(gltf.scene).forEach((geo) => geo.translate(...adjustment));
     }
 
-    const box = new Box3().setFromObject(gltf.scene, true);
-    const center = box.getCenter(new Vector3());
-    const adjustment = gltf.scene.position.clone().sub(center);
-    gltf.scene.position.add(adjustment);
+    if (centerScene) {
+        const box = new Box3().setFromObject(gltf.scene, true);
+        const center = box.getCenter(new Vector3());
+        const adjustment = gltf.scene.position.clone().sub(center);
+        gltf.scene.position.add(adjustment);
+    }
 
     return gltf.scene;
 }

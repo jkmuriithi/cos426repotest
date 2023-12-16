@@ -63,9 +63,17 @@ class Level extends Scene {
      * and then call "await super.load()".
      */
     async load() {
-        // Adjust camera
+        // Adjust camera and player
         CAMERA.position.copy(this.initCameraPosition);
-        if (this.player) CAMERA.lookAt(this.player.position);
+        if (this.player) {
+            CAMERA.lookAt(this.player.position);
+            const dir = this.player.position
+                .clone()
+                .sub(CAMERA.position)
+                .setComponent(1, 0)
+                .normalize();
+            this.player.setForwardsDirection(dir);
+        }
 
         // Add physics objects to sim
         dfsTraverse(this, (child: Object3D | PhysicsObject | Enemy) => {
