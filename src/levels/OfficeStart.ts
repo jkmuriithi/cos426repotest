@@ -30,7 +30,6 @@ import OfficeStartLights from '../lights/OfficeStartLights';
 
 // Models
 import WATER_COOLER from '@models/watercooler.glb?url';
-import CUBICLE from '@models/cubicle.glb?url';
 import DOOR from '@models/door.glb?url';
 import DESK from '@models/Desk.glb?url';
 import CHAIR_2 from '@models/Chair Modern Cushion.glb?url';
@@ -62,11 +61,10 @@ class OfficeStart extends Level {
     initCameraPosition = new Vector3(-40, 15, 0);
 
     async load() {
-        this.background = new Color(COLORS.WHITE);
+        this.background = new Color(COLORS.BLACK);
 
         // Load models from files
         const cooler = await loadModelFromGLTF(WATER_COOLER, true);
-        const cubicle = await loadModelFromGLTF(CUBICLE);
         const desk = await loadModelFromGLTF(DESK);
         const chairTwo = await loadModelFromGLTF(CHAIR_2, true);
         const door = await loadModelFromGLTF(DOOR, true);
@@ -79,10 +77,6 @@ class OfficeStart extends Level {
         const monitor = await loadModelFromGLTF(MONITOR);
         const bin = await loadModelFromGLTF(BIN);
         const keyboard = await loadModelFromGLTF(KEYBOARD);
-
-        cooler.rotateOnAxis(UP_AXIS_THREE, Math.PI);
-        desk.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
-        cubicle.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
 
         // Load textures from files
         const google_colors = await loadTexturesFromImages([GOOG_COLORS]);
@@ -135,7 +129,7 @@ class OfficeStart extends Level {
 
         // clock
         this.add(
-            new PhysicsObject(clock.rotateOnAxis(UP_AXIS_THREE, Math.PI), {
+            new PhysicsObject(clock.clone().rotateOnAxis(UP_AXIS_THREE, Math.PI), {
                 position: [-0.5, 8, 0],
                 scale: 0.08,
                 mass: 0,
@@ -148,14 +142,13 @@ class OfficeStart extends Level {
             })
         );
 
-        // cubicles
         const backWallOpacity = {
             directional: true,
             lowOpacity: 0.5,
             highOpacity: 1,
             normal: new Vector3(0, 0, -1).normalize(),
         };
-        const cooler1 = new PhysicsObject(cooler, {
+        const cooler1 = new PhysicsObject(cooler.clone().rotateOnAxis(UP_AXIS_THREE, Math.PI), {
             position: [-1, 3, 12],
             scale: 1.5,
             mass: 0,
@@ -163,7 +156,7 @@ class OfficeStart extends Level {
         });
 
         const trashbin = new PhysicsObject(
-            bin.rotateOnAxis(UP_AXIS_THREE, -Math.PI / 2),
+            bin.clone().rotateOnAxis(UP_AXIS_THREE, -Math.PI / 2),
             {
                 position: [-1, 1, 13.5],
                 scale: 2,
@@ -211,7 +204,7 @@ class OfficeStart extends Level {
         // Desks
         for (let i = 0; i < 3; i++) {
             this.add(
-                new PhysicsObject(desk, {
+                new PhysicsObject(desk.clone().rotateOnAxis(UP_AXIS_THREE, Math.PI / 2), {
                     position: [i * 6 + 6, 3, -20],
                     scale: 3,
                     mass: 0,
@@ -267,7 +260,7 @@ class OfficeStart extends Level {
         });
 
         const phone1 = new PhysicsObject(
-            phone.rotateOnAxis(UP_AXIS_THREE, (Math.PI * 3) / 4),
+            phone.clone().rotateOnAxis(UP_AXIS_THREE, (Math.PI * 3) / 4),
             {
                 position: [-6, 4, 4],
                 scale: 0.4,
@@ -282,7 +275,7 @@ class OfficeStart extends Level {
         );
 
         const monitor1 = new PhysicsObject(
-            monitor.rotateOnAxis(UP_AXIS_THREE, (Math.PI * 3) / 4),
+            monitor.clone().rotateOnAxis(UP_AXIS_THREE, (Math.PI * 3) / 4),
             {
                 position: [-6, 5, -3],
                 scale: 0.04,
@@ -297,7 +290,7 @@ class OfficeStart extends Level {
         );
 
         const mug1 = new PhysicsObject(
-            mug.rotateOnAxis(UP_AXIS_THREE, (Math.PI * 3) / 4),
+            mug.clone().rotateOnAxis(UP_AXIS_THREE, (Math.PI * 3) / 4),
             {
                 position: [-6, 4.2, 3.5],
                 scale: 8,
@@ -312,7 +305,7 @@ class OfficeStart extends Level {
         );
 
         const keyboard1 = new PhysicsObject(
-            keyboard.rotateOnAxis(UP_AXIS_THREE, (-Math.PI * 3) / 4),
+            keyboard.clone().rotateOnAxis(UP_AXIS_THREE, (-Math.PI * 3) / 4),
             {
                 position: [-4.7, 3.5, -1],
                 scale: 0.007,
@@ -328,7 +321,7 @@ class OfficeStart extends Level {
 
         // Front Desk Lady
         const receptionist = new PhysicsObject(
-            lady.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2),
+            lady.clone().rotateOnAxis(UP_AXIS_THREE, Math.PI / 2),
             {
                 position: [-2, 3, 0],
                 scale: 6,
@@ -356,7 +349,7 @@ class OfficeStart extends Level {
         );
 
         this.portal = new PhysicsObject(
-            door.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2),
+            door.clone().rotateOnAxis(UP_AXIS_THREE, Math.PI / 2),
             {
                 position: [-0.5, 4, -18],
                 scale: 8,
@@ -431,8 +424,8 @@ class OfficeStart extends Level {
 
         const leftClearWall = new Wall({
             name: 'leftClearWall',
-            size: [20, WALL_THICKNESS, 15],
-            position: [position[0], 10, position[2] - 7.5],
+            size: [20, WALL_THICKNESS, 8],
+            position: [position[0], 10, position[2] - 19],
             direction: [-1, 0, 0],
             color: COLORS.WHITE,
             opacityConfig: {
@@ -448,8 +441,8 @@ class OfficeStart extends Level {
 
         const rightClearWall = new Wall({
             name: 'rightClearWall',
-            size: [20, WALL_THICKNESS, 15],
-            position: [position[0], 10, position[2] + 7.5],
+            size: [20, WALL_THICKNESS, 8],
+            position: [position[0], 10, position[2] + 19],
             direction: [-1, 0, 0],
             color: COLORS.WHITE,
             opacityConfig: {
@@ -483,7 +476,7 @@ class OfficeStart extends Level {
             })
         );
         meshesOf(logo).forEach((mesh) => (mesh.castShadow = true));
-        room.add(logo.rotateOnAxis(UP_AXIS_THREE, -Math.PI / 2));
+        room.add(logo.clone().rotateOnAxis(UP_AXIS_THREE, -Math.PI / 2));
 
         const paper = new Wall({
             name: 'paper',
@@ -505,7 +498,7 @@ class OfficeStart extends Level {
             })
         );
         meshesOf(paper).forEach((mesh) => (mesh.castShadow = true));
-        room.add(paper.rotateOnAxis(UP_AXIS_THREE, -Math.PI / 2));
+        room.add(paper.clone().rotateOnAxis(UP_AXIS_THREE, -Math.PI / 2));
 
         this.add(room);
         this.add(new OfficeStartLights());
