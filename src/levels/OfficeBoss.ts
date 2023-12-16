@@ -5,6 +5,8 @@ import {
     NearestFilter,
     Vector3,
     Vector2,
+    Material,
+    DoubleSide,
 } from 'three';
 
 import {
@@ -66,6 +68,9 @@ class OfficeBoss extends Level {
         this.background = new Color(COLORS.BLACK);
 
         // Projectile config
+        meshesOf(plane).forEach(
+            (mesh) => ((mesh.material as Material).side = DoubleSide)
+        );
         const projectileConfig = {
             object: plane.rotateOnAxis(new Vector3(0, 0, 1), -Math.PI / 2),
             speed: 50,
@@ -192,7 +197,7 @@ class OfficeBoss extends Level {
         this.add(new OfficeBossLights());
 
         // Platform
-        const { size, position, opacityConfig, color } = room.options;
+        const opacityConfig = room.options.opacityConfig;
         const platformLeft1 = new Wall({
             name: 'platform',
             size: [10, WALL_THICKNESS, 10],
@@ -208,7 +213,7 @@ class OfficeBoss extends Level {
         });
         meshesOf(platformLeft1).forEach((mesh) => (mesh.castShadow = true));
         room.add(platformLeft1);
-        
+
         const platformLeft2 = new Wall({
             name: 'platform',
             size: [10, WALL_THICKNESS, 10],

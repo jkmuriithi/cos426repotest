@@ -1,7 +1,9 @@
 import {
     Color,
+    DoubleSide,
     GridHelper,
     LinearFilter,
+    Material,
     MeshPhongMaterial,
     NearestFilter,
     Vector3,
@@ -10,6 +12,7 @@ import {
 import {
     loadModelFromGLTF,
     loadTexturesFromImages,
+    meshesOf,
     setMaterial,
 } from '../helpers';
 import { COLORS, UP_AXIS_THREE } from '../globals';
@@ -30,7 +33,6 @@ import COPIER from '@models/copier.glb?url';
 import BOARD from '@models/dryeraseboard.glb?url';
 import DOOR from '@models/door.glb?url';
 import DESK from '@models/Desk.glb?url';
-import CHAIR from '@models/chair.glb?url';
 import CHAIR_2 from '@models/Chair-2.glb?url';
 import FIDDLELEAF from '@models/Fiddle-leaf Plant.glb?url';
 import CLOCK from '@models/analog.glb?url';
@@ -60,7 +62,6 @@ class OfficeFight2 extends Level {
         const whiteboard = await loadModelFromGLTF(BOARD);
         const printer = await loadModelFromGLTF(COPIER);
         const desk = await loadModelFromGLTF(DESK);
-        const chair = await loadModelFromGLTF(CHAIR);
         const chairTwo = await loadModelFromGLTF(CHAIR_2, true);
         const door = await loadModelFromGLTF(DOOR, true);
         const fiddlePlant = await loadModelFromGLTF(FIDDLELEAF);
@@ -92,6 +93,9 @@ class OfficeFight2 extends Level {
         this.background = new Color(COLORS.BLACK);
 
         // Projectile config
+        meshesOf(plane).forEach(
+            (mesh) => ((mesh.material as Material).side = DoubleSide)
+        );
         const projectileConfig = {
             object: plane.rotateOnAxis(new Vector3(0, 0, 1), -Math.PI / 2),
             speed: 50,

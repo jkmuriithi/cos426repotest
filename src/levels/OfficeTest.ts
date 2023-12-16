@@ -45,7 +45,7 @@ import QUOTE from '@textures/motivation.jpg';
 import CEILING from '@textures/ceiling_panels.jpg';
 import CARPET from '@textures/carpet.jpg';
 
-class Office2 extends Level {
+class OfficeTest extends Level {
     initCameraPosition = new Vector3(-10, 10, 10);
 
     async load() {
@@ -442,4 +442,4 @@ class Office2 extends Level {
     }
 }
 
-export default Office2;
+export default OfficeTest;

@@ -4,7 +4,9 @@ import {
     MeshPhongMaterial,
     NearestFilter,
     Vector3,
-    Vector2
+    Vector2,
+    Material,
+    DoubleSide
 } from 'three';
 
 // Helpers and constants
@@ -78,6 +80,10 @@ class OfficeStart extends Level {
         const monitor = await loadModelFromGLTF(MONITOR);
         const bin = await loadModelFromGLTF(BIN);
         const keyboard = await loadModelFromGLTF(KEYBOARD);
+
+        meshesOf(plane).forEach(
+            (mesh) => ((mesh.material as Material).side = DoubleSide)
+        );
 
         // Load textures from files
         const google_colors = await loadTexturesFromImages([GOOG_COLORS]);

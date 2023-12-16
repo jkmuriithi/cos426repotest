@@ -1,6 +1,8 @@
 import {
     Color,
+    DoubleSide,
     LinearFilter,
+    Material,
     MeshPhongMaterial,
     NearestFilter,
     Vector3,
@@ -8,6 +10,7 @@ import {
 import {
     loadModelFromGLTF,
     loadTexturesFromImages,
+    meshesOf,
     setMaterial,
 } from '../helpers';
 import { COLORS, UP_AXIS_THREE } from '../globals';
@@ -44,10 +47,9 @@ import CEILING from '@textures/ceiling_panels.jpg';
 import CARPET from '@textures/carpet.jpg';
 import RangedEnemy, { RangedEnemyOptions } from '../characters/RangedEnemy';
 
-class Fight1 extends Level {
+class OfficeFight1 extends Level {
     initCameraPosition = new Vector3(-41, 5, -7.5);
     async load() {
-
         // Load models from files
         const windowNS = await loadModelFromGLTF(WINDOW_LARGE);
         const windowEW = windowNS.clone();
@@ -89,6 +91,9 @@ class Fight1 extends Level {
         this.background = new Color(COLORS.BLACK);
 
         // Projectile config
+        meshesOf(plane).forEach(
+            (mesh) => ((mesh.material as Material).side = DoubleSide)
+        );
         const projectileConfig = {
             object: plane.rotateOnAxis(new Vector3(0, 0, 1), -Math.PI / 2),
             speed: 50,
@@ -800,7 +805,7 @@ class Fight1 extends Level {
             size: [2, 4, 2],
             color: COLORS.RED,
             projectileConfig,
-        }
+        };
         this.enemies = [
             new RangedEnemy({
                 ...rangedOpts,
@@ -882,4 +887,4 @@ class Fight1 extends Level {
     }
 }
 
-export default Fight1;
+export default OfficeFight1;

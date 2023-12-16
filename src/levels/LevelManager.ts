@@ -6,10 +6,9 @@ import { CAMERA, STARTING_LEVEL } from '../globals';
 import Level from './Level';
 import OfficeStart from './OfficeStart';
 import OfficeBoss from './OfficeBoss';
-import Parkour from './Parkour';
-import TestLevelOne from './TestLevelOne';
 import OfficeCorridor from './OfficeCorridor';
-import Fight1 from './Fight1';
+import OfficeFight1 from './OfficeFight1';
+import OfficeFight2 from './OfficeFight2';
 
 type LevelCreationFunction = () => Level;
 
@@ -17,9 +16,10 @@ class LevelManager {
     readonly levels: LevelCreationFunction[] = [
         () => new OfficeStart(),
         () => new OfficeCorridor(),
-        () => new Parkour(),
-        () => new TestLevelOne(),
-        () => new Fight1(),
+        () => new OfficeFight1(),
+        () => new OfficeCorridor(),
+        () => new OfficeFight2(),
+        () => new OfficeCorridor(),
         () => new OfficeBoss(),
     ];
 

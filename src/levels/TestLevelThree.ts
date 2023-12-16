@@ -1,6 +1,8 @@
 import {
     Color,
+    DoubleSide,
     LinearFilter,
+    Material,
     MeshPhongMaterial,
     NearestFilter,
     Vector3,
@@ -38,7 +40,7 @@ import PLAYER_PZ from '@textures/player_pz.jpg';
 import PLAYER_NZ from '@textures/player_nz.jpg';
 import KOOL_AID_MAN from '@textures/BEAM.jpg';
 
-class Parkour extends Level {
+class TestLevelThree extends Level {
     initCameraPosition = new Vector3(-10, 10, 10);
 
     async load() {
@@ -48,6 +50,10 @@ class Parkour extends Level {
         const door = await loadModelFromGLTF(DOOR, true);
         const plane = await loadModelFromGLTF(PLANE, true);
         door.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
+
+        meshesOf(plane).forEach(
+            (mesh) => ((mesh.material as Material).side = DoubleSide)
+        );
 
         // Load textures from files
         const kool = await loadTexturesFromImages([KOOL_AID_MAN]);
@@ -278,4 +284,4 @@ class Parkour extends Level {
     }
 }
 
-export default Parkour;
+export default TestLevelThree;

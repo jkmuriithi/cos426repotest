@@ -53,10 +53,6 @@ class TestLevelOne extends Level {
 
         door.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
 
-        meshesOf(plane).forEach(
-            (mesh) => ((mesh.material as Material).side = DoubleSide)
-        );
-
         // Load textures from files
         const kool = await loadTexturesFromImages([KOOL]);
         const player_textures = await loadTexturesFromImages(
@@ -67,6 +63,9 @@ class TestLevelOne extends Level {
         this.background = new Color(COLORS.BLACK);
 
         // Projectile config
+        meshesOf(plane).forEach(
+            (mesh) => ((mesh.material as Material).side = DoubleSide)
+        );
         const projectileConfig = {
             object: plane.rotateOnAxis(new Vector3(0, 0, 1), -Math.PI / 2),
             speed: 50,
