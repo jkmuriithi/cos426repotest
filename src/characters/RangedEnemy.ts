@@ -2,7 +2,7 @@ import { Vector3 } from 'three';
 import { FLOAT_EPS, DEBUG_FLAGS, WORLD } from '../globals';
 import Enemy, { EnemyOptions } from './Enemy';
 
-type RangedEnemyOptions = EnemyOptions & {
+export type RangedEnemyOptions = EnemyOptions & {
     fireRate: number;
 };
 
