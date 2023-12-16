@@ -55,7 +55,7 @@ import PLAYER_PZ from '@textures/player_pz.jpg';
 import PLAYER_NZ from '@textures/player_nz.jpg';
 import CEILING from '@textures/ceiling_panels.jpg';
 import CARPET from '@textures/carpet.jpg';
-import LOGO from '@textures/Google.png';
+import LOGO from '@textures/google.png';
 import WOOD from '@textures/wood.jpeg';
 import SIGN from '@textures/paper.jpeg';
 import GOOG_COLORS from '@textures/google_colors.jpeg';
