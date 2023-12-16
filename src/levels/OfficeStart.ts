@@ -4,7 +4,6 @@ import {
     MeshPhongMaterial,
     NearestFilter,
     Vector3,
-    GridHelper
 } from 'three';
 
 // Helpers and constants
