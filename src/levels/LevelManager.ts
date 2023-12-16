@@ -9,6 +9,7 @@ import OfficeBoss from './OfficeBoss';
 import Parkour from './Parkour';
 import TestLevelOne from './TestLevelOne';
 import OfficeCorridor from './OfficeCorridor';
+import Fight1 from './Fight1';
 
 type LevelCreationFunction = () => Level;
 
@@ -18,6 +19,7 @@ class LevelManager {
         () => new OfficeCorridor(),
         () => new Parkour(),
         () => new TestLevelOne(),
+        () => new Fight1(),
         () => new OfficeBoss(),
     ];
 
