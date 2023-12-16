@@ -40,9 +40,33 @@ class OfficeCorridorLights extends Group {
         spot4.shadow.mapSize.height = this.shadowMapSize;
         this.add(spot4, spot4.target);
 
+        const spotPositions = [
+            [1.5, 3.5],
+            [25.5, 3.5],
+            [1.5, -17.5],
+            [25.5, -17.5],
+        ];
+
+        for (const pos of spotPositions) {
+            const spot = new SpotLight(
+                COLORS.WHITE,
+                150,
+                0,
+                Math.PI / 3,
+                0.9,
+                2
+            );
+            spot.position.set(pos[0], 12, pos[1]);
+            spot.target.position.set(pos[0], -2, pos[1]);
+            spot.castShadow = true;
+            spot.shadow.mapSize.width = this.shadowMapSize;
+            spot.shadow.mapSize.height = this.shadowMapSize;
+            this.add(spot, spot.target);
+        }
+
         const hemi =
             Math.random() > 0.8
-                ? new HemisphereLight(COLORS.WHITE, COLORS.BLUEISH_WHITE, 0.7)
+                ? new HemisphereLight(COLORS.WHITE, COLORS.BLUEISH_WHITE, 0.5)
                 : new HemisphereLight(COLORS.WHITE, COLORS.WHITE, 0.85);
         hemi.position.set(-13, 12, -9);
         this.add(hemi);

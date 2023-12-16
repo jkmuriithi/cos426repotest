@@ -8,6 +8,7 @@ class OfficeStartLights extends Group {
     constructor() {
         // Invoke parent Group() constructor
         super();
+
         const spotPositions = [
             [10, 11.25],
             [-10, 11.25],
@@ -18,7 +19,7 @@ class OfficeStartLights extends Group {
         for (const pos of spotPositions) {
             const spot = new SpotLight(
                 COLORS.WHITE,
-                200,
+                500,
                 0,
                 Math.PI / 3,
                 0.9,
@@ -32,7 +33,7 @@ class OfficeStartLights extends Group {
             this.add(spot, spot.target);
         }
 
-        const hemi = new HemisphereLight(COLORS.WHITE, COLORS.WHITE, 1);
+        const hemi = new HemisphereLight(COLORS.WHITE, COLORS.WHITE, 0.8);
         hemi.position.set(-10, 10, 0);
         this.add(hemi);
     }

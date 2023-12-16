@@ -209,8 +209,8 @@ class OfficeCorridor extends Level {
             mass: 0,
             opacityConfig: frontWallOpacity,
         });
-        room.add(this.portal);
-        room.add(
+        this.add(this.portal);
+        this.add(
             new PhysicsObject(doorBack, {
                 position: [-11, 2.9, -8],
                 scale: 10,
@@ -219,14 +219,14 @@ class OfficeCorridor extends Level {
             })
         );
 
-        room.add(new OfficeCorridorLights());
+        this.add(new OfficeCorridorLights());
 
         /************************************
          * Creating objects for the office
          ************************************/
 
         // Whiteboard
-        room.add(
+        this.add(
             new PhysicsObject(whiteboard.rotateOnAxis(UP_AXIS_THREE, Math.PI), {
                 position: [37, 5, -13],
                 scale: 8,
@@ -236,7 +236,7 @@ class OfficeCorridor extends Level {
         );
 
         // Clock
-        room.add(
+        this.add(
             new PhysicsObject(clock.rotateOnAxis(UP_AXIS_THREE, Math.PI), {
                 position: [37, 10, -2],
                 scale: 0.1,
@@ -246,18 +246,18 @@ class OfficeCorridor extends Level {
         );
 
         // Cubicles
-        room.add(
+        this.add(
             new PhysicsObject(
                 cooler.rotateOnAxis(UP_AXIS_THREE, -Math.PI / 2),
                 {
                     position: [1.5, 1, 2],
                     scale: 1.5,
-                    mass: 0,
+                    mass: 1,
                     opacityConfig: rightWallOpacity,
                 }
             )
         );
-        room.add(
+        this.add(
             new PhysicsObject(cubicle, {
                 position: [9, 1, 0],
                 scale: 3,
@@ -265,7 +265,7 @@ class OfficeCorridor extends Level {
                 opacityConfig: rightWallOpacity,
             })
         );
-        room.add(
+        this.add(
             new PhysicsObject(cubicle, {
                 position: [15, 1, 0],
                 scale: 3,
@@ -273,7 +273,7 @@ class OfficeCorridor extends Level {
                 opacityConfig: rightWallOpacity,
             })
         );
-        room.add(
+        this.add(
             new PhysicsObject(cubicle, {
                 position: [21, 1, 0],
                 scale: 3,
@@ -281,7 +281,7 @@ class OfficeCorridor extends Level {
                 opacityConfig: rightWallOpacity,
             })
         );
-        room.add(
+        this.add(
             new PhysicsObject(cubicle, {
                 position: [27, 1, 0],
                 scale: 3,
@@ -291,20 +291,20 @@ class OfficeCorridor extends Level {
         );
 
         // Printer/copier
-        room.add(
+        this.add(
             new PhysicsObject(
                 printer.rotateOnAxis(UP_AXIS_THREE, -Math.PI / 2),
                 {
                     position: [-8, 1.5, 1],
                     scale: 3,
-                    mass: 0,
+                    mass: 2,
                     opacityConfig: rightWallOpacity,
                 }
             )
         );
 
         // Desks
-        room.add(
+        this.add(
             new PhysicsObject(desk, {
                 position: [2, 1.5, -18],
                 scale: 4,
@@ -312,7 +312,7 @@ class OfficeCorridor extends Level {
                 opacityConfig: leftWallOpacity,
             })
         );
-        room.add(
+        this.add(
             new PhysicsObject(desk, {
                 position: [10, 1.5, -18],
                 scale: 4,
@@ -320,7 +320,7 @@ class OfficeCorridor extends Level {
                 opacityConfig: leftWallOpacity,
             })
         );
-        room.add(
+        this.add(
             new PhysicsObject(desk, {
                 position: [18, 1.5, -18],
                 scale: 4,
@@ -330,7 +330,7 @@ class OfficeCorridor extends Level {
         );
 
         // Chairs
-        room.add(
+        this.add(
             new PhysicsObject(chair, {
                 position: [8, 1, 0],
                 scale: 0.1,
@@ -338,7 +338,7 @@ class OfficeCorridor extends Level {
                 opacityConfig: rightWallOpacity,
             })
         );
-        room.add(
+        this.add(
             new PhysicsObject(chair, {
                 position: [14, 1, 0],
                 scale: 0.1,
@@ -346,7 +346,7 @@ class OfficeCorridor extends Level {
                 opacityConfig: rightWallOpacity,
             })
         );
-        room.add(
+        this.add(
             new PhysicsObject(chair, {
                 position: [20, 1, 0],
                 scale: 0.1,
@@ -354,7 +354,7 @@ class OfficeCorridor extends Level {
                 opacityConfig: rightWallOpacity,
             })
         );
-        room.add(
+        this.add(
             new PhysicsObject(chair, {
                 position: [26, 1, 0],
                 scale: 0.1,
@@ -362,27 +362,27 @@ class OfficeCorridor extends Level {
                 opacityConfig: rightWallOpacity,
             })
         );
-        room.add(
+        this.add(
             new PhysicsObject(chairLeft, {
                 position: [32, 0, -17.5],
                 scale: 0.1,
-                mass: 0,
+                mass: 1,
                 opacityConfig: leftWallOpacity,
             })
         );
 
         // Plants
-        room.add(
+        this.add(
             new PhysicsObject(fiddlePlant, {
-                position: [-7, 2, -18.5],
+                position: [-7, 2.8, -18.5],
                 scale: 1,
-                mass: 0,
+                mass: 1,
                 opacityConfig: leftWallOpacity,
             })
         );
 
         // Windows
-        room.add(
+        this.add(
             new PhysicsObject(window, {
                 position: [-4, 5, -21],
                 scale: 3,
@@ -390,7 +390,7 @@ class OfficeCorridor extends Level {
                 opacityConfig: leftWallOpacity,
             })
         );
-        room.add(
+        this.add(
             new PhysicsObject(window, {
                 position: [26, 5, -21],
                 scale: 3,
