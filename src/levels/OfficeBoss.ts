@@ -44,6 +44,7 @@ import BOSS_NZ from '@textures/boss_nz.jpg';
 import CEILING from '@textures/ceiling_panels.jpg';
 import CARPET from '@textures/carpet.jpg';
 import FINKELSTEIN from '@textures/finkelstein.jpeg';
+import GOOG_COLORS from '@textures/google_colors.jpeg';
 
 class OfficeBoss extends Level {
     initCameraPosition = new Vector3(-150, 50, 0);
@@ -64,6 +65,7 @@ class OfficeBoss extends Level {
         const ceil = await loadTexturesFromImages([CEILING]);
         const carp = await loadTexturesFromImages([CARPET]);
         const fink = await loadTexturesFromImages([FINKELSTEIN]);
+        const google_colors = await loadTexturesFromImages([GOOG_COLORS]);
 
         this.background = new Color(COLORS.BLACK);
 
@@ -174,11 +176,15 @@ class OfficeBoss extends Level {
             color: COLORS.WHITE,
             map: fink[0],
         });
+        const googMaterial = new MeshPhongMaterial({
+            color: COLORS.WHITE,
+            map: google_colors[0],
+        })
 
-        setMaterial(room.rightFrontWall, finkMaterial);
+        setMaterial(room.rightFrontWall, googMaterial);
         setMaterial(room.rightBackWall, finkMaterial);
-        setMaterial(room.leftFrontWall, finkMaterial);
-        setMaterial(room.leftBackWall, finkMaterial);
+        setMaterial(room.leftFrontWall, googMaterial);
+        setMaterial(room.leftBackWall, googMaterial);
         setMaterial(
             room.ceiling,
             new MeshPhongMaterial({

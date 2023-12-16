@@ -48,6 +48,7 @@ import PLAYER_NZ from '@textures/player_nz.jpg';
 import QUOTE from '@textures/motivation.jpg';
 import CEILING from '@textures/ceiling_panels.jpg';
 import CARPET from '@textures/carpet.jpg';
+import GOOG_COLORS from '@textures/google_colors.jpeg';
 
 class OfficeFight2 extends Level {
     initCameraPosition = new Vector3(-50, 20, 0);
@@ -77,7 +78,7 @@ class OfficeFight2 extends Level {
         desk.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
 
         // Load textures from files
-        const motivation = await loadTexturesFromImages([QUOTE]);
+        const google_colors = await loadTexturesFromImages([GOOG_COLORS]);        
         const player_textures = await loadTexturesFromImages([
             PLAYER_PX,
             PLAYER_NX,
@@ -322,7 +323,21 @@ class OfficeFight2 extends Level {
             room.leftBackWall,
             new MeshPhongMaterial({
                 color: COLORS.WHITE,
-                map: motivation[0],
+                map: google_colors[0],
+            })
+        );
+        setMaterial(
+            room.leftFrontWall,
+            new MeshPhongMaterial({
+                color: COLORS.WHITE,
+                map: google_colors[0],
+            })
+        );
+        setMaterial(
+            room.rightBackWall,
+            new MeshPhongMaterial({
+                color: COLORS.WHITE,
+                map: google_colors[0],
             })
         );
         setMaterial(
