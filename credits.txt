@@ -1,25 +1,46 @@
 This project uses the following Creative Commons assets:
+
+Models:
+ - Analog clock by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/5gAoMR2YHs3)
+ - Animated Woman by Quaternius (https://poly.pizza/m/nIItLV9nxS)
+ - Bank by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/2gYeniBQ8RH)
+ - Bloodwood tree by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/5MenXQd3qRA)
+ - Cardboard Boxes by Quaternius (https://poly.pizza/m/V9KbWC8Vd6)
+ - Chair by CMHT Oculus [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/bOuqwqoXiy2)
+ - Chair by CMHT Oculus [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/dCEsSsJJ1Md)
+ - Chair Modern Cushion by Kenney (https://poly.pizza/m/KuTg9Uw3QC)
+ - Chicken by jeremy [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/1YE8U35HXsI)
+ - Coin by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/5dwGkhjKXIW)
+ - Couch Small by Quaternius (https://poly.pizza/m/ZOPP3KzNIk)
+ - Couch Medium by Quaternius (https://poly.pizza/m/mWgQ94zhDZ)
+ - Cubicle by Stephen Faett [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/9oZP4harYcp)
+ - Curtains by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/1B9JneFqd-a)
+ - Desk by Niko Hokkanen [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/c406LNgto0n)
+ - Doorway Front by Kenney (https://poly.pizza/m/ZIueKgYj4i)
+ - Dry Erase Board by Jarlan Perez [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/cgrhoDImyFt)
+ - Fiddle-leaf Plant by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/2ag6_uuqsnb)
+ - Flying saucer by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/6hu2h8v78mO)
+ - Keyboard by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/3oFfQCSsUmQ)
+ - Knight chess piece by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/aW5HcCo0KZa)
+ - Lab Desk by Colonel Cthulu [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/6KxaD6I6I48)
+ - Monitor by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/e8cELDeDuTr)
+ - Mug With Office Tool by CreativeTrio (https://poly.pizza/m/4jSgnM5WWk)
+ - Nunchucks by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/bD_Y3fK5Wz0)
+ - Office Phone by dook [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/YxfMuchpUF)
+ - Office Printer / Copier by Bruno Oliveira [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/bgNnmejxBa-)
  - Paper airplane by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/75WQH5E29tF)
  - Paper airplane by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/5Dzvrp9lvtN)
- - Flying saucer by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/6hu2h8v78mO)
- - Nunchucks by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/bD_Y3fK5Wz0)
- - Window Large by Quaternius [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/EipzkrS9nG)
  - Square window by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/0BEn8hO2Nbn)
- - Chair by CMHT Oculus [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/dCEsSsJJ1Md)
- - Lowe's
- - Desk by Niko Hokkanen [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/c406LNgto0n)
- - Water Cooler by J-Toastie [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/zWi9p5FSxD)
- - Cubicle by Stephen Faett [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/9oZP4harYcp)
- - Chair by CMHT Oculus [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/bOuqwqoXiy2)
- - Fiddle-leaf Plant by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/2ag6_uuqsnb)
- - Analog clock by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/5gAoMR2YHs3)
- - Monitor by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/e8cELDeDuTr)
+ - Suit by Quaternius [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/sOUciDsoVV)
  - Suit & Tie Guy by Ian MacGillivray [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/cgdjE3cst7f)
- - Mug With Office Tool by CreativeTrio (https://poly.pizza/m/4jSgnM5WWk)
- - Office Phone by dook [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/YxfMuchpUF)
- - Carpet https://www.floorbros.com/carpet/philadelphia-commercial-by-shaw/sp745/strut/?gclid=EAIaIQobChMIseuVuNSSgwMV0GFHAR3tnQ7gEAQYAiABEgKwFvD_BwE
  - Trashcan Small by Quaternius (https://poly.pizza/m/i7HDuYDLkx)
- - Chair Modern Cushion by Kenney (https://poly.pizza/m/KuTg9Uw3QC)
- - Keyboard by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/3oFfQCSsUmQ)
- - Google Colors by Jesssaysno https://www.deviantart.com/jesssaysno/art/Google-Colors-911428187
+ - Water Cooler by J-Toastie [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/zWi9p5FSxD)
+ - Window Large by Quaternius [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/EipzkrS9nG)
+
+Textures:
+ - Adam Finkelstein https://innovation.princeton.edu/sites/g/files/toruqf5841/files/styles/freeform_750w/public/2021-10/Finkelstein_Adam_IMG_4556.jpg
+ - Carpet https://www.floorbros.com/carpet/philadelphia-commercial-by-shaw/sp745/strut/?gclid=EAIaIQobChMIseuVuNSSgwMV0GFHAR3tnQ7gEAQYAiABEgKwFvD_BwE
  - Carpet https://www.lowes.com/pd/Shaw-Double-Take-12-Pack-Ditto-Carpet-Tile/1003128130
+ - Google Colors by Jesssaysno https://www.deviantart.com/jesssaysno/art/Google-Colors-911428187
+ - Google Full Logo https://en.wikipedia.org/wiki/Google_logo#/media/File:Google_2015_logo.svg
+ - Google G Logo https://en.wikipedia.org/wiki/Google_logo#/media/File:Google_%22G%22_logo.svg
