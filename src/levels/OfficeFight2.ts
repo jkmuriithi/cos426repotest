@@ -45,7 +45,6 @@ import PLAYER_PY from '@textures/player_py.jpg';
 import PLAYER_NY from '@textures/player_ny.jpg';
 import PLAYER_PZ from '@textures/player_pz.jpg';
 import PLAYER_NZ from '@textures/player_nz.jpg';
-import QUOTE from '@textures/motivation.jpg';
 import CEILING from '@textures/ceiling_panels.jpg';
 import CARPET from '@textures/carpet.jpg';
 import GOOG_COLORS from '@textures/google_colors.jpeg';
@@ -78,7 +77,7 @@ class OfficeFight2 extends Level {
         desk.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
 
         // Load textures from files
-        const google_colors = await loadTexturesFromImages([GOOG_COLORS]);        
+        const google_colors = await loadTexturesFromImages([GOOG_COLORS]);
         const player_textures = await loadTexturesFromImages([
             PLAYER_PX,
             PLAYER_NX,

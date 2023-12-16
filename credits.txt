@@ -8,18 +8,18 @@ This project uses the following Creative Commons assets:
  - Chair by CMHT Oculus [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/dCEsSsJJ1Md)
  - Lowe's
  - Desk by Niko Hokkanen [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/c406LNgto0n)
-- Water Cooler by J-Toastie [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/zWi9p5FSxD)
-- Cubicle by Stephen Faett [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/9oZP4harYcp)
-- Chair by CMHT Oculus [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/bOuqwqoXiy2)
-Fiddle-leaf Plant by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/2ag6_uuqsnb)
-- Analog clock by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/5gAoMR2YHs3)
-- Monitor by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/e8cELDeDuTr)
-- Suit & Tie Guy by Ian MacGillivray [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/cgdjE3cst7f)
-- Mug With Office Tool by CreativeTrio (https://poly.pizza/m/4jSgnM5WWk)
-- Office Phone by dook [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/YxfMuchpUF)
-- Carpet https://www.floorbros.com/carpet/philadelphia-commercial-by-shaw/sp745/strut/?gclid=EAIaIQobChMIseuVuNSSgwMV0GFHAR3tnQ7gEAQYAiABEgKwFvD_BwE
-- Trashcan Small by Quaternius (https://poly.pizza/m/i7HDuYDLkx)
-- Chair Modern Cushion by Kenney (https://poly.pizza/m/KuTg9Uw3QC)
-- Keyboard by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/3oFfQCSsUmQ)
-- Google Colors by Jesssaysno https://www.deviantart.com/jesssaysno/art/Google-Colors-911428187
-- Carpet https://www.lowes.com/pd/Shaw-Double-Take-12-Pack-Ditto-Carpet-Tile/1003128130
+ - Water Cooler by J-Toastie [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/zWi9p5FSxD)
+ - Cubicle by Stephen Faett [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/9oZP4harYcp)
+ - Chair by CMHT Oculus [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/bOuqwqoXiy2)
+ - Fiddle-leaf Plant by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/2ag6_uuqsnb)
+ - Analog clock by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/5gAoMR2YHs3)
+ - Monitor by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/e8cELDeDuTr)
+ - Suit & Tie Guy by Ian MacGillivray [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/cgdjE3cst7f)
+ - Mug With Office Tool by CreativeTrio (https://poly.pizza/m/4jSgnM5WWk)
+ - Office Phone by dook [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/YxfMuchpUF)
+ - Carpet https://www.floorbros.com/carpet/philadelphia-commercial-by-shaw/sp745/strut/?gclid=EAIaIQobChMIseuVuNSSgwMV0GFHAR3tnQ7gEAQYAiABEgKwFvD_BwE
+ - Trashcan Small by Quaternius (https://poly.pizza/m/i7HDuYDLkx)
+ - Chair Modern Cushion by Kenney (https://poly.pizza/m/KuTg9Uw3QC)
+ - Keyboard by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/3oFfQCSsUmQ)
+ - Google Colors by Jesssaysno https://www.deviantart.com/jesssaysno/art/Google-Colors-911428187
+ - Carpet https://www.lowes.com/pd/Shaw-Double-Take-12-Pack-Ditto-Carpet-Tile/1003128130

@@ -43,7 +43,7 @@ import BOSS_PZ from '@textures/boss_pz.jpg';
 import BOSS_NZ from '@textures/boss_nz.jpg';
 import CEILING from '@textures/ceiling_panels.jpg';
 import CARPET from '@textures/carpet.jpg';
-import FINKELSTEIN from '@textures/finkelstein.jpeg';
+import FINK from '@textures/fink.jpg';
 import GOOG_COLORS from '@textures/google_colors.jpeg';
 
 class OfficeBoss extends Level {
@@ -64,7 +64,7 @@ class OfficeBoss extends Level {
         );
         const ceil = await loadTexturesFromImages([CEILING]);
         const carp = await loadTexturesFromImages([CARPET]);
-        const fink = await loadTexturesFromImages([FINKELSTEIN]);
+        const fink = await loadTexturesFromImages([FINK]);
         const google_colors = await loadTexturesFromImages([GOOG_COLORS]);
 
         this.background = new Color(COLORS.BLACK);

@@ -19,7 +19,7 @@ import { CSS2DRenderer } from 'three/examples/jsm/Addons.js';
 // Game
 export const PROJECTILE_LIMIT = 100;
 export const UP_AXIS = [0, 1, 0] as const;
-export const STARTING_LEVEL = 0;
+export const STARTING_LEVEL = 6;
 export const WALL_THICKNESS = 0.4;
 export const FLOAT_EPS = 1e-6;
 
