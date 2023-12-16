@@ -1,4 +1,4 @@
-import { Group, SpotLight, HemisphereLight } from 'three';
+import { Group, HemisphereLight } from 'three';
 
 import { COLORS, SHADOW_MAP_SIZE } from '../globals';
 
