@@ -40,6 +40,7 @@ class LevelManager {
 
     private startingLevel;
     private currentIndex: number;
+    private clearClockMs: number = performance.now();
     private loading: boolean = true;
     private portalMessageShown: boolean = false;
 
@@ -76,6 +77,8 @@ class LevelManager {
         hideGameText();
         for (const [text, ms] of textDelayMs) {
             this.current = getTextScreen(text) as Level;
+            // Show the screen forever if ms == 0
+            if (ms === 0) return;
             await delay(ms);
             this.current.children[0].removeFromParent();
         }
@@ -107,8 +110,13 @@ class LevelManager {
     async loadNext() {
         // Handle end game
         if (this.currentIndex === this.levels.length - 1) {
-            hideGameText();
-            this.current = getTextScreen(this.winMessage) as Level;
+            const clearTime = String(
+                (performance.now() - this.clearClockMs) / 1000
+            ).slice(0, 7);
+            this.showSlides([
+                [this.winMessage, 1500],
+                [`time: ${clearTime} secs`, 0],
+            ]);
         } else {
             await this.load(
                 this.currentIndex + 1,
@@ -142,6 +150,7 @@ class LevelManager {
                 this.loadNext();
                 break;
             case 'playerDead':
+                this.clearClockMs = performance.now();
                 this.load(
                     this.startingLevel,
                     getTextScreen(chooseRandom(this.deathMessages)),
