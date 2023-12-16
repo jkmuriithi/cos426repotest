@@ -109,14 +109,17 @@ function setup() {
                 case 'KeyC':
                     console.log(CAMERA);
                     break;
-                case 'KeyR':
-                    levelManager.resetCurrent();
+                case 'KeyI':
+                    DEBUG_FLAGS.ICE_SKATER_MODE = !DEBUG_FLAGS.ICE_SKATER_MODE;
                     break;
                 case 'KeyN':
                     levelManager.loadNext();
                     break;
                 case 'KeyP':
                     levelManager.loadPrevious();
+                    break;
+                case 'KeyR':
+                    levelManager.resetCurrent();
                     break;
             }
         });

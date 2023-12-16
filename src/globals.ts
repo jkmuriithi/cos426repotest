@@ -37,7 +37,7 @@ export const COLORS = {
 };
 
 export const DEBUG_FLAGS = {
-    HOTKEYS_ENABLED: false,
+    HOTKEYS_ENABLED: true,
     ORBIT_CONTROLS_ENABLED: false,
     ICE_SKATER_MODE: false,
     PRINT_ASSETS_ON_LOAD: false,
