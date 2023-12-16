@@ -44,3 +44,4 @@ Textures:
  - Google Colors by Jesssaysno https://www.deviantart.com/jesssaysno/art/Google-Colors-911428187
  - Google Full Logo https://en.wikipedia.org/wiki/Google_logo#/media/File:Google_2015_logo.svg
  - Google G Logo https://en.wikipedia.org/wiki/Google_logo#/media/File:Google_%22G%22_logo.svg
+ - Gold Plane Texture https://jenikirbyhistory.getarchive.net/media/gold-glitter-background-backgrounds-textures-5c65a8

@@ -16,14 +16,7 @@ class OfficeCorridorLights extends Group {
         ];
 
         for (const pos of spotPositions) {
-            const spot = new SpotLight(
-                COLORS.WHITE,
-                250,
-                0,
-                Math.PI / 3,
-                0.9,
-                2
-            );
+            const spot = new SpotLight(COLORS.WHITE, 300, 0, 1, 0.9, 2);
             spot.position.set(pos[0], 12, pos[1]);
             spot.target.position.set(pos[0], -2, pos[1]);
             spot.castShadow = true;

@@ -17,7 +17,7 @@ class OfficeFight2Lights extends Group {
         ];
 
         for (const pos of spotPositions) {
-            const spot = new SpotLight(COLORS.WHITE, 150, 0, 1.3, 0.9, 2);
+            const spot = new SpotLight(COLORS.WHITE, 150, 0, 1, 0.9, 2);
             spot.position.set(pos[0], 10, pos[1]);
             spot.target.position.set(pos[0], 0, pos[1]);
             spot.castShadow = true;

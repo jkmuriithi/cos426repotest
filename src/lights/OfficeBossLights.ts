@@ -11,10 +11,8 @@ class OfficeBossLights extends Group {
 
         const spotPositions = [
             [-40, -15],
-            [-20, -30],
             [20, -30],
             [-40, 15],
-            [-20, 30],
             [20, 30],
         ];
 
@@ -31,8 +29,8 @@ class OfficeBossLights extends Group {
         bossSpot.position.set(0, 100, 0);
         bossSpot.target.position.set(20, 0, 0);
         bossSpot.castShadow = true;
-        bossSpot.shadow.mapSize.width = this.shadowMapSize;
-        bossSpot.shadow.mapSize.height = this.shadowMapSize;
+        bossSpot.shadow.mapSize.width = this.shadowMapSize / 2;
+        bossSpot.shadow.mapSize.height = this.shadowMapSize / 2;
         this.add(bossSpot, bossSpot.target);
 
         // // Directional light to simulate the sun

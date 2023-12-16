@@ -17,12 +17,13 @@ class OfficeFight1Lights extends Group {
         ];
 
         for (const pos of spotPositions) {
-            const spot = new SpotLight(COLORS.WHITE, 300, 0, 1.1, 0.9, 2);
+            const spot = new SpotLight(COLORS.WHITE, 300, 0, 1, 0.9, 2);
             spot.position.set(pos[0], 18, pos[1]);
             spot.target.position.set(pos[0], -2, pos[1]);
             spot.castShadow = true;
-            spot.shadow.mapSize.width = this.shadowMapSize;
-            spot.shadow.mapSize.height = this.shadowMapSize;
+            // Try to mitigate performance dip
+            spot.shadow.mapSize.width = this.shadowMapSize / 2;
+            spot.shadow.mapSize.height = this.shadowMapSize / 2;
             this.add(spot, spot.target);
         }
 

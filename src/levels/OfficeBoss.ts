@@ -18,7 +18,7 @@ import {
 } from '../helpers';
 import {
     COLORS,
-    RENDER_ORDER_LAST,
+    RENDER_ORDER_FIRST,
     UP_AXIS_THREE,
     WALL_THICKNESS,
 } from '../globals';
@@ -293,7 +293,7 @@ class OfficeBoss extends Level {
             },
         });
         // Avoid with render order being reset after intersection
-        platformLeft1.renderOrder = RENDER_ORDER_LAST - 1;
+        platformLeft1.renderOrder = RENDER_ORDER_FIRST + 1;
         room.add(platformLeft1);
 
         const platformLeft2 = new Wall({
@@ -308,7 +308,7 @@ class OfficeBoss extends Level {
                 lowOpacity: 0.4,
             },
         });
-        platformLeft2.renderOrder = RENDER_ORDER_LAST - 1;
+        platformLeft2.renderOrder = RENDER_ORDER_FIRST + 1;
         room.add(platformLeft2);
 
         const platformLeft3 = new Wall({
@@ -324,7 +324,7 @@ class OfficeBoss extends Level {
             },
             castShadow: true,
         });
-        platformLeft3.renderOrder = RENDER_ORDER_LAST - 1;
+        platformLeft3.renderOrder = RENDER_ORDER_FIRST + 1;
         room.add(platformLeft3);
 
         const platformRight1 = new Wall({
@@ -340,7 +340,7 @@ class OfficeBoss extends Level {
             },
             castShadow: true,
         });
-        platformRight1.renderOrder = RENDER_ORDER_LAST - 1;
+        platformRight1.renderOrder = RENDER_ORDER_FIRST + 1;
         room.add(platformRight1);
 
         const platformRight2 = new Wall({
@@ -356,7 +356,7 @@ class OfficeBoss extends Level {
             },
             castShadow: true,
         });
-        platformRight2.renderOrder = RENDER_ORDER_LAST - 1;
+        platformRight2.renderOrder = RENDER_ORDER_FIRST + 1;
         room.add(platformRight2);
 
         const platformRight3 = new Wall({
@@ -372,7 +372,7 @@ class OfficeBoss extends Level {
             },
             castShadow: true,
         });
-        platformRight3.renderOrder = RENDER_ORDER_LAST - 1;
+        platformRight3.renderOrder = RENDER_ORDER_FIRST + 1;
         room.add(platformRight3);
 
         await super.load();

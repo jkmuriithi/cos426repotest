@@ -35,7 +35,7 @@ class LevelManager {
         'ngl that was bad',
         'aw man',
     ];
-    private readonly loadingMessage = '';
+    private readonly loadingMessage = 'loading...';
     private readonly winMessage = 'you got hired! gg';
 
     private startingLevel;
