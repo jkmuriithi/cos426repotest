@@ -84,7 +84,7 @@ class OfficeBoss extends Level {
 
         // Characters
         this.player = new Player({
-            size: [1.5, 3, 1.5],
+            size: [3, 6, 3],
             position: [-50, 5, 0],
             color: COLORS.PLAYER,
             projectileConfig,
