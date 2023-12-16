@@ -25,7 +25,7 @@ class TestLevelTwoLights extends Group {
         spot2.shadow.mapSize.height = this.shadowMapSize;
         this.add(spot2, spot2.target);
 
-        const hemi = new HemisphereLight(COLORS.WHITE, COLORS.GRAY, 0.5);
+        const hemi = new HemisphereLight(COLORS.WHITE, COLORS.GRAY, 1);
         hemi.position.set(10, 20, -5);
         this.add(hemi);
     }

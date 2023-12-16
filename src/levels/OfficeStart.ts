@@ -13,7 +13,12 @@ import {
     loadModelFromGLTF,
     loadTexturesFromImages,
 } from '../helpers';
-import { COLORS, RENDER_ORDER_LAST, UP_AXIS_THREE, WALL_THICKNESS } from '../globals';
+import {
+    COLORS,
+    RENDER_ORDER_LAST,
+    UP_AXIS_THREE,
+    WALL_THICKNESS,
+} from '../globals';
 
 // Game objects
 import Level from './Level';
@@ -133,7 +138,6 @@ class OfficeStart extends Level {
             new PhysicsObject(clock.rotateOnAxis(UP_AXIS_THREE, Math.PI), {
                 position: [-0.5, 8, 0],
                 scale: 0.08,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: {
                     directional: true,
@@ -151,34 +155,27 @@ class OfficeStart extends Level {
             highOpacity: 1,
             normal: new Vector3(0, 0, -1).normalize(),
         };
-        const cooler1 = new PhysicsObject(
-            cooler,
-            {
-                position: [-1, 3, 12],
-                scale: 1.5,
-                castShadow: false,
-                mass: 0,
-                opacityConfig: backWallOpacity,
-            }
-        );
+        const cooler1 = new PhysicsObject(cooler, {
+            position: [-1, 3, 12],
+            scale: 1.5,
+            mass: 0,
+            opacityConfig: backWallOpacity,
+        });
 
         const trashbin = new PhysicsObject(
-            bin.rotateOnAxis(UP_AXIS_THREE, -Math.PI/2),
+            bin.rotateOnAxis(UP_AXIS_THREE, -Math.PI / 2),
             {
                 position: [-1, 1, 13.5],
                 scale: 2,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: backWallOpacity,
             }
         );
-
 
         // Plants
         const plant1 = new PhysicsObject(fiddlePlant, {
             position: [-1, 5, 6],
             scale: 1,
-            castShadow: false,
             mass: 0,
             opacityConfig: {
                 directional: true,
@@ -191,7 +188,6 @@ class OfficeStart extends Level {
         const plant2 = new PhysicsObject(fiddlePlant, {
             position: [-1, 5, -6],
             scale: 1,
-            castShadow: false,
             mass: 0,
             opacityConfig: {
                 directional: true,
@@ -201,19 +197,16 @@ class OfficeStart extends Level {
             },
         });
 
-
         for (let i = 0; i < 7; i++) {
-            this.add(new PhysicsObject(
-                chairTwo,
-                {
-                    position: [-14 + i*2, 1.5, 20],
+            this.add(
+                new PhysicsObject(chairTwo, {
+                    position: [-14 + i * 2, 1.5, 20],
                     scale: 6,
-                    castShadow: false,
-                    mass: 0, 
+                    mass: 0,
                     opacityConfig: backWallOpacity,
-                }
-            ));
-        };
+                })
+            );
+        }
 
         // Desks
         for (let i = 0; i < 3; i++) {
@@ -221,7 +214,6 @@ class OfficeStart extends Level {
                 new PhysicsObject(desk, {
                     position: [i * 6 + 6, 3, -20],
                     scale: 3,
-                    castShadow: false,
                     mass: 0,
                     opacityConfig: {
                         directional: true,
@@ -235,7 +227,6 @@ class OfficeStart extends Level {
                 new PhysicsObject(desk, {
                     position: [i * 6 + 6, 3, 20],
                     scale: 3,
-                    castShadow: false,
                     mass: 0,
                     opacityConfig: {
                         directional: true,
@@ -280,7 +271,6 @@ class OfficeStart extends Level {
             {
                 position: [-6, 4, 4],
                 scale: 0.4,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: {
                     directional: true,
@@ -296,7 +286,6 @@ class OfficeStart extends Level {
             {
                 position: [-6, 5, -3],
                 scale: 0.04,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: {
                     directional: true,
@@ -312,7 +301,6 @@ class OfficeStart extends Level {
             {
                 position: [-6, 4.2, 3.5],
                 scale: 8,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: {
                     directional: true,
@@ -324,11 +312,10 @@ class OfficeStart extends Level {
         );
 
         const keyboard1 = new PhysicsObject(
-            keyboard.rotateOnAxis(UP_AXIS_THREE, -Math.PI*3/4),
+            keyboard.rotateOnAxis(UP_AXIS_THREE, (-Math.PI * 3) / 4),
             {
                 position: [-4.7, 3.5, -1],
                 scale: 0.007,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: {
                     directional: true,
@@ -345,7 +332,6 @@ class OfficeStart extends Level {
             {
                 position: [-2, 3, 0],
                 scale: 6,
-                castShadow: false,
                 mass: 0,
             }
         );
@@ -369,17 +355,20 @@ class OfficeStart extends Level {
             trashbin
         );
 
-        this.portal = new PhysicsObject(door.rotateOnAxis(UP_AXIS_THREE, Math.PI/2), {
-            position: [-0.5, 4, -18],
-            scale: 8,
-            mass: 0,
-            opacityConfig: {
-                directional: true,
-                lowOpacity: 0.2,
-                highOpacity: 1,
-                normal: new Vector3(0, 0, 1),
-            },
-        });
+        this.portal = new PhysicsObject(
+            door.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2),
+            {
+                position: [-0.5, 4, -18],
+                scale: 8,
+                mass: 0,
+                opacityConfig: {
+                    directional: true,
+                    lowOpacity: 0.2,
+                    highOpacity: 1,
+                    normal: new Vector3(0, 0, 1),
+                },
+            }
+        );
         this.add(this.portal);
 
         /**** ROOM SETUP ****/
@@ -431,18 +420,19 @@ class OfficeStart extends Level {
             opacityConfig: undefined,
         });
         setMaterial(
-            platform, 
+            platform,
             new MeshPhongMaterial({
                 color: COLORS.WHITE,
                 map: wood[0],
-            }));
+            })
+        );
         meshesOf(platform).forEach((mesh) => (mesh.castShadow = true));
         room.add(platform);
 
         const leftClearWall = new Wall({
             name: 'leftClearWall',
-            size: [20, WALL_THICKNESS, 8],
-            position: [position[0], 10, position[2] - 19],
+            size: [20, WALL_THICKNESS, 15],
+            position: [position[0], 10, position[2] - 7.5],
             direction: [-1, 0, 0],
             color: COLORS.WHITE,
             opacityConfig: {
@@ -458,8 +448,8 @@ class OfficeStart extends Level {
 
         const rightClearWall = new Wall({
             name: 'rightClearWall',
-            size: [20, WALL_THICKNESS, 8],
-            position: [position[0], 10, position[2] + 19],
+            size: [20, WALL_THICKNESS, 15],
+            position: [position[0], 10, position[2] + 7.5],
             direction: [-1, 0, 0],
             color: COLORS.WHITE,
             opacityConfig: {
@@ -486,13 +476,14 @@ class OfficeStart extends Level {
             },
         });
         setMaterial(
-            logo, 
+            logo,
             new MeshPhongMaterial({
                 color: COLORS.WHITE,
                 map: logoTexture[0],
-            }));
+            })
+        );
         meshesOf(logo).forEach((mesh) => (mesh.castShadow = true));
-        room.add(logo.rotateOnAxis(UP_AXIS_THREE, -Math.PI/2));
+        room.add(logo.rotateOnAxis(UP_AXIS_THREE, -Math.PI / 2));
 
         const paper = new Wall({
             name: 'paper',
@@ -507,13 +498,14 @@ class OfficeStart extends Level {
             },
         });
         setMaterial(
-            paper, 
+            paper,
             new MeshPhongMaterial({
                 color: COLORS.WHITE,
                 map: sign[0],
-            }));
+            })
+        );
         meshesOf(paper).forEach((mesh) => (mesh.castShadow = true));
-        room.add(paper.rotateOnAxis(UP_AXIS_THREE, -Math.PI/2));
+        room.add(paper.rotateOnAxis(UP_AXIS_THREE, -Math.PI / 2));
 
         this.add(room);
         this.add(new OfficeStartLights());

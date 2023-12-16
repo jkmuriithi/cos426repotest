@@ -1,15 +1,19 @@
 import {
     Color,
+    DoubleSide,
     GridHelper,
     LinearFilter,
+    Material,
     MeshPhongMaterial,
     NearestFilter,
     Vector3,
 } from 'three';
 
 import {
+    createBox,
     loadModelFromGLTF,
     loadTexturesFromImages,
+    meshesOf,
     setMaterial,
 } from '../helpers';
 import { COLORS, DEBUG_FLAGS, UP_AXIS_THREE } from '../globals';
@@ -19,7 +23,7 @@ import Level from './Level';
 import PhysicsObject from '../PhysicsObject';
 import Room from '../rooms/Room';
 import Player from '../characters/Player';
-import OfficeStartLights from '../lights/Office2Lights';
+import OfficeCorridorLights from '../lights/OfficeCorridorLights';
 
 // Models
 import WINDOW_LARGE from '@models/windowlarge.glb?url';
@@ -45,7 +49,7 @@ import QUOTE from '@textures/motivation.jpg';
 import CEILING from '@textures/ceiling_panels.jpg';
 import CARPET from '@textures/carpet.jpg';
 
-class OfficeCorridorOne extends Level {
+class OfficeCorridor extends Level {
     initCameraPosition = new Vector3(-10, 10, 10);
 
     async load() {
@@ -72,7 +76,10 @@ class OfficeCorridorOne extends Level {
         const door = await loadModelFromGLTF(DOOR, true);
         const fiddlePlant = await loadModelFromGLTF(FIDDLELEAF);
         const clock = await loadModelFromGLTF(CLOCK);
-        const plane = await loadModelFromGLTF(PLANE);
+        const plane = await loadModelFromGLTF(PLANE, true);
+        meshesOf(plane).forEach(
+            (mesh) => ((mesh.material as Material).side = DoubleSide)
+        );
 
         cooler.rotateOnAxis(UP_AXIS_THREE, Math.PI);
         desk.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
@@ -109,8 +116,10 @@ class OfficeCorridorOne extends Level {
                 object: plane.rotateOnAxis(new Vector3(0, 0, 1), -Math.PI / 2),
                 speed: 50,
                 damage: 35,
+                distanceFromSender: 1.1,
                 options: {
                     scale: 2e-6,
+                    colllisionShape: createBox(plane, 2.1e-6),
                 },
             },
         });
@@ -195,7 +204,7 @@ class OfficeCorridorOne extends Level {
 
         // Portal setup
         this.portal = new PhysicsObject(door, {
-            position: [37, 2.9, -3],
+            position: [37, 2.9, -2],
             scale: 10,
             mass: 0,
             opacityConfig: frontWallOpacity,
@@ -210,7 +219,7 @@ class OfficeCorridorOne extends Level {
             })
         );
 
-        room.add(new OfficeStartLights());
+        room.add(new OfficeCorridorLights());
 
         /************************************
          * Creating objects for the office
@@ -219,9 +228,8 @@ class OfficeCorridorOne extends Level {
         // Whiteboard
         room.add(
             new PhysicsObject(whiteboard.rotateOnAxis(UP_AXIS_THREE, Math.PI), {
-                position: [37, 5, -14],
+                position: [37, 5, -13],
                 scale: 8,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: frontWallOpacity,
             })
@@ -232,7 +240,6 @@ class OfficeCorridorOne extends Level {
             new PhysicsObject(clock.rotateOnAxis(UP_AXIS_THREE, Math.PI), {
                 position: [37, 10, -2],
                 scale: 0.1,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: frontWallOpacity,
             })
@@ -245,7 +252,6 @@ class OfficeCorridorOne extends Level {
                 {
                     position: [1.5, 1, 2],
                     scale: 1.5,
-                    castShadow: false,
                     mass: 0,
                     opacityConfig: rightWallOpacity,
                 }
@@ -255,7 +261,6 @@ class OfficeCorridorOne extends Level {
             new PhysicsObject(cubicle, {
                 position: [9, 1, 0],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: rightWallOpacity,
             })
@@ -264,7 +269,6 @@ class OfficeCorridorOne extends Level {
             new PhysicsObject(cubicle, {
                 position: [15, 1, 0],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: rightWallOpacity,
             })
@@ -273,7 +277,6 @@ class OfficeCorridorOne extends Level {
             new PhysicsObject(cubicle, {
                 position: [21, 1, 0],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: rightWallOpacity,
             })
@@ -282,7 +285,6 @@ class OfficeCorridorOne extends Level {
             new PhysicsObject(cubicle, {
                 position: [27, 1, 0],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: rightWallOpacity,
             })
@@ -295,7 +297,6 @@ class OfficeCorridorOne extends Level {
                 {
                     position: [-8, 1.5, 1],
                     scale: 3,
-                    castShadow: false,
                     mass: 0,
                     opacityConfig: rightWallOpacity,
                 }
@@ -307,7 +308,6 @@ class OfficeCorridorOne extends Level {
             new PhysicsObject(desk, {
                 position: [2, 1.5, -18],
                 scale: 4,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: leftWallOpacity,
             })
@@ -316,7 +316,6 @@ class OfficeCorridorOne extends Level {
             new PhysicsObject(desk, {
                 position: [10, 1.5, -18],
                 scale: 4,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: leftWallOpacity,
             })
@@ -325,7 +324,6 @@ class OfficeCorridorOne extends Level {
             new PhysicsObject(desk, {
                 position: [18, 1.5, -18],
                 scale: 4,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: leftWallOpacity,
             })
@@ -336,7 +334,6 @@ class OfficeCorridorOne extends Level {
             new PhysicsObject(chair, {
                 position: [8, 1, 0],
                 scale: 0.1,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: rightWallOpacity,
             })
@@ -345,7 +342,6 @@ class OfficeCorridorOne extends Level {
             new PhysicsObject(chair, {
                 position: [14, 1, 0],
                 scale: 0.1,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: rightWallOpacity,
             })
@@ -354,7 +350,6 @@ class OfficeCorridorOne extends Level {
             new PhysicsObject(chair, {
                 position: [20, 1, 0],
                 scale: 0.1,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: rightWallOpacity,
             })
@@ -363,7 +358,6 @@ class OfficeCorridorOne extends Level {
             new PhysicsObject(chair, {
                 position: [26, 1, 0],
                 scale: 0.1,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: rightWallOpacity,
             })
@@ -372,7 +366,6 @@ class OfficeCorridorOne extends Level {
             new PhysicsObject(chairLeft, {
                 position: [32, 0, -17.5],
                 scale: 0.1,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: leftWallOpacity,
             })
@@ -383,7 +376,6 @@ class OfficeCorridorOne extends Level {
             new PhysicsObject(fiddlePlant, {
                 position: [-7, 2, -18.5],
                 scale: 1,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: leftWallOpacity,
             })
@@ -394,7 +386,6 @@ class OfficeCorridorOne extends Level {
             new PhysicsObject(window, {
                 position: [-4, 5, -21],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: leftWallOpacity,
             })
@@ -403,7 +394,6 @@ class OfficeCorridorOne extends Level {
             new PhysicsObject(window, {
                 position: [26, 5, -21],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: leftWallOpacity,
             })
@@ -413,4 +403,4 @@ class OfficeCorridorOne extends Level {
     }
 }
 
-export default OfficeCorridorOne;
+export default OfficeCorridor;

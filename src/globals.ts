@@ -25,6 +25,7 @@ export const FLOAT_EPS = 1e-6;
 
 export const COLORS = {
     WHITE: 0xffffff,
+    BLUEISH_WHITE: 0xeb3fff,
     BLACK: 0x000000,
     GRAY: 0x999999,
     RED: 0xff0000,
