@@ -16,9 +16,9 @@ class LevelManager {
     readonly levels: LevelCreationFunction[] = [
         () => new OfficeStart(),
         () => new OfficeCorridor(),
-        () => new OfficeFight1(),
-        () => new OfficeCorridor(),
         () => new OfficeFight2(),
+        () => new OfficeCorridor(),
+        () => new OfficeFight1(),
         () => new OfficeCorridor(),
         () => new OfficeBoss(),
     ];
@@ -45,13 +45,14 @@ class LevelManager {
         return this.currentIndex;
     }
 
-    private async load(index: number) {
+    private async load(index: number, loadingScene: Scene, delayMs = 0) {
         this.loading = true;
 
         const last = this.current;
-        this.current = getLoadingScreen() as Level;
+        this.current = loadingScene as Level;
         last.dispose();
 
+        if (delayMs !== 0) await delay(delayMs);
         const next = this.levels[index]();
         await next.load();
 
@@ -68,7 +69,7 @@ class LevelManager {
             this.current.dispose();
             this.current = getEndScreen() as Level;
         } else {
-            await this.load(this.currentIndex + 1);
+            await this.load(this.currentIndex + 1, getLoadingScreen());
         }
     }
 
@@ -78,7 +79,7 @@ class LevelManager {
             location.reload();
             return;
         }
-        await this.load(this.currentIndex - 1);
+        await this.load(this.currentIndex - 1, getLoadingScreen());
     }
 
     update(dt: number) {
@@ -89,7 +90,7 @@ class LevelManager {
                 this.loadNext();
                 break;
             case 'playerDead':
-                this.load(this.startingLevel);
+                this.load(this.startingLevel, getDeadScreen(), 700);
                 break;
             case 'incomplete':
                 this.current.update(dt);
@@ -99,13 +100,40 @@ class LevelManager {
 
 export default LevelManager;
 
+/**
+ * From: https://alvarotrigo.com/blog/wait-1-second-javascript/
+ */
+const delay = (ms: number) => {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
+};
+
 const getLoadingScreen = () => {
     CAMERA.position.set(10, 10, 10);
     const scene = new Scene();
     scene.layers.enableAll();
 
     const loading = createObject2D({
-        textContent: 'Loading...',
+        textContent: 'loading...',
+        style: {
+            fontFamily: 'monospace',
+            fontSize: '4em',
+        },
+    });
+
+    CAMERA.lookAt(loading.position);
+    scene.add(loading);
+    return scene;
+};
+
+const getDeadScreen = () => {
+    CAMERA.position.set(10, 10, 10);
+    const scene = new Scene();
+    scene.layers.enableAll();
+
+    const loading = createObject2D({
+        textContent: 'you died lol',
         style: {
             fontFamily: 'monospace',
             fontSize: '4em',
@@ -123,7 +151,7 @@ const getEndScreen = () => {
     scene.layers.enableAll();
 
     const ending = createObject2D({
-        textContent: 'You Win!',
+        textContent: 'you got hired! gg',
         style: {
             fontFamily: 'monospace',
             fontSize: '4em',

@@ -8,6 +8,7 @@ import {
     Vector3,
 } from 'three';
 import {
+    createBox,
     loadModelFromGLTF,
     loadTexturesFromImages,
     meshesOf,
@@ -20,7 +21,8 @@ import Level from './Level';
 import PhysicsObject from '../PhysicsObject';
 import Room from '../rooms/Room';
 import Player from '../characters/Player';
-import OfficeStartLights from '../lights/Office2Lights';
+import RangedEnemy, { RangedEnemyOptions } from '../characters/RangedEnemy';
+import OfficeFight1Lights from '../lights/OfficeFight1Lights';
 
 // Models
 import WINDOW_LARGE from '@models/windowlarge.glb?url';
@@ -46,10 +48,8 @@ import CEILING from '@textures/ceiling_panels.jpg';
 import CARPET from '@textures/carpet.jpg';
 import GOOG_COLORS from '@textures/google_colors.jpeg';
 
-import RangedEnemy, { RangedEnemyOptions } from '../characters/RangedEnemy';
-
 class OfficeFight1 extends Level {
-    initCameraPosition = new Vector3(-41, 5, -7.5);
+    initCameraPosition = new Vector3(-35, 28, 10);
     async load() {
         // Load models from files
         const windowNS = await loadModelFromGLTF(WINDOW_LARGE);
@@ -65,9 +65,6 @@ class OfficeFight1 extends Level {
         const plane = await loadModelFromGLTF(PLANE, true);
         const cubicle = await loadModelFromGLTF(CUBICLE);
 
-        windowNS.castShadow = false;
-        windowEW.castShadow = false;
-
         cubicle.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
         door.rotateOnAxis(UP_AXIS_THREE, -Math.PI / 2);
         windowNS.rotateOnAxis(UP_AXIS_THREE, Math.PI / 2);
@@ -77,15 +74,10 @@ class OfficeFight1 extends Level {
 
         // Load textures from files
         const google_colors = await loadTexturesFromImages([GOOG_COLORS]);
-        const player_textures = await loadTexturesFromImages([
-            PLAYER_PX,
-            PLAYER_NX,
-            PLAYER_PY,
-            PLAYER_NY,
-            PLAYER_PZ,
-            PLAYER_NZ,
-        ]);
-        player_textures.map((te) => (te.magFilter = NearestFilter));
+        const player_textures = await loadTexturesFromImages(
+            [PLAYER_PX, PLAYER_NX, PLAYER_PY, PLAYER_NY, PLAYER_PZ, PLAYER_NZ],
+            NearestFilter
+        );
         const ceil = await loadTexturesFromImages([CEILING]);
         const carp = await loadTexturesFromImages([CARPET]);
 
@@ -99,8 +91,10 @@ class OfficeFight1 extends Level {
             object: plane.rotateOnAxis(new Vector3(0, 0, 1), -Math.PI / 2),
             speed: 50,
             damage: 35,
+            distanceFromSender: 1.1,
             options: {
                 scale: 2e-6,
+                colllisionShape: createBox(plane, 2.1e-6),
             },
         };
 
@@ -111,6 +105,7 @@ class OfficeFight1 extends Level {
         /**** CREATING PLAYER ****/
         this.player = new Player({
             size: [2, 4, 2],
+            health: 120,
             position: [-15, 0.5, -7.5],
             color: COLORS.PLAYER,
             projectileConfig,
@@ -140,7 +135,6 @@ class OfficeFight1 extends Level {
             {
                 position: [47, 6, -9],
                 scale: 12,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: {
                     directional: true,
@@ -157,7 +151,6 @@ class OfficeFight1 extends Level {
             {
                 position: [47, 13, -9],
                 scale: 0.1,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: {
                     directional: true,
@@ -190,7 +183,6 @@ class OfficeFight1 extends Level {
             new PhysicsObject(fiddlePlant, {
                 position: [42, 3, -34],
                 scale: 1,
-                castShadow: false,
                 mass: 1,
                 opacityConfig: {
                     directional: true,
@@ -202,7 +194,6 @@ class OfficeFight1 extends Level {
             new PhysicsObject(fiddlePlant, {
                 position: [42, 3, -24],
                 scale: 1,
-                castShadow: false,
                 mass: 1,
                 opacityConfig: {
                     directional: true,
@@ -214,7 +205,6 @@ class OfficeFight1 extends Level {
             new PhysicsObject(windowEW, {
                 position: [36, 8, -43],
                 scale: 5,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: {
                     directional: true,
@@ -226,7 +216,6 @@ class OfficeFight1 extends Level {
             new PhysicsObject(windowEW, {
                 position: [21, 8, -43],
                 scale: 5,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: {
                     directional: true,
@@ -238,7 +227,6 @@ class OfficeFight1 extends Level {
             new PhysicsObject(windowEW, {
                 position: [6, 8, -43],
                 scale: 5,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: {
                     directional: true,
@@ -250,7 +238,6 @@ class OfficeFight1 extends Level {
             new PhysicsObject(windowEW, {
                 position: [-9, 8, -43],
                 scale: 5,
-                castShadow: false,
                 mass: 0,
                 opacityConfig: {
                     directional: true,
@@ -259,65 +246,16 @@ class OfficeFight1 extends Level {
                     normal: new Vector3(0, 0, 1),
                 },
             }),
-            new PhysicsObject(windowNS, {
-                position: [-21, 8, -31],
-                scale: 5,
-                castShadow: false,
-                mass: 0,
-                opacityConfig: {
-                    directional: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
-            }),
-            new PhysicsObject(windowNS, {
-                position: [-21, 8, -16],
-                scale: 5,
-                castShadow: false,
-                mass: 0,
-                opacityConfig: {
-                    directional: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
-            }),
-            new PhysicsObject(windowNS, {
-                position: [-21, 8, -1],
-                scale: 5,
-                castShadow: false,
-                mass: 0,
-                opacityConfig: {
-                    directional: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
-            }),
-            new PhysicsObject(windowNS, {
-                position: [-21, 8, 14],
-                scale: 5,
-                castShadow: false,
-                mass: 0,
-                opacityConfig: {
-                    directional: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
-            }),
             board1,
             new PhysicsObject(printer, {
                 position: [43, 2, 23],
                 scale: 3.4,
-                castShadow: false,
                 mass: 3,
                 opacityConfig: {
-                    characterIntersection: true,
+                    directional: true,
                     lowOpacity: 0.2,
                     highOpacity: 1,
-                    normal: new Vector3(0, 0, -1),
+                    normal: new Vector3(-1, 0, 0),
                 },
             }),
             new PhysicsObject(
@@ -325,430 +263,202 @@ class OfficeFight1 extends Level {
                 {
                     position: [42, 2, 17],
                     scale: 3,
-                    castShadow: false,
                     mass: 1,
                     opacityConfig: {
-                        characterIntersection: true,
+                        directional: true,
                         lowOpacity: 0.2,
                         highOpacity: 1,
-                        normal: new Vector3(0, 0, -1),
+                        normal: new Vector3(-1, 0, 0),
                     },
                 }
             ),
             new PhysicsObject(printer, {
                 position: [42, 2, 11],
                 scale: 3,
-                castShadow: false,
                 mass: 1,
                 opacityConfig: {
-                    characterIntersection: true,
+                    directional: true,
                     lowOpacity: 0.2,
                     highOpacity: 1,
-                    normal: new Vector3(0, 0, -1),
+                    normal: new Vector3(-1, 0, 0),
                 },
             }),
             new PhysicsObject(printer, {
                 position: [42, 2, 5],
                 scale: 3,
-                castShadow: false,
                 mass: 1,
                 opacityConfig: {
-                    characterIntersection: true,
+                    directional: true,
                     lowOpacity: 0.2,
                     highOpacity: 1,
-                    normal: new Vector3(0, 0, -1),
+                    normal: new Vector3(-1, 0, -0),
                 },
             }),
             new PhysicsObject(cubicle, {
                 position: [9, 1, 21.5],
                 scale: 3.05,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [9, 1, 15],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [9, 1, 8.5],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [9, 1, 2],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [9, 1, -38.5],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [9, 1, -32],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [9, 1, -25.5],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [9, 1, -19],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
 
             new PhysicsObject(cubicle, {
                 position: [-10, 1, 21.5],
                 scale: 3.05,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [-10, 1, 15],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [-10, 1, 8.5],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [-10, 1, 2],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [-10, 1, -38.5],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [-10, 1, -32],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [-10, 1, -25.5],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [-10, 1, -19],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
 
             new PhysicsObject(cubicle, {
                 position: [-10, 1, 21.5],
                 scale: 3.05,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [-10, 1, 15],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [-10, 1, 8.5],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [-10, 1, 2],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [-10, 1, -38.5],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [-10, 1, -32],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [28, 1, -25.5],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [28, 1, -19],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [28, 1, 21.5],
                 scale: 3.05,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [28, 1, 15],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [28, 1, 8.5],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [28, 1, 2],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [28, 1, -38.5],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [28, 1, -32],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [28, 1, -25.5],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(cubicle, {
                 position: [28, 1, -19],
                 scale: 3,
-                castShadow: false,
                 mass: 0,
-                opacityConfig: {
-                    characterIntersection: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(1, 0, 0),
-                },
             }),
             new PhysicsObject(chairTwo, {
                 position: [19, 1, -15],
                 scale: 0.15,
-                castShadow: false,
                 mass: 1,
                 opacityConfig: {
                     directional: true,
@@ -762,7 +472,6 @@ class OfficeFight1 extends Level {
                 {
                     position: [9, 1, -4],
                     scale: 0.15,
-                    castShadow: false,
                     mass: 1,
                     opacityConfig: {
                         directional: true,
@@ -777,7 +486,6 @@ class OfficeFight1 extends Level {
                 {
                     position: [28, 1, -6],
                     scale: 0.15,
-                    castShadow: false,
                     mass: 1,
                     opacityConfig: {
                         directional: true,
@@ -804,6 +512,7 @@ class OfficeFight1 extends Level {
         const rangedOpts: RangedEnemyOptions = {
             ...RangedEnemy.defaultOptions,
             size: [2, 4, 2],
+            health: 60,
             color: COLORS.RED,
             projectileConfig,
         };
@@ -836,11 +545,6 @@ class OfficeFight1 extends Level {
             new RangedEnemy({
                 ...rangedOpts,
                 position: [37, 1, -7],
-                fireRate: 0.5,
-            }),
-            new RangedEnemy({
-                ...rangedOpts,
-                position: [42, 1, -3],
                 fireRate: 0.5,
             }),
             new RangedEnemy({
@@ -882,7 +586,7 @@ class OfficeFight1 extends Level {
             })
         );
         this.add(room);
-        this.add(new OfficeStartLights());
+        this.add(new OfficeFight1Lights());
 
         await super.load();
     }

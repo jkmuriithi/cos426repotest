@@ -3,7 +3,7 @@ import {
     Vector3,
     BoxGeometry,
     ColorRepresentation,
-    MeshLambertMaterial,
+    MeshPhongMaterial,
 } from 'three';
 
 import { RENDER_ORDER_FIRST, UP_AXIS_THREE, WALL_THICKNESS } from '../globals';
@@ -41,7 +41,7 @@ class Wall extends PhysicsObject {
 
         // Create object
         const geometry = new BoxGeometry(...size);
-        const material = new MeshLambertMaterial({ color });
+        const material = new MeshPhongMaterial({ color });
         const mesh = new Mesh(geometry, material);
         mesh.name = name;
 

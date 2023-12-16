@@ -17,9 +17,9 @@ import { PerspectiveCamera, Vector3, WebGLRenderer } from 'three';
 import { CSS2DRenderer } from 'three/examples/jsm/Addons.js';
 
 // Game
-export const PROJECTILE_LIMIT = 100;
+export const PROJECTILE_LIMIT = 20;
 export const UP_AXIS = [0, 1, 0] as const;
-export const STARTING_LEVEL = 6;
+export const STARTING_LEVEL = 2;
 export const WALL_THICKNESS = 0.4;
 export const FLOAT_EPS = 1e-6;
 
@@ -47,7 +47,7 @@ export const DEBUG_FLAGS = {
 
 // ThreeJS
 export const UP_AXIS_THREE = new Vector3(...UP_AXIS);
-export const SHADOW_MAP_SIZE = 512;
+export const SHADOW_MAP_SIZE = 256;
 export const RENDER_ORDER_FIRST = -100;
 export const RENDER_ORDER_LAST = 100;
 

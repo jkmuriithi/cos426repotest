@@ -6,7 +6,7 @@ import {
     Vector3,
     Vector2,
     Material,
-    DoubleSide
+    DoubleSide,
 } from 'three';
 
 // Helpers and constants
@@ -107,6 +107,7 @@ class OfficeStart extends Level {
             size: [1.5, 3, 1.5],
             position: [-18, 6, 0],
             color: COLORS.PLAYER,
+            hasHealthBar: false,
             projectileConfig: {
                 object: plane.rotateOnAxis(new Vector3(0, 0, 1), -Math.PI / 2),
                 speed: 50,
@@ -136,17 +137,20 @@ class OfficeStart extends Level {
 
         // clock
         this.add(
-            new PhysicsObject(clock.clone().rotateOnAxis(UP_AXIS_THREE, Math.PI), {
-                position: [-0.5, 8, 0],
-                scale: 0.08,
-                mass: 0,
-                opacityConfig: {
-                    directional: true,
-                    lowOpacity: 0.2,
-                    highOpacity: 1,
-                    normal: new Vector3(-1, 0, 0),
-                },
-            })
+            new PhysicsObject(
+                clock.clone().rotateOnAxis(UP_AXIS_THREE, Math.PI),
+                {
+                    position: [-0.5, 8, 0],
+                    scale: 0.08,
+                    mass: 0,
+                    opacityConfig: {
+                        directional: true,
+                        lowOpacity: 0.2,
+                        highOpacity: 1,
+                        normal: new Vector3(-1, 0, 0),
+                    },
+                }
+            )
         );
 
         const backWallOpacity = {
@@ -155,12 +159,15 @@ class OfficeStart extends Level {
             highOpacity: 1,
             normal: new Vector3(0, 0, -1).normalize(),
         };
-        const cooler1 = new PhysicsObject(cooler.clone().rotateOnAxis(UP_AXIS_THREE, Math.PI), {
-            position: [-1, 3, 12],
-            scale: 1.5,
-            mass: 0,
-            opacityConfig: backWallOpacity,
-        });
+        const cooler1 = new PhysicsObject(
+            cooler.clone().rotateOnAxis(UP_AXIS_THREE, Math.PI),
+            {
+                position: [-1, 3, 12],
+                scale: 1.5,
+                mass: 0,
+                opacityConfig: backWallOpacity,
+            }
+        );
 
         const trashbin = new PhysicsObject(
             bin.clone().rotateOnAxis(UP_AXIS_THREE, -Math.PI / 2),
@@ -211,17 +218,20 @@ class OfficeStart extends Level {
         // Desks
         for (let i = 0; i < 3; i++) {
             this.add(
-                new PhysicsObject(desk.clone().rotateOnAxis(UP_AXIS_THREE, Math.PI / 2), {
-                    position: [i * 6 + 6, 3, -20],
-                    scale: 3,
-                    mass: 0,
-                    opacityConfig: {
-                        directional: true,
-                        lowOpacity: 0.2,
-                        highOpacity: 1,
-                        normal: new Vector3(0, 0, 1),
-                    },
-                })
+                new PhysicsObject(
+                    desk.clone().rotateOnAxis(UP_AXIS_THREE, Math.PI / 2),
+                    {
+                        position: [i * 6 + 6, 3, -20],
+                        scale: 3,
+                        mass: 0,
+                        opacityConfig: {
+                            directional: true,
+                            lowOpacity: 0.2,
+                            highOpacity: 1,
+                            normal: new Vector3(0, 0, 1),
+                        },
+                    }
+                )
             );
             this.add(
                 new PhysicsObject(desk, {
