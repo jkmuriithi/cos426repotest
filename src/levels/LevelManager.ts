@@ -16,9 +16,9 @@ class LevelManager {
     readonly levels: LevelCreationFunction[] = [
         () => new OfficeStart(),
         () => new OfficeCorridor(),
-        () => new OfficeFight2(),
-        () => new OfficeCorridor(),
         () => new OfficeFight1(),
+        () => new OfficeCorridor(),
+        () => new OfficeFight2(),
         () => new OfficeCorridor(),
         () => new OfficeBoss(),
     ];
