@@ -1,12 +1,5 @@
 import { BODY_TYPES, Body, Vec3 } from 'cannon-es';
-import {
-    Scene,
-    Object3D,
-    Object3DEventMap,
-    Vector3,
-    Box3,
-    Ray,
-} from 'three';
+import { Scene, Object3D, Object3DEventMap, Vector3, Box3, Ray } from 'three';
 
 import {
     CAMERA,
@@ -326,12 +319,14 @@ class Level extends Scene {
             sender.firedProjectile = false; // reset flag
 
             const { projectileConfig: config } = sender.options;
+            // direction relative to sender (location to spawn projectile)
             const dir = sender.front
                 .clone()
                 .applyQuaternion(sender.quaternion)
                 .normalize();
 
             const distance = config.distanceFromSender || Math.SQRT2;
+            // rotate projectile to face away from sender
             const configObj = config.object
                 .clone()
                 .rotateOnAxis(
