@@ -97,7 +97,7 @@ class Player extends Character {
         if (fireKeys.has(code)) {
             this.fireProjectile();
         }
-        if (this.jumpsLeft > 0 && jumpKeys.has(code)) {
+        if ((DEBUG_FLAGS.FLIGHT_MODE || this.jumpsLeft > 0) && jumpKeys.has(code)) {
             this.body.velocity.y += this.jumpVelocity;
             --this.jumpsLeft;
         }

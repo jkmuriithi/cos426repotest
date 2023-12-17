@@ -39,12 +39,13 @@ export const COLORS = {
 export const DEBUG_FLAGS = {
     HOTKEYS_ENABLED: true,
     ORBIT_CONTROLS_ENABLED: false,
-    ICE_SKATER_MODE: false,
+    ICE_SKATER_MODE: false, // Frictionless movement and high acceleration
     PRINT_ASSETS_ON_LOAD: false,
     DRAW_CHARACTER_DIRECTION_LINE: false,
     SHOW_GRIDS: false,
     HIDE_INTRO: false,
-    GODMODE: false,
+    GODMODE: false, // Invincibility
+    FLIGHT_MODE: false, // Infinite double jumps
 };
 
 // ThreeJS

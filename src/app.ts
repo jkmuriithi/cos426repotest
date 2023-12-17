@@ -109,6 +109,9 @@ function setup() {
                 case 'KeyC':
                     console.log(CAMERA);
                     break;
+                case 'KeyF':
+                    DEBUG_FLAGS.FLIGHT_MODE = !DEBUG_FLAGS.FLIGHT_MODE;
+                    break;
                 case 'KeyG':
                     DEBUG_FLAGS.GODMODE = !DEBUG_FLAGS.GODMODE;
                     break;
