@@ -24,7 +24,7 @@ import PhysicsObject from '../PhysicsObject';
 import Room from '../rooms/Room';
 import Player from '../characters/Player';
 import MeleeEnemy from '../characters/MeleeEnemy';
-import OfficeFight2Lights from '../lights/OfficeFight2Lights';
+import OfficeFight1Lights from '../lights/OfficeFight1Lights';
 
 // Models
 import WATER_COOLER from '@models/watercooler.glb?url';
@@ -400,7 +400,7 @@ class OfficeFight1 extends Level {
         );
         this.add(room);
 
-        this.add(new OfficeFight2Lights());
+        this.add(new OfficeFight1Lights());
 
         await super.load();
     }

@@ -20,6 +20,7 @@ class OfficeCorridorLights extends Group {
             spot.position.set(pos[0], 12, pos[1]);
             spot.target.position.set(pos[0], -2, pos[1]);
             spot.castShadow = true;
+            // Try to mitigate performance dip
             spot.shadow.mapSize.width = this.shadowMapSize / 2;
             spot.shadow.mapSize.height = this.shadowMapSize / 2;
             this.add(spot, spot.target);

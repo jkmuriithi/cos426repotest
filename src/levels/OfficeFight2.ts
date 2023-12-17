@@ -22,7 +22,7 @@ import PhysicsObject from '../PhysicsObject';
 import Room from '../rooms/Room';
 import Player from '../characters/Player';
 import RangedEnemy, { RangedEnemyOptions } from '../characters/RangedEnemy';
-import OfficeFight1Lights from '../lights/OfficeFight1Lights';
+import OfficeFight2Lights from '../lights/OfficeFight2Lights';
 
 // Models
 import WINDOW_LARGE from '@models/windowlarge.glb?url';
@@ -608,7 +608,7 @@ class OfficeFight2 extends Level {
             })
         );
         this.add(room);
-        this.add(new OfficeFight1Lights());
+        this.add(new OfficeFight2Lights());
 
         await super.load();
     }

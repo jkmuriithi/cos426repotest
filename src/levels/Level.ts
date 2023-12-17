@@ -126,8 +126,8 @@ class Level extends Scene {
                     ) {
                         this.lastContactTime = WORLD.time;
                         if (!DEBUG_FLAGS.GODMODE) {
-                        this.player.takeDamage(enemy.contactDamage);
-                    }
+                            this.player.takeDamage(enemy.contactDamage);
+                        }
                     }
 
                     const dir = this.player.body.position
@@ -213,6 +213,7 @@ class Level extends Scene {
             this.moveCameraWithPlayer();
         }
 
+        // Handle more expensvive calculations asynchronously
         this.handleMaterialTransparency();
         this.handleProjectiles();
     }
@@ -231,7 +232,7 @@ class Level extends Scene {
     }
 
     /** Make objects between the camera and the player transparent */
-    private handleMaterialTransparency() {
+    private async handleMaterialTransparency() {
         if (!this.player && this.enemies.length == 0) return;
 
         const currTransparent = new Set<PhysicsObject>();
@@ -308,7 +309,7 @@ class Level extends Scene {
         this.prevTransparent = currTransparent;
     }
 
-    private handleProjectiles() {
+    private async handleProjectiles() {
         const characters: Character[] = [...this.enemies];
         if (this.player) characters.push(this.player);
 
@@ -349,7 +350,7 @@ class Level extends Scene {
                     this.bodyToEnemy.has(sender.body.id)
                 ) {
                     if (!DEBUG_FLAGS.GODMODE) {
-                    this.player.takeDamage(config.damage);
+                        this.player.takeDamage(config.damage);
                     }
                     this.activeProjectiles.delete(proj);
                 } else if (sender.body.id === this.player.body.id) {

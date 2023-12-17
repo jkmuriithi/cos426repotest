@@ -109,6 +109,9 @@ function setup() {
                 case 'KeyC':
                     console.log(CAMERA);
                     break;
+                case 'KeyG':
+                    DEBUG_FLAGS.GODMODE = !DEBUG_FLAGS.GODMODE;
+                    break;
                 case 'KeyI':
                     DEBUG_FLAGS.ICE_SKATER_MODE = !DEBUG_FLAGS.ICE_SKATER_MODE;
                     break;

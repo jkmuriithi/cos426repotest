@@ -33,15 +33,6 @@ class OfficeBossLights extends Group {
         bossSpot.shadow.mapSize.height = this.shadowMapSize / 2;
         this.add(bossSpot, bossSpot.target);
 
-        // // Directional light to simulate the sun
-        // const sunLight = new DirectionalLight(COLORS.WHITE, 0.3);
-        // sunLight.position.set(-50, 25, 0); // Position can be adjusted for desired angle and distance
-        // sunLight.target.position.set(40, 0, 0);
-        // sunLight.castShadow = true;
-        // sunLight.shadow.mapSize.width = this.shadowMapSize;
-        // sunLight.shadow.mapSize.height = this.shadowMapSize;
-        // this.add(sunLight, sunLight.target);
-
         const hemi = new HemisphereLight(COLORS.WHITE, COLORS.WHITE, 0.4);
         hemi.position.set(0, 120, 0);
         this.add(hemi);
