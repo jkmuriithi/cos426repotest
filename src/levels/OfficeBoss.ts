@@ -122,7 +122,7 @@ class OfficeBoss extends Level {
             object: plane.rotateOnAxis(new Vector3(0, 0, 1), -Math.PI / 2),
             speed: 50,
             damage: 35,
-            distanceFromSender: 1.2,
+            distanceFromSender: 3.6,
             options: {
                 scale: 2e-6,
                 colllisionShape: createBox(plane, 2.1e-6),
@@ -151,6 +151,10 @@ class OfficeBoss extends Level {
         setMaterial(this.player, materials);
         this.add(this.player);
 
+        const enemyConfig = {
+            ...projectileConfig,
+            distanceFromSender: 4.1,
+        };
         // Enemies
         this.enemies = [
             new RangedEnemy({
@@ -158,14 +162,14 @@ class OfficeBoss extends Level {
                 position: [20, 25, -30],
                 color: COLORS.RED,
                 health: 200,
-                projectileConfig,
+                projectileConfig: enemyConfig,
             }),
             new RangedEnemy({
                 size: [4, 8, 4],
                 position: [20, 25, 30],
                 color: COLORS.RED,
                 health: 200,
-                projectileConfig,
+                projectileConfig: enemyConfig,
             }),
             new MeleeEnemy({
                 size: [4, 8, 4],
