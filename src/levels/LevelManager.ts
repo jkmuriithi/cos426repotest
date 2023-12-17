@@ -40,7 +40,7 @@ class LevelManager {
 
     private startingLevel;
     private currentIndex: number;
-    private clearClockMs: number = performance.now();
+    private lastStartTime: number = performance.now();
     private loading: boolean = true;
     private portalMessageShown: boolean = false;
 
@@ -60,8 +60,8 @@ class LevelManager {
             start.load().then(() => (this.loading = false));
         } else {
             this.showSlides([
-                ['welcome to roguelife', 2000],
-                ['wasd or arrows to move', 1500],
+                ['welcome to roguelife inc', 2000],
+                ['wasd to move', 1500],
                 ['space to jump', 1500],
                 ['enter to shoot', 1500],
                 ['good luck interviewing', 1500],
@@ -72,17 +72,23 @@ class LevelManager {
         }
     }
 
+    /**
+     * Takes in an array of text strings and the time they should be shown
+     * onscreen for. If the given delay for a string is 0, this function will
+     * return without cleaning up the scene (good for showing text "forever").
+     */
     private async showSlides(textDelayMs: [string, number][]) {
         const curr = this.current;
         hideGameText();
+
         for (const [text, ms] of textDelayMs) {
-            this.current = getTextScreen(text) as Level;
-            if (ms === 0) {
-                return; // Show this screen forever
-            }
+            this.current = getTextScene(text) as Level;
+            if (ms === 0) return;
+
             await delay(ms);
             this.current.children[0].removeFromParent();
         }
+
         this.current = curr;
         showGameText();
     }
@@ -109,26 +115,30 @@ class LevelManager {
     }
 
     async loadNext() {
-        if (this.currentIndex === this.levels.length - 1) {
-            // Handle end game
-            const clearTime = (performance.now() - this.clearClockMs) / 1000;
+        if (!this.loading && this.currentIndex === this.levels.length - 1) {
+            // Prevent further load() calls from running
+            this.loading = true;
+
+            const clearTime = (performance.now() - this.lastStartTime) / 1000;
+            const timeMsg = `time: ${String(clearTime).slice(0, 7)} secs`;
             this.showSlides([
                 [this.winMessage, 1500],
-                [`time: ${String(clearTime).slice(0, 7)} secs`, 0],
+                [timeMsg, 0],
             ]);
         } else {
             await this.load(
                 this.currentIndex + 1,
-                getTextScreen(this.loadingMessage)
+                getTextScene(this.loadingMessage)
             );
         }
     }
 
     async loadPrevious() {
         if (this.currentIndex === 0) return;
+
         await this.load(
             this.currentIndex - 1,
-            getTextScreen(this.loadingMessage)
+            getTextScene(this.loadingMessage)
         );
     }
 
@@ -156,10 +166,10 @@ class LevelManager {
                 this.loadNext();
                 break;
             case 'playerDead':
-                this.clearClockMs = performance.now();
+                this.lastStartTime = performance.now();
                 this.load(
                     this.startingLevel,
-                    getTextScreen(chooseRandom(this.deathMessages)),
+                    getTextScene(chooseRandom(this.deathMessages)),
                     1000
                 );
                 break;
@@ -179,7 +189,7 @@ const delay = (ms: number) => {
     });
 };
 
-const getTextScreen = (text: string) => {
+const getTextScene = (text: string): Scene => {
     CAMERA.position.set(10, 10, 10);
     const scene = new Scene();
     scene.layers.enableAll();
