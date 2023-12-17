@@ -325,7 +325,8 @@ class Level extends Scene {
                 .applyQuaternion(sender.quaternion)
                 .normalize();
 
-            const distance = config.distanceFromSender || Math.SQRT2;
+            const distance =
+                config.distanceFromSender || sender.options.size[0] * 1.2;
             // rotate projectile to face away from sender
             const configObj = config.object
                 .clone()

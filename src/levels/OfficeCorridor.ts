@@ -141,7 +141,6 @@ class OfficeCorridor extends Level {
                 object: plane.rotateOnAxis(new Vector3(0, 0, 1), -Math.PI / 2),
                 speed: 50,
                 damage: 35,
-                distanceFromSender: 1.1,
                 options: {
                     scale: 2e-6,
                     colllisionShape: createBox(plane, 2.1e-6),
