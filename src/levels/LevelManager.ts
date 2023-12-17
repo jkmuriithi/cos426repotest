@@ -60,7 +60,7 @@ class LevelManager {
             start.load().then(() => (this.loading = false));
         } else {
             this.showSlides([
-                ['welcome to roguelife inc', 2000],
+                ['welcome to roguelife', 2000],
                 ['wasd to move', 1500],
                 ['space to jump', 1500],
                 ['enter to shoot', 1500],
