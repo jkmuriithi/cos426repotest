@@ -11,6 +11,7 @@ import {
     RENDER_ORDER_LAST,
     RENDER_ORDER_FIRST,
     DEBUG_FLAGS,
+    UP_AXIS_THREE,
 } from '../globals';
 import {
     dfsFind,
@@ -318,19 +319,27 @@ class Level extends Scene {
             sender.firedProjectile = false; // reset flag
 
             const { projectileConfig: config } = sender.options;
+            // direction relative to sender (location to spawn projectile)
             const dir = sender.front
                 .clone()
                 .applyQuaternion(sender.quaternion)
                 .normalize();
 
-            const distance = config.distanceFromSender || 1;
-            const proj = new PhysicsObject(config.object, {
+            const distance = config.distanceFromSender || Math.SQRT2;
+            // rotate projectile to face away from sender
+            const configObj = config.object
+                .clone()
+                .rotateOnAxis(
+                    UP_AXIS_THREE,
+                    Math.atan2(dir.x, dir.z) + Math.PI / 2
+                );
+            const proj = new PhysicsObject(configObj, {
                 ...config.options,
                 position: sender.position
                     .clone()
                     .add(dir.clone().setLength(distance))
                     .toArray(),
-                direction: dir.clone().toArray(),
+                direction: new Vector3(-1, 0, 0).toArray(),
             });
 
             this.add(proj);
