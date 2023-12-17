@@ -44,6 +44,7 @@ export const DEBUG_FLAGS = {
     DRAW_CHARACTER_DIRECTION_LINE: false,
     SHOW_GRIDS: false,
     HIDE_INTRO: false,
+    GODMODE: false,
 };
 
 // ThreeJS

@@ -125,7 +125,9 @@ class Level extends Scene {
                         this.contactImmunitySecs
                     ) {
                         this.lastContactTime = WORLD.time;
+                        if (!DEBUG_FLAGS.GODMODE) {
                         this.player.takeDamage(enemy.contactDamage);
+                    }
                     }
 
                     const dir = this.player.body.position
@@ -346,7 +348,9 @@ class Level extends Scene {
                     e.body.id === this.player.body.id &&
                     this.bodyToEnemy.has(sender.body.id)
                 ) {
+                    if (!DEBUG_FLAGS.GODMODE) {
                     this.player.takeDamage(config.damage);
+                    }
                     this.activeProjectiles.delete(proj);
                 } else if (sender.body.id === this.player.body.id) {
                     const enemy = this.bodyToEnemy.get(e.body.id);
